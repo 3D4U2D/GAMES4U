@@ -15,6 +15,7 @@
 :root{--ink:#123247;--muted:#5b7d93;--card:#fffdf6;--line:#e3edf2;--accent:#ff8a3d;--blue:#1597d4;--gold:#ffc83d}
 *{box-sizing:border-box;touch-action:manipulation}
 html,body{margin:0;height:100%;overflow:hidden;background:#06324d;overscroll-behavior:none}
+body{position:fixed;inset:0}
 body{font-family:ui-rounded,"SF Pro Rounded","Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -697,7 +698,8 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-window.settingsUI=()=>open(hd('Instellingen')+`<div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
+const VERSION='2.4 · 2 nov 17:50';
+window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="if(confirmReset){localStorage.removeItem('fish4u_state');location.reload();}else{confirmReset=1;this.textContent='Zeker weten? Tik nogmaals'}">Opnieuw beginnen</button>`);
 let confirmReset=0;
 window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.closeM=close;
