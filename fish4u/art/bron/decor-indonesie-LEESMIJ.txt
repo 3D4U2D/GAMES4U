@@ -1,0 +1,6 @@
+Fish4U – Indonesische decoratie v2
+
+decor_borobudur.png: verweerde blauwgrijze steen met algen, zeepokken en klein koraal.
+decor_spekkoek.png: eenvoudige cartoonpunt met pandangroene lagen en warme bruine bovenkant.
+
+Vervangt de twee gelijknamige bestanden uit v1. Transparante PNG, maximaal 800px breed. Plaats met anker midden onder [0.5,1]. Behoud deze kleuren: geen hue-rotatie of kleurfilter. Geen spelwaarden toegevoegd.
