@@ -47,15 +47,15 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   white-space:nowrap;animation:toast 2.2s ease forwards;pointer-events:none;font-size:15px}
 @keyframes toast{0%{opacity:0;transform:translate(-50%,-10px)}10%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
 /* sheet */
-#modal{position:absolute;inset:0;z-index:10;display:flex;align-items:flex-end;justify-content:center;background:rgba(4,30,48,.45);opacity:0;pointer-events:none;transition:opacity .2s}
+#modal{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(4,30,48,.45);opacity:0;pointer-events:none;transition:opacity .2s}
 #modal.open{opacity:1;pointer-events:auto}
-.sheet{width:min(100%,620px);margin:0 auto;max-height:86%;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);
-  transform:translateY(30px);transition:transform .25s cubic-bezier(.3,1.3,.6,1)}
+.sheet{width:min(94%,700px);margin:0 auto;max-height:94%;overflow:auto;background:var(--card);border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.35);padding:12px 16px 14px;
+  transform:scale(.94);transition:transform .25s cubic-bezier(.3,1.3,.6,1)}
 #modal.open .sheet{transform:none}
-.sheet h2{margin:0;font-size:22px;font-weight:900}
-.sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.x{width:36px;height:36px;border:0;border-radius:50%;background:var(--line);font-weight:900;font-size:16px}
-.sheet p{margin:4px 0 10px;color:var(--muted);font-size:14px;line-height:1.4}
+.sheet h2{margin:0;font-size:19px;font-weight:900}
+.sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.x{width:32px;height:32px;border:0;border-radius:50%;background:var(--line);font-weight:900;font-size:16px}
+.sheet p{margin:3px 0 7px;color:var(--muted);font-size:13.5px;line-height:1.35}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
 .item{border:2px solid var(--line);background:#fff;border-radius:16px;padding:8px 6px;text-align:center;font-weight:800;font-size:12.5px;position:relative}
 .sheet canvas{position:static;inset:auto}
@@ -65,13 +65,17 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .item.sel{border-color:var(--accent);background:#fff4ea}
 .item.dis{opacity:.45}
 .item .tag{position:absolute;top:4px;left:4px;font-size:9.5px;padding:1px 5px;border-radius:6px;color:#fff;font-weight:900}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:50px;border:0;border-radius:15px;background:var(--line);font-weight:900;font-size:16px;margin-top:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:42px;border:0;border-radius:15px;background:var(--line);font-weight:900;font-size:15px;margin-top:8px}
 .btn.p{background:linear-gradient(180deg,#ffa25c,#ff7a1a);color:#fff;box-shadow:0 4px 0 #c45608}
 .btn:disabled{opacity:.45}
 .row2{display:flex;gap:8px}.row2 .btn{flex:1}
-.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0 10px}.bar i{display:block;height:100%;border-radius:99px}
+.bar{height:9px;border-radius:99px;background:var(--line);overflow:hidden;margin:3px 0 7px}.bar i{display:block;height:100%;border-radius:99px}
 .kv{display:flex;justify-content:space-between;font-weight:800;font-size:13.5px;color:var(--muted)}
-.big{display:block;width:70%;height:auto;margin:0 auto;aspect-ratio:1.4}
+.big{display:block;height:calc(var(--ah,390px)*.36);width:auto;max-width:100%;margin:0 auto;aspect-ratio:1.4}
+.two{display:grid;grid-template-columns:1fr 1.15fr;gap:14px;align-items:center}
+.mid{height:calc(var(--ah,390px)*.24)!important;width:auto!important;max-width:100%;aspect-ratio:1.2;display:block;margin:0 auto}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.help2{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}.help2 p{font-size:12.5px!important;margin:2px 0!important}
 .r0{background:#8aa4b4}.r1{background:#3fb06a}.r2{background:#2f8be0}.r3{background:#a24ae0}.r4{background:linear-gradient(90deg,#ff5f6d,#ffc371,#3fd0a0,#4a9cff,#b25cff)}
 .rt{display:inline-block;color:#fff;font-weight:900;font-size:12px;padding:3px 10px;border-radius:99px}
 .new{display:inline-block;background:#e8202a;color:#fff;font-weight:900;font-size:12px;padding:3px 10px;border-radius:99px;margin-left:6px}
@@ -363,7 +367,7 @@ function levelUp(){
   Object.entries(DECOR_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push(DECOR.find(d=>d.id===k).n);});
   Object.entries(BG_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push('Thema: '+BGS.find(b=>b.id===k).n);});
   CFG.seas.forEach(z=>{if(z.lvl===S.lvl&&z.lvl>1)un.push(z.n+' te koop');});
-  open(`<div style="text-align:center"><div style="font-size:54px" class="reveal">⭐</div><h2>Niveau ${S.lvl}!</h2><p>+3 parels</p>
+  open(`<div style="text-align:center"><div style="font-size:40px" class="reveal">⭐</div><h2>Niveau ${S.lvl}!</h2><p>+3 parels</p>
     ${un.length?'<p><b>Nieuw in de winkel:</b><br>'+un.join(' · ')+'</p>':''}</div><button class="btn p" onclick="closeM()">Top!</button>`);
 }
 
@@ -372,7 +376,8 @@ const cv=$('cv'),cx=cv.getContext('2d'),app=$('app');
 let W=360,H=640,dpr=1,SAND=560;
 const rotated=()=>matchMedia('(orientation:portrait)').matches;
 function pt(e){if(rotated())return {x:e.clientY,y:app.offsetHeight-e.clientX};const r=app.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
-function resize(){dpr=Math.min(devicePixelRatio||1,2.5);W=app.offsetWidth;H=app.offsetHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);SAND=H-(H<500?84:128);}
+function resize(){if(rotated()){app.style.width=innerHeight+'px';app.style.height=innerWidth+'px';}else{app.style.width='';app.style.height='';}
+  dpr=Math.min(devicePixelRatio||1,2.5);W=app.offsetWidth;H=app.offsetHeight;app.style.setProperty('--ah',H+'px');cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);SAND=H-(H<500?84:128);}
 addEventListener('resize',()=>{resize();syncSwimmers();});addEventListener('orientationchange',()=>setTimeout(resize,250));
 const SW=[];
 function syncSwimmers(rebuild){
@@ -546,12 +551,12 @@ document.querySelectorAll('.dock [data-tool]').forEach(b=>b.onclick=()=>{ensureA
 // vis-info
 function fishInfo(f){
   const r=rarity(f.g),val=VALUE[r]*(adult(f)?15:5)*(1+(f.tier||0));
-  open(hd(fname(f.g))+`<canvas class="big" id="bigc"></canvas>
-    <div style="text-align:center;margin:4px 0 12px">${rt(r)} <span class="rt" style="background:#5b7d93">Vorm ${(f.tier||0)+1}/3</span></div>
+  open(hd(fname(f.g))+`<div class="two"><div><canvas class="big" id="bigc"></canvas>
+    <div style="text-align:center;margin-top:4px">${rt(r)} <span class="rt" style="background:#5b7d93">Vorm ${(f.tier||0)+1}/3</span></div></div><div>
     <div class="kv"><span>${adult(f)?'Volwassen':'Groeit nog'}</span><span>${Math.min(6,f.grow)}/6</span></div><div class="bar"><i style="width:${Math.min(1,f.grow/6)*100}%;background:#3fb06a"></i></div>
     <div class="kv"><span>Honger</span><span>${Math.round(f.hunger)}%</span></div><div class="bar"><i style="width:${f.hunger}%;background:${f.hunger>70?'#e8202a':'#ff9f43'}"></i></div>
     <p>${adult(f)?((f.tier||0)<2?'Deze vis kan evolueren via 🧬 Evolutie.':'Deze vis is volledig geëvolueerd.'):'Voer hem om te laten groeien. Volwassen vissen laten munten en XP vallen en kunnen evolueren.'}</p>
-    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button>${adult(f)&&(f.tier||0)<2?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="closeM()">Oké</button>'}</div>`);
+    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button>${adult(f)&&(f.tier||0)<2?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="closeM()">Oké</button>'}</div></div></div>`);
   liveFish('bigc',f.g,280,200,150);
 }
 window.sellFish=id=>{const t=T();if(t.fish.length<=1){toast('Je hebt minstens één vis nodig');return;}
@@ -593,10 +598,10 @@ function evoUI(fid){
     const e=S.evo,tk=S.tanks[e.tank],f=tk&&tk.fish.find(q=>q.id===e.id);
     if(!f){S.evo=null;return evoUI();}
     const left=Math.max(0,e.done-Date.now()),ready=left<=0;
-    open(hd('Evolutie')+`<p style="text-align:center">${fname(f.g)} wordt…</p><canvas class="big" id="evoT"></canvas>
-      <div style="text-align:center;font-weight:900;font-size:18px">${fname(e.g)}</div>
-      <p style="text-align:center">${ready?'Klaar!':'Nog '+fmtT(left/1000)}</p>
-      ${ready?'<button class="btn p" onclick="finishEvo()">Bekijk je nieuwe vis</button>':`<button class="btn p" ${S.pearls<CFG.skipPearls?'disabled':''} onclick="skipEvo()">Direct klaar (${CFG.skipPearls} parels)</button><button class="btn" onclick="closeM()">Wachten</button>`}`);
+    open(hd('Evolutie')+`<div class="two"><canvas class="big" id="evoT"></canvas><div style="text-align:center"><p>${fname(f.g)} wordt…</p>
+      <div style="font-weight:900;font-size:18px">${fname(e.g)}</div>
+      <p style="font-size:20px;font-weight:900;color:var(--ink)">${ready?'Klaar!':'⏱ '+fmtT(left/1000)}</p>
+      ${ready?'<button class="btn p" onclick="finishEvo()">Bekijk je nieuwe vis</button>':`<button class="btn p" ${S.pearls<CFG.skipPearls?'disabled':''} onclick="skipEvo()">Direct klaar (${CFG.skipPearls} parels)</button><button class="btn" onclick="closeM()">Wachten</button>`}</div></div>`);
     liveSil('evoT',e.g,!ready);
     if(!ready)setTimeout(()=>{if(modalOpen()&&$('evoT'))evoUI();},1000);
     return;
@@ -611,8 +616,8 @@ function evoUI(fid){
   const f=t.fish.find(q=>q.id===fid);if(!f)return evoUI();
   const opts=evoOptions(f),tier=f.tier||0,cost=CFG.evoCost[tier],time=CFG.evoTime[tier];
   open(hd('Evolutie')+`<div style="display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:6px;align-items:center;text-align:center">
-      ${opts.map((g,i)=>`${i===1?`<div><canvas id="evoC" style="width:100%;aspect-ratio:1.2"></canvas><div style="font-weight:900;font-size:12px">${fname(f.g)}</div></div>`:''}
-        <div class="item ${evoPick===i?'sel':''}" onclick="evoPick=${i};evoUI('${fid}')"><canvas id="evo${i}" style="width:100%;aspect-ratio:1.2"></canvas>
+      ${opts.map((g,i)=>`${i===1?`<div><canvas id="evoC" class="mid"></canvas><div style="font-weight:900;font-size:12px">${fname(f.g)}</div></div>`:''}
+        <div class="item ${evoPick===i?'sel':''}" onclick="evoPick=${i};evoUI('${fid}')"><canvas id="evo${i}" class="mid"></canvas>
         <div style="font-size:11px">${fname(g)}</div>${rt(rarity(g))}<div style="font-size:11px;color:var(--muted);margin-top:4px">⏱ ${fmtT(time)}</div></div>`).join('')}
     </div>
     <p style="text-align:center;margin-top:10px">Kies een uitkomst. Kosten: <b>${cost} munten</b>.</p>
@@ -632,18 +637,18 @@ window.finishEvo=()=>{const e=S.evo;if(!e)return;const tk=S.tanks[e.tank],f=tk&&
   if(!f){updTop();close();return;}
   f.g=e.g;f.tier=(f.tier||0)+1;const k=key(f.g),isNew=!S.disc[k];S.disc[k]=1;if(isNew)track('discover');track('evolve');S.stats.evolved++;addXP(20+f.tier*15);
   updTop();save();sfx(isNew?'new':'hatch');
-  open(`<div style="text-align:center"><h2>${isNew?'Nieuwe soort ontdekt!':'Geëvolueerd!'}</h2><canvas class="big reveal" id="bigc"></canvas>
+  open(`<div class="two"><canvas class="big reveal" id="bigc"></canvas><div style="text-align:center"><h2>${isNew?'Nieuwe soort ontdekt!':'Geëvolueerd!'}</h2>
     <div style="font-weight:900;font-size:18px;margin:6px 0">${fname(f.g)}</div>${rt(rarity(f.g))}${isNew?'<span class="new">NIEUW</span>':''}
-    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p></div><button class="btn p" onclick="closeM()">Prachtig!</button>`);
+    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p><button class="btn p" onclick="closeM()">Prachtig!</button></div></div>`);
   liveFish('bigc',f.g,280,200,150);};
 
 // taken
 function tasksUI(){
-  open(hd('Taken')+S.tasks.map((t,i)=>{const d=TASKS.find(q=>q.t===t.t).d(t.goal),done=t.n>=t.goal;
-    return `<div class="item" style="text-align:left;margin-bottom:8px;padding:12px"><div style="font-size:14px">${d}</div>
+  open(hd('Taken')+'<div class="cols3">'+S.tasks.map((t,i)=>{const d=TASKS.find(q=>q.t===t.t).d(t.goal),done=t.n>=t.goal;
+    return `<div class="item" style="text-align:left;padding:10px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-size:14px;min-height:36px">${d}</div>
       <div class="bar"><i style="width:${t.n/t.goal*100}%;background:${done?'#3fb06a':'#ff9f43'}"></i></div>
       <div class="kv"><span>${t.n}/${t.goal}</span><span>🪙 ${t.rc} · ⭐ ${t.rx} XP${t.rp?' · 🫧 '+t.rp:''}</span></div>
-      ${done?`<button class="btn p" style="height:40px" onclick="claim(${i})">Beloning ophalen</button>`:''}</div>`;}).join(''));
+      ${done?`<button class="btn p" style="height:38px" onclick="claim(${i})">Ophalen</button>`:''}</div>`;}).join('')+'</div>');
 }
 window.claim=i=>{const t=S.tasks[i];if(!t||t.n<t.goal)return;S.coins+=t.rc;S.pearls+=t.rp;addXP(t.rx);S.tasks[i]=newTask();sfx('coin');updTop();save();tasksUI();};
 
@@ -652,7 +657,7 @@ const SYM=['🐟','🐚','🪙','⭐','🦀','💎'];
 function jackpotUI(){
   const free=S.jackDay!==today();
   open(hd('Jackpot')+`<p>Drie dezelfde? Prijs! Drie 💎 is de <b>jackpot</b> (500 munten).</p>
-    <div id="reels" style="display:flex;gap:8px;justify-content:center;margin:14px 0">${[0,1,2].map(()=>`<div style="width:78px;height:86px;border-radius:16px;background:#123247;display:grid;place-items:center;font-size:46px">❔</div>`).join('')}</div>
+    <div id="reels" style="display:flex;gap:8px;justify-content:center;margin:8px 0">${[0,1,2].map(()=>`<div style="width:72px;height:76px;border-radius:14px;background:#123247;display:grid;place-items:center;font-size:40px">❔</div>`).join('')}</div>
     <div class="kv" style="justify-content:center;gap:12px"><span>3× 💎 = 500</span><span>3× ⭐ = 150</span><span>3× = 60</span><span>2× = 12</span></div>
     <button class="btn p" id="spin" onclick="spin()">${free?'Gratis draaien (vandaag)':'Draaien ('+CFG.jackpotCost+' munten)'}</button>`);
 }
@@ -680,18 +685,18 @@ function trophies(){
 }
 // meer-menu
 function moreUI(){
-  const it=(ic,n,fn)=>`<div class="item" style="padding:14px 4px" onclick="${fn}"><div style="font-size:30px">${ic}</div>${n}</div>`;
-  open(hd('Menu')+`<div class="grid">${it('🎰','Jackpot','jackpotUI()')}${it('🏆','Trofeeën','trophies()')}${it('📋','Taken','tasksUI()')}${it('🌊','Zeeën',"shop('sea')")}${it('🫧','Parels','pearlsUI()')}${it('❓','Help','helpUI()')}${it('⚙️','Instellingen','settingsUI()')}${it('🏠','Alle spellen',"location.href='../'")}</div>`);
+  const it=(ic,n,fn)=>`<div class="item" style="padding:10px 4px" onclick="${fn}"><div style="font-size:26px">${ic}</div>${n}</div>`;
+  open(hd('Menu')+`<div class="grid" style="grid-template-columns:repeat(4,1fr)">${it('🎰','Jackpot','jackpotUI()')}${it('🏆','Trofeeën','trophies()')}${it('📋','Taken','tasksUI()')}${it('🌊','Zeeën',"shop('sea')")}${it('🫧','Parels','pearlsUI()')}${it('❓','Help','helpUI()')}${it('⚙️','Instellingen','settingsUI()')}${it('🏠','Alle spellen',"location.href='../'")}</div>`);
 }
 window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
-window.helpUI=()=>open(hd('Help')+`<p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
+window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
   <p><b>🍤 Voer</b> – tik in het water om voer te strooien. Vissen groeien door te eten; volwassen vissen laten munten en XP vallen.</p>
   <p><b>🧽 Poetsen</b> – er komt vanzelf vuil op het glas. Veeg eroverheen voor munten en XP. Veel vuil = minder munten.</p>
   <p><b>✋ Inrichten</b> – sleep decoraties naar een andere plek.</p>
   <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
-  <p style="font-size:12px">Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p><button class="btn p" onclick="closeM()">Begrepen</button>`);
+  <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
 window.settingsUI=()=>open(hd('Instellingen')+`<div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="if(confirmReset){localStorage.removeItem('fish4u_state');location.reload();}else{confirmReset=1;this.textContent='Zeker weten? Tik nogmaals'}">Opnieuw beginnen</button>`);
 let confirmReset=0;
