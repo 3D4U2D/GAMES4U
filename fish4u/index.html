@@ -96,7 +96,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 /* liggend: knoppen buiten de inkeping houden */
 .top{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
 /* telefoon rechtop (spel gedraaid): links van het spel = statusbalk, rechts = thuisbalk */
-@media (orientation:portrait){.top{top:6px;padding-left:calc(env(safe-area-inset-top) + 14px);padding-right:calc(env(safe-area-inset-bottom) + 12px)}.dock{bottom:6px}}
+@media (orientation:portrait){.top{top:6px;padding-left:calc(env(safe-area-inset-top) + 14px);padding-right:calc(env(safe-area-inset-bottom) + 12px + var(--xr,0px))}.dock{bottom:6px;padding-right:calc(10px + var(--xr,0px))}}
+@media (orientation:landscape){.dock{bottom:calc(max(6px,env(safe-area-inset-bottom)) + var(--xb,0px))}}
 </style>
 </head>
 <body>
@@ -252,12 +253,16 @@ let W=360,H=640,dpr=1,SAND=560;
 const rotated=()=>matchMedia('(orientation:portrait)').matches;
 function pt(e){if(rotated())return {x:e.clientY,y:app.offsetHeight-e.clientX};const r=app.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
 const standalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches;
-function screenWH(){ // volledige schermmaat (als app op beginscherm), anders het zichtbare browserdeel
+const lvhProbe=document.createElement('div');lvhProbe.style.cssText='position:fixed;top:0;left:0;width:1px;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';document.body.appendChild(lvhProbe);
+let EXTRA=0;
+function screenWH(){ // volledige schermmaat; het deel achter een verborgen browserbalk doet ook mee
   const vw=Math.max(innerWidth,document.documentElement.clientWidth),vh=Math.max(innerHeight,document.documentElement.clientHeight,(window.visualViewport&&visualViewport.height)||0);
-  if(standalone()&&screen.width&&screen.height){const sw=Math.min(screen.width,screen.height),sh=Math.max(screen.width,screen.height);return rotated()?[sw,sh]:[Math.max(vw,sh),Math.max(vh,sw)];}
-  return [vw,vh];
+  let fh=Math.max(vh,lvhProbe.offsetHeight||0),fw=vw;
+  if(standalone()&&screen.width&&screen.height){const sw=Math.min(screen.width,screen.height),sh=Math.max(screen.width,screen.height);if(rotated()){fw=Math.max(fw,sw);fh=Math.max(fh,sh);}else{fw=Math.max(fw,sh);fh=Math.max(fh,sw);}}
+  EXTRA=Math.max(0,Math.round(fh-vh));return [fw,fh];
 }
 function resize(){if(rotated()){const [w,h]=screenWH();app.style.width=h+'px';app.style.height=w+'px';}else{const [w,h]=screenWH();app.style.width=w+'px';app.style.height=h+'px';}
+  app.style.setProperty('--xr',(rotated()?EXTRA:0)+'px');app.style.setProperty('--xb',(rotated()?0:EXTRA)+'px');
   dpr=Math.min(devicePixelRatio||1,2.5);W=app.offsetWidth;H=app.offsetHeight;app.style.setProperty('--ah',H+'px');cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);SAND=sandLine();}
 function sandLine(){const B=BGS.find(b=>b.id===T().bg)||BGS[0],im=BG_ART[B.id];if(im){const sc=Math.max(W/im.width,H/im.height);return Math.round(H-im.height*sc*.13);}return H-(H<500?84:128);}
 addEventListener('resize',()=>{resize();syncSwimmers();});addEventListener('orientationchange',()=>{setTimeout(resize,250);setTimeout(resize,800);});
@@ -578,8 +583,8 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='3.7 · decor Indonesië';
-window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
+const VERSION='3.8 · volle schermhoogte';
+window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----
 const slotInfo=id=>{const st=store.get('state_'+id,null);if(!st)return 'Nog niet gespeeld';const n=(st.tanks||[]).reduce((a,t)=>a+t.fish.length,0);return `Niveau ${st.lvl||1} · ${st.coins||0} munten · ${n} vis${n===1?'':'sen'} · ${(k=>k+(k===1?' soort':' soorten'))(Object.keys(st.disc||{}).length)}`;};
