@@ -655,7 +655,8 @@ function achCheck(){ // melding zodra er iets nieuws te innen is
   if(achSeen){const nw=r.filter(id=>!achSeen.includes(id));if(nw.length){const x=achList().find(q=>q.id===nw[0]);toast('🏅 Prestatie gehaald: '+x.n+' – haal je parels op in Menu → Prestaties');}}
   achSeen=r;
 }
-const achIc=x=>UIA['ach_'+x.id.replace(/_\d+$/,'')]?`<img class="aic" src="art/ach_${x.id.replace(/_\d+$/,'')}.png" alt="">`:`<span class="aic e">${({Ontdekken:'🔎',Evolutie:'🧬',Stamboom:'🌳',Verzorging:'🫧',Inrichten:'🪸',Groei:'⭐',Jackpot:'🎰'})[x.grp]}</span>`;
+const ACH_ART={Ontdekken:'ontdekken',Evolutie:'evolutie',Stamboom:'stamboom',Verzorging:'verzorging',Inrichten:'inrichten',Groei:'groei',Jackpot:'jackpot'};
+const achIc=x=>UIA['ach_'+ACH_ART[x.grp]]?`<img class="aic" src="art/ach_${ACH_ART[x.grp]}.png" alt="">`:`<span class="aic e">${({Ontdekken:'🔎',Evolutie:'🧬',Stamboom:'🌳',Verzorging:'🫧',Inrichten:'🪸',Groei:'⭐',Jackpot:'🎰'})[x.grp]}</span>`;
 const ACH_GRP=['Ontdekken','Evolutie','Stamboom','Verzorging','Inrichten','Groei','Jackpot'];
 let achTab=null;
 function achUI(tab){
@@ -775,7 +776,7 @@ function cleanup(){
 G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
 // UI-pakket
 const UIA={};
-G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','jp_fish','jp_shell','jp_coin','jp_star','jp_crab','jp_gem','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
+G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','jp_fish','jp_shell','jp_coin','jp_star','jp_crab','jp_gem','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3','ach_ontdekken','ach_evolutie','ach_stamboom','ach_verzorging','ach_inrichten','ach_groei','ach_jackpot'],UIA,(n,im)=>{
   const k=n.replace(/^ui_|^obj_/,'');
   document.querySelectorAll('[data-ic="'+k+'"] span').forEach(sp=>{sp.innerHTML='';sp.appendChild(im.cloneNode());});
   document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';const c=im.cloneNode();c.alt='';
