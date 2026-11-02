@@ -1,0 +1,10 @@
+Fish4U – herkenning en swag v3
+
+ui_home.svg/png: eenvoudig huis zonder zeedecoratie.
+ui_tasks.svg/png: duidelijke checklist zonder zeedecoratie.
+PNG256x256 transparant; SVG aanbevolen op28-32px.
+Vervang de twee bovenbalk-iconen, behoud bestaande knopacties. Gebruik toegankelijke namen Home en Taken.
+
+vis_08ab.png: roze eindvorm, bril en snor, steviger wenkbrauwen, zelfverzekerde gesloten grijns.
+vis_08bb.png: rode eindvorm, bandana, snor en sik, zelfverzekerde blik.
+Vervang alleen deze twee visbestanden; behoud overige familieleden en de bandanaloze vis_08a uit v2. Geen wijzigingen in spelwaarden.
