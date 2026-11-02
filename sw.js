@@ -1,5 +1,5 @@
 // GAMES4U service worker: eerst netwerk (altijd nieuwste versie), offline uit de cache.
-const CACHE='games4u-v13';
+const CACHE='games4u-v14';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png',
   './shared/chars.js','./shared/art.js','./tikblok/','./tikblok/index.html','./tikblok/icon-192.png','./flappyme/','./flappyme/index.html','./flappyme/icon-192.png',
   './bergloop/','./bergloop/index.html','./bergloop/icon-192.png','./hoogvlieger/','./hoogvlieger/index.html','./hoogvlieger/icon-192.png','./fish4u/','./fish4u/index.html','./fish4u/icon-192.png'];

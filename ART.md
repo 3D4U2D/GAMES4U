@@ -27,7 +27,7 @@ Na 1–2 minuten staat het live.
 | `decor_kelp.png` `decor_coral.png` `decor_rock.png` `decor_star.png` `decor_shell.png` `decor_moss.png` `decor_anemone.png` `decor_flower.png` `decor_crystal.png` `decor_bubbler.png` `decor_chest.png` `decor_castle.png` | Decoratie op de bodem | Vooraanzicht, staat op de bodem |
 | `bg_reef.png` `bg_lagoon.png` `bg_wreck.png` `bg_cave.png` | Thema's / achtergronden, **liggend ca. 1920×1080** | Leeg water met bodem, **zonder vissen** |
 
-Ontbreken de evolutieplaatjes van een vis, dan maakt het spel zelf kleurvarianten als evolutie.
+Ontbreken de evolutieplaatjes van een vis, dan kan die vis (nog) niet evolueren. Er bestaan geen automatische kleur- of magievarianten meer.
 
 `vissen.json` (zeldzaamheid 0 = gewoon, 1 = bijzonder, 2 = zeldzaam, 3 = episch):
 ```json
