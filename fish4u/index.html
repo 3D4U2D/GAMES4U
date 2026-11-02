@@ -206,7 +206,12 @@ function newState(){
   t.decor=[{id:'kelp',x:.18},{id:'rock',x:.78}];
   return {fresh:true,v:2,coins:60,pearls:5,xp:0,lvl:1,tanks:[t],cur:0,bgs:['reef'],disc:{},ever:{},evo:null,tasks:[],stats:{evolved:0,cleaned:0,fed:0},sound:true,last:Date.now(),jackDay:''};
 }
-let S=store.get('state',null);
+// meerdere oceanen (opslagen): fish4u_slots, fish4u_cur, fish4u_state_<id>
+const MAX_SLOTS=5;
+let SLOTS=store.get('slots',null),CUR=store.get('cur',null);
+if(!Array.isArray(SLOTS)||!SLOTS.length){SLOTS=[{id:'s1',name:'Mijn oceaan'}];CUR='s1';const old=store.get('state',null);if(old)store.set('state_s1',old);store.set('slots',SLOTS);store.set('cur',CUR);}
+if(!SLOTS.find(x=>x.id===CUR)){CUR=SLOTS[0].id;store.set('cur',CUR);}
+let S=store.get('state_'+CUR,null);
 if(S&&!S.tanks){ // oude versie omzetten
   const t=newTank(S.bg||'reef');t.fish=(S.fish||[]).map(f=>Object.assign({tier:0},f));t.decor=S.decor||[];
   (S.eggs||[]).forEach(e=>t.fish.push(mkFish(e.g,false)));
@@ -215,7 +220,7 @@ if(S&&!S.tanks){ // oude versie omzetten
 if(!S)S=newState();
 const T=()=>S.tanks[S.cur];
 for(const t of S.tanks)for(const f of t.fish){S.disc[key(f.g)]=1;}
-const save=()=>{if(typeof resetting!=='undefined'&&resetting)return;S.last=Date.now();store.set('state',S);};
+const save=()=>{if(typeof resetting!=='undefined'&&resetting)return;S.last=Date.now();store.set('state_'+CUR,S);};
 
 /* ================= taken ================= */
 const TASKS=[
@@ -573,13 +578,38 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='3.5 · volledig scherm';
-window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
+const VERSION='3.6 · meerdere oceanen';
+window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
+// ---- oceanen beheren ----
+const slotInfo=id=>{const st=store.get('state_'+id,null);if(!st)return 'Nog niet gespeeld';const n=(st.tanks||[]).reduce((a,t)=>a+t.fish.length,0);return `Niveau ${st.lvl||1} · ${st.coins||0} munten · ${n} vis${n===1?'':'sen'} · ${(k=>k+(k===1?' soort':' soorten'))(Object.keys(st.disc||{}).length)}`;};
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let slotDel=null,slotEdit=null;
+window.slotsUI=()=>{
+  open(hd('Mijn oceanen')+`<div style="display:grid;gap:6px">${SLOTS.map(sl=>{const act=sl.id===CUR;
+    return `<div class="item" style="display:flex;align-items:center;gap:8px;text-align:left;padding:7px 10px;${act?'border-color:var(--accent);background:#fff4ea':''}">
+      <div style="flex:1;min-width:0">${slotEdit===sl.id?`<input id="slotName" value="${esc(sl.name)}" maxlength="24" style="font:inherit;font-weight:800;width:100%;padding:4px 6px;border:1px solid var(--line);border-radius:8px">`:`<div style="font-size:14px">${esc(sl.name)}${act?' <span class="rt" style="background:#ff8a3d;font-size:10px;padding:1px 7px">nu</span>':''}</div>`}
+        <div style="font-size:11.5px;color:var(--muted);font-weight:700">${slotInfo(sl.id)}</div></div>
+      ${slotEdit===sl.id?`<button class="btn p" style="width:auto;margin:0;height:34px;padding:0 12px" onclick="slotSave('${sl.id}')">OK</button>`:
+       `${act?'':`<button class="btn p" style="width:auto;margin:0;height:34px;padding:0 12px" onclick="slotPlay('${sl.id}')">Spelen</button>`}
+        <button class="btn" style="width:auto;margin:0;height:34px;padding:0 10px" onclick="slotEdit='${sl.id}';slotsUI()" aria-label="Naam wijzigen">✏️</button>
+        ${SLOTS.length>1?`<button class="btn" style="width:auto;margin:0;height:34px;padding:0 10px;${slotDel===sl.id?'background:#c0303a;color:#fff':''}" onclick="slotDelete('${sl.id}')" aria-label="Verwijderen">${slotDel===sl.id?'Zeker?':'🗑'}</button>`:''}`}
+    </div>`;}).join('')}</div>
+    ${SLOTS.length<MAX_SLOTS?`<button class="btn p" onclick="slotNew()">+ Nieuwe oceaan</button>`:`<p style="text-align:center;margin-top:8px">Maximaal ${MAX_SLOTS} oceanen.</p>`}`);
+  const inp=$('slotName');if(inp){inp.focus();inp.select();inp.onkeydown=e=>{if(e.key==='Enter')slotSave(slotEdit);};}
+};
+Object.defineProperty(window,'slotEdit',{get:()=>slotEdit,set:v=>{slotEdit=v;slotDel=null;}});
+window.slotSave=id=>{const v=($('slotName')||{}).value;const sl=SLOTS.find(x=>x.id===id);if(sl&&v&&v.trim())sl.name=v.trim().slice(0,24);slotEdit=null;store.set('slots',SLOTS);slotsUI();};
+window.slotPlay=id=>{save();CUR=id;store.set('cur',CUR);resetting=true;location.reload();};
+window.slotNew=()=>{if(SLOTS.length>=MAX_SLOTS)return;save();let n=1;while(SLOTS.find(x=>x.id==='s'+n))n++;
+  const id='s'+n,name='Oceaan '+(SLOTS.length+1);SLOTS.push({id,name});store.set('slots',SLOTS);CUR=id;store.set('cur',CUR);resetting=true;location.reload();};
+window.slotDelete=id=>{if(SLOTS.length<=1)return;if(slotDel!==id){slotDel=id;slotsUI();return;}
+  try{localStorage.removeItem('fish4u_state_'+id);}catch(e){}SLOTS=SLOTS.filter(x=>x.id!==id);store.set('slots',SLOTS);slotDel=null;
+  if(id===CUR){CUR=SLOTS[0].id;store.set('cur',CUR);resetting=true;location.reload();return;}slotsUI();};
 let confirmReset=0,resetting=false;
 window.resetGame=btn=>{
   if(!confirmReset){confirmReset=1;btn.textContent='Zeker weten? Tik nogmaals';return;}
-  resetting=true;try{localStorage.removeItem('fish4u_state');}catch(e){}location.reload();
+  resetting=true;try{localStorage.removeItem('fish4u_state_'+CUR);}catch(e){}location.reload();
 };
 window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.closeM=close;
 $('bShop').onclick=()=>{ensureAudio();shop();};

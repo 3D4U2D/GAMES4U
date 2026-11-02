@@ -60,7 +60,7 @@ const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){re
 document.querySelectorAll('.best').forEach(el=>{
   const g=el.dataset.g;let best=0;
   if(g==='tikblok'){for(const m of['vast','stijg']){const l=get('tikblok_top_'+m);if(l&&l[0])best=Math.max(best,l[0].score);}}
-  else if(g==='fish4u'){const st=get('fish4u_state');if(st&&st.disc){el.textContent='🐟 '+Object.keys(st.disc).length+' soorten';return;}}
+  else if(g==='fish4u'){const st=get('fish4u_state_'+(get('fish4u_cur')||'s1'))||get('fish4u_state');if(st&&st.disc){el.textContent='🐟 '+Object.keys(st.disc).length+' soorten';return;}}
   else{const l=get(g+'_top');if(l&&l[0])best=l[0].score;}
   if(best)el.textContent='🏆 '+best.toLocaleString('nl-NL');
 });
