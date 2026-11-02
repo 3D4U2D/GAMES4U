@@ -551,5 +551,163 @@
   "fase": 3,
   "ouder": "vis_07b",
   "evoluties": []
+ },
+ {
+  "id": "vis_08",
+  "bestand": "vis_08.png",
+  "naam": "Krulknop",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_08a",
+   "vis_08b"
+  ]
+ },
+ {
+  "id": "vis_08a",
+  "bestand": "vis_08a.png",
+  "naam": "Groefvin",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 2,
+  "ouder": "vis_08",
+  "evoluties": [
+   "vis_08aa",
+   "vis_08ab"
+  ]
+ },
+ {
+  "id": "vis_08b",
+  "bestand": "vis_08b.png",
+  "naam": "Swingstaart",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 2,
+  "ouder": "vis_08",
+  "evoluties": [
+   "vis_08ba",
+   "vis_08bb"
+  ]
+ },
+ {
+  "id": "vis_08aa",
+  "bestand": "vis_08aa.png",
+  "naam": "Afrovin",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 3,
+  "ouder": "vis_08a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_08ab",
+  "bestand": "vis_08ab.png",
+  "naam": "Discokrul",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 3,
+  "ouder": "vis_08a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_08ba",
+  "bestand": "vis_08ba.png",
+  "naam": "Soulzwemmer",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 3,
+  "ouder": "vis_08b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_08bb",
+  "bestand": "vis_08bb.png",
+  "naam": "Funkvorst",
+  "familie": "familie_08",
+  "familienaam": "Funky",
+  "fase": 3,
+  "ouder": "vis_08b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_09",
+  "bestand": "vis_09.png",
+  "naam": "Oogstip",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_09a",
+   "vis_09b"
+  ]
+ },
+ {
+  "id": "vis_09a",
+  "bestand": "vis_09a.png",
+  "naam": "Pluimvin",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 2,
+  "ouder": "vis_09",
+  "evoluties": [
+   "vis_09aa",
+   "vis_09ab"
+  ]
+ },
+ {
+  "id": "vis_09b",
+  "bestand": "vis_09b.png",
+  "naam": "Prachtveer",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 2,
+  "ouder": "vis_09",
+  "evoluties": [
+   "vis_09ba",
+   "vis_09bb"
+  ]
+ },
+ {
+  "id": "vis_09aa",
+  "bestand": "vis_09aa.png",
+  "naam": "Pronkvinner",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 3,
+  "ouder": "vis_09a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_09ab",
+  "bestand": "vis_09ab.png",
+  "naam": "Pauwpraal",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 3,
+  "ouder": "vis_09a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_09ba",
+  "bestand": "vis_09ba.png",
+  "naam": "Sierstaart",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 3,
+  "ouder": "vis_09b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_09bb",
+  "bestand": "vis_09bb.png",
+  "naam": "Pauwenprins",
+  "familie": "familie_09",
+  "familienaam": "Pauwvis",
+  "fase": 3,
+  "ouder": "vis_09b",
+  "evoluties": []
  }
 ]

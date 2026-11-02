@@ -105,7 +105,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   <canvas id="cv"></canvas>
   <div class="top">
     <a class="home" href="../" aria-label="Home" title="Alle spellen" data-ic2="home">🏠</a>
-    <button class="home" id="bTasks" aria-label="Taken" style="border:0;position:relative" data-ic2="tasks">📋<span id="taskBadge" class="badge2">1</span></button>
+    <button class="home" id="bTasks" aria-label="Taken" title="Taken" style="border:0;position:relative" data-ic2="tasks">📋<span id="taskBadge" class="badge2">1</span></button>
     <div class="lvl"><b id="lvln">1</b><div class="lb"><i id="lvlbar"></i></div></div>
     <div class="pill"><i></i><span id="coins">0</span></div>
     <button class="pill b" id="bPearls" style="border:0"><i></i><span id="pearls">0</span></button>
@@ -583,7 +583,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='3.9 · nieuwe Home- en Taken-iconen';
+const VERSION='4.0 · families 08 en 09';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----
@@ -668,7 +668,9 @@ const UIA={};
 G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','jp_fish','jp_shell','jp_coin','jp_star','jp_crab','jp_gem','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
   const k=n.replace(/^ui_|^obj_/,'');
   document.querySelectorAll('[data-ic="'+k+'"] span').forEach(sp=>{sp.innerHTML='';sp.appendChild(im.cloneNode());});
-  document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';el.appendChild(im.cloneNode());if(b)el.appendChild(b);});
+  document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';const c=im.cloneNode();c.alt='';
+    if(k==='home'||k==='tasks'){const png=c.src;c.onerror=()=>{c.onerror=null;c.src=png;};c.src='art/menu/ui_'+k+'.svg';} // SVG scherp, PNG als terugval
+    el.appendChild(c);if(b)el.appendChild(b);});
   if(k==='coin')document.querySelectorAll('.pill:not(.b) i').forEach(i=>{const c=im.cloneNode();c.className='pi';i.replaceWith(c);});
   if(k==='pearl')document.querySelectorAll('.pill.b i').forEach(i=>{const c=im.cloneNode();c.className='pi';i.replaceWith(c);});
 });

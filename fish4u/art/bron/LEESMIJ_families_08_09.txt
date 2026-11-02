@@ -1,0 +1,9 @@
+Fish4U – families 08 en 09
+
+14 originele visontwerpen, echte transparantie, maximaal 1024px breed. Grote masters apart bewaard.
+Familie08: Krulknop → Groefvin of Swingstaart → vier funky eindvormen.
+Familie09: Oogstip → Pluimvin of Prachtveer → vier pauwvis-eindvormen.
+Bestandsnamen: basis, a/b, aa/ab/ba/bb per familie.
+Voeg vissen.json toe aan de bestaande catalogus; vervang deze niet. Zeldzaamheid, prijzen, kansen en tijden worden door spelcode bepaald.
+Schaal inclusief kapsel en staart: baby circa3%, tussenvorm5-6%, eindvorm9-10% van aquariumbreedte.
+Gemaakt met ingebouwde beeldgeneratie; promptset bijgevoegd.

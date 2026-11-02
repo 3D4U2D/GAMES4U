@@ -1,0 +1,7 @@
+Fish4U – funky familie update v2
+Vervang uitsluitend deze drie bestanden; namen en afstamming blijven gelijk.
+vis_08a.png: tussenvorm zonder bandana.
+vis_08ab.png: Discokrul met roze jasje, bril en klein snorretje, geen bandana.
+vis_08bb.png: Funkvorst met rode bandana, rood jasje, nette snor en klein sikje.
+Overige vissen blijven behouden. Geen turquoise of paarse bandana meer in familie08. Bandana verschijnt pas in eindvormen en is rood.
+Transparante PNG maximaal1024px breed; behoud bestaande weergaveschaal en spelregels.
