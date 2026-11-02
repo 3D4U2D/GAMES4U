@@ -41,6 +41,10 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .dock button{flex:1;min-width:0;max-width:78px;height:56px;border:0;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 4px 0 rgba(0,0,0,.18);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:900;font-size:11.5px;color:var(--ink)}
 .dock button span{font-size:24px;line-height:1}
+.dock button span img{width:34px;height:34px;display:block;object-fit:contain}
+.home img{width:30px;height:30px;display:block;object-fit:contain}
+.pill img.pi{width:26px;height:26px;object-fit:contain;display:block}
+.item .uiimg{width:34px;height:34px;object-fit:contain;display:block;margin:0 auto}
 .dock button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
 .dock button.on{background:var(--gold)}
 .dock .badge{position:absolute;margin:-40px 0 0 40px;background:#e8202a;color:#fff;border-radius:999px;font-size:10px;padding:1px 6px}
@@ -88,8 +92,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 <div id="app">
   <canvas id="cv"></canvas>
   <div class="top">
-    <a class="home" href="../" aria-label="Alle spellen">🏠</a>
-    <button class="home" id="bTasks" aria-label="Taken" style="border:0;position:relative">📋<span id="taskBadge" class="badge2">1</span></button>
+    <a class="home" href="../" aria-label="Alle spellen" data-ic2="home">🏠</a>
+    <button class="home" id="bTasks" aria-label="Taken" style="border:0;position:relative" data-ic2="tasks">📋<span id="taskBadge" class="badge2">1</span></button>
     <div class="lvl"><b id="lvln">1</b><div class="lb"><i id="lvlbar"></i></div></div>
     <div class="pill"><i></i><span id="coins">0</span></div>
     <button class="pill b" id="bPearls" style="border:0"><i></i><span id="pearls">0</span></button>
@@ -97,14 +101,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
     <div class="sea"><button id="seaPrev">◀</button><span id="seaName">Zee 1</span><button id="seaNext">▶</button></div>
   </div>
   <div class="dock">
-    <button data-tool="pointer" class="on"><span>👆</span>Wijzer</button>
-    <button data-tool="food"><span>🍤</span>Voer</button>
-    <button data-tool="clean"><span>🧽</span>Poetsen</button>
-    <button data-tool="decor"><span>✋</span>Inrichten</button>
+    <button data-tool="pointer" class="on" data-ic="pointer"><span>👆</span>Wijzer</button>
+    <button data-tool="food" data-ic="food"><span>🍤</span>Voer</button>
+    <button data-tool="clean" data-ic="clean"><span>🧽</span>Poetsen</button>
+    <button data-tool="decor" data-ic="decor"><span>✋</span>Inrichten</button>
     <i class="sep"></i>
-    <button id="bShop"><span>🛒</span>Winkel</button>
-    <button id="bEvo" style="position:relative"><span>🧬</span>Evolutie<b id="evoBadge" class="badge2" style="display:none">!</b></button>
-    <button id="bMore"><span>☰</span>Menu</button>
+    <button id="bShop" data-ic="shop"><span>🛒</span>Winkel</button>
+    <button id="bEvo" style="position:relative" data-ic="evolution"><span>🧬</span>Evolutie<b id="evoBadge" class="badge2" style="display:none">!</b></button>
+    <button id="bMore" data-ic="menu"><span>☰</span>Menu</button>
   </div>
   
   <div id="modal"><div class="sheet" id="sheet"></div></div>
@@ -504,9 +508,11 @@ function render(){
   }
   for(const d of tank.decor)drawDecor(x,d.id,t,d.x*W,SAND+10,1.15);
   if(tool==='decor'){x.fillStyle='rgba(255,255,255,.85)';x.font='800 13px system-ui';x.textAlign='center';x.fillText('Sleep een decoratie naar links of rechts',W/2,SAND-120);}
-  x.fillStyle='#c46a2a';for(const p of food)x.fillRect(p.x-2,p.y-2,4,3);
+  if(UIA.obj_food)for(const p of food)x.drawImage(UIA.obj_food,p.x-5,p.y-5,10,10);else{x.fillStyle='#c46a2a';for(const p of food)x.fillRect(p.x-2,p.y-2,4,3);}
   for(const c of drops){const sp=Math.abs(Math.cos(t/250+c.x));x.save();x.translate(c.x,c.y);
-    if(c.xp){x.rotate(t/600);x.fillStyle='#7ff0ff';x.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5,r=i&1?4:9;x.lineTo(Math.cos(a)*r,Math.sin(a)*r);}x.fill();}
+    if(c.xp&&UIA.obj_xp){x.rotate(Math.sin(t/300)*.3);x.drawImage(UIA.obj_xp,-11,-11,22,22);}
+    else if(!c.xp&&UIA.obj_coin){x.scale(sp*.9+.1,1);x.drawImage(UIA.obj_coin,-11,-11,22,22);}
+    else if(c.xp){x.rotate(t/600);x.fillStyle='#7ff0ff';x.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5,r=i&1?4:9;x.lineTo(Math.cos(a)*r,Math.sin(a)*r);}x.fill();}
     else{x.scale(sp*.9+.1,1);const cg=x.createRadialGradient(-3,-3,1,0,0,9);cg.addColorStop(0,'#fff3a8');cg.addColorStop(.6,'#ffc83d');cg.addColorStop(1,'#d99a10');x.fillStyle=cg;x.beginPath();x.arc(0,0,8,0,7);x.fill();}
     x.restore();}
   const order=SW.slice().sort((a,b)=>sizeOf(a.f)-sizeOf(b.f));
@@ -516,7 +522,8 @@ function render(){
     if(s.f.hunger>70&&!evoing){x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.arc(s.x+s.dir*sz*.3,s.y-sz*.65,9,0,7);x.fill();x.font='11px system-ui';x.textAlign='center';x.fillText('🍤',s.x+s.dir*sz*.3,s.y-sz*.65+4);}}
   x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=1.2;for(const b of bubbles){x.beginPath();x.arc(b.x,b.y,b.r,0,7);x.stroke();}
   // vuil op het glas
-  for(const d of tank.dirt){const a=.18+.08*(d.hp||3);x.fillStyle=['rgba(90,120,40,'+a+')','rgba(110,100,50,'+a+')','rgba(70,110,80,'+a+')'][d.k];
+  for(const d of tank.dirt){const di=UIA['obj_dirt_'+(d.k+1)];if(di){x.globalAlpha=.45+.18*(d.hp||3);const sz=d.r*2.4;x.save();x.translate(d.x*W,d.y*H);x.rotate(d.x*20);x.drawImage(di,-sz/2,-sz/2,sz,sz);x.restore();x.globalAlpha=1;continue;}
+    const a=.18+.08*(d.hp||3);x.fillStyle=['rgba(90,120,40,'+a+')','rgba(110,100,50,'+a+')','rgba(70,110,80,'+a+')'][d.k];
     x.beginPath();for(let i=0;i<9;i++){const an=i/9*Math.PI*2,rr=d.r*(.75+.25*Math.sin(i*2.3+d.x*20));x.lineTo(d.x*W+Math.cos(an)*rr,d.y*H+Math.sin(an)*rr);}x.fill();}
   for(const f of fx){x.globalAlpha=1-f.t/1.2;x.fillStyle=f.c||'#fff';x.font='900 16px system-ui';x.textAlign='center';x.strokeStyle='rgba(18,50,71,.6)';x.lineWidth=3;
     x.strokeText(f.txt,f.x,f.y-f.t*30);x.fillText(f.txt,f.x,f.y-f.t*30);x.globalAlpha=1;}
@@ -688,8 +695,8 @@ function trophies(){
 }
 // meer-menu
 function moreUI(){
-  const it=(ic,n,fn)=>`<div class="item" style="padding:10px 4px" onclick="${fn}"><div style="font-size:26px">${ic}</div>${n}</div>`;
-  open(hd('Menu')+`<div class="grid" style="grid-template-columns:repeat(4,1fr)">${it('🎰','Jackpot','jackpotUI()')}${it('🏆','Trofeeën','trophies()')}${it('📋','Taken','tasksUI()')}${it('🌊','Zeeën',"shop('sea')")}${it('🫧','Parels','pearlsUI()')}${it('❓','Help','helpUI()')}${it('⚙️','Instellingen','settingsUI()')}${it('🏠','Alle spellen',"location.href='../'")}</div>`);
+  const it=(k,emo,n,fn)=>`<div class="item" style="padding:10px 4px" onclick="${fn}">${uiIc(k,emo)}${n}</div>`;
+  open(hd('Menu')+`<div class="grid" style="grid-template-columns:repeat(4,1fr)">${it('jackpot','🎰','Jackpot','jackpotUI()')}${it('trophy','🏆','Trofeeën','trophies()')}${it('tasks','📋','Taken','tasksUI()')}${it('sea','🌊','Zeeën',"shop('sea')")}${it('pearl','🫧','Parels','pearlsUI()')}${it('-','❓','Help','helpUI()')}${it('-','⚙️','Instellingen','settingsUI()')}${it('home','🏠','Alle spellen',"location.href='../'")}</div>`);
 }
 window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
 window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
@@ -700,7 +707,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='2.8 · decoratie v1';
+const VERSION='2.9 · UI-pakket v1';
 window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 let confirmReset=0,resetting=false;
@@ -744,6 +751,16 @@ G4U_ART_SERIES('art/','vis_',99,(i,img)=>{ART_FISH[i]=img;updTop();
 G4U_JSON('art/vissen.json').then(j=>{if(Array.isArray(j))j.forEach((v,i)=>{v=v||{};if(v.bestand)ART_NAMES[v.bestand.replace(/\.png$/,'')]=v;else ART_INFO[i]=v;});
   else if(j&&typeof j==='object')Object.entries(j).forEach(([k,v])=>{ART_NAMES[k.replace(/\.png$/,'')]=typeof v==='string'?{naam:v}:v;});});
 G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
+// UI-pakket
+const UIA={};
+G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
+  const k=n.replace(/^ui_|^obj_/,'');
+  document.querySelectorAll('[data-ic="'+k+'"] span').forEach(sp=>{sp.innerHTML='';sp.appendChild(im.cloneNode());});
+  document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';el.appendChild(im.cloneNode());if(b)el.appendChild(b);});
+  if(k==='coin')document.querySelectorAll('.pill:not(.b) i').forEach(i=>{const c=im.cloneNode();c.className='pi';i.replaceWith(c);});
+  if(k==='pearl')document.querySelectorAll('.pill.b i').forEach(i=>{const c=im.cloneNode();c.className='pi';i.replaceWith(c);});
+});
+const uiIc=(k,emo)=>UIA['ui_'+k]?`<img class="uiimg" src="art/ui_${k}.png" alt="">`:(UIA['obj_'+k]?`<img class="uiimg" src="art/obj_${k}.png" alt="">`:`<div style="font-size:26px">${emo}</div>`);
 ['reef','lagoon','wreck','cave'].forEach(id=>{const im=new Image();im.onload=()=>{BG_ART[id]=im;resize();};im.onerror=()=>G4U_ART('art/',['bg_'+id],{},(n,i)=>{BG_ART[id]=i;resize();});im.src='art/bg_'+id+'.jpg';});
 function loop(now){let dt=(now-lastT)/1000;lastT=now;if(dt>.25)dt=.25;update(dt);render();requestAnimationFrame(loop);}
 requestAnimationFrame(loop);

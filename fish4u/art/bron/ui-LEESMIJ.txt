@@ -1,0 +1,29 @@
+Fish4U – UI-pakket v1
+
+19 originele PNG-assets met echte alpha-transparantie.
+Knoppictogrammen: 256×256; spelobjecten: 128×128.
+Onderwerpen gecentreerd, circa 10% marge. Alg-vlekken zijn halftransparant.
+Geen tekst of spelwaarden in de beelden.
+
+Bestandslijst:
+ui_decor.png
+ui_pointer.png
+ui_clean.png
+ui_food.png
+ui_menu.png
+ui_tasks.png
+ui_shop.png
+ui_trophy.png
+ui_evolution.png
+ui_jackpot.png
+ui_sea.png
+ui_home.png
+obj_food.png
+obj_coin.png
+obj_dirt_1.png
+obj_pearl.png
+obj_xp.png
+obj_dirt_2.png
+obj_dirt_3.png
+
+Gemaakt met ingebouwde beeldgeneratie, geschaald voor gebruik in de app.
