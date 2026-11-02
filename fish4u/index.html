@@ -2,6 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
+<meta name="screen-orientation" content="landscape">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0c5c8a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +18,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:#06324d;overscroll-beh
 body{font-family:ui-rounded,"SF Pro Rounded","Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 button{font:inherit;color:inherit;cursor:pointer}
-#app{position:relative;height:100vh;height:100dvh;width:min(100vw,calc(100dvh * .66));margin:0 auto;overflow:hidden;touch-action:none}
+#app{position:relative;height:100vh;height:100dvh;width:100vw;margin:0 auto;overflow:hidden;touch-action:none}
+#rot{display:none}
+@media (orientation:portrait) and (max-width:820px){#rot{display:flex;position:fixed;inset:0;z-index:50;background:#0c5c8a;color:#fff;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-weight:900;font-size:20px;text-align:center;padding:30px}#rot span{font-size:64px;animation:rt 2s ease-in-out infinite}@keyframes rt{50%{transform:rotate(-90deg)}}}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 10px);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:3;pointer-events:none}
 .top>*{pointer-events:auto}
@@ -26,10 +29,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pill i{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3a8,#ffc83d 55%,#d99a10);display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
 .pill.b i{background:radial-gradient(circle at 35% 35%,#bfe9ff,#4ab4ee 60%,#1a7ab5)}
 .home{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.92);display:grid;place-items:center;text-decoration:none;font-size:18px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.lvl{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.92);border-radius:999px;padding:4px 10px 4px 4px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.lvl b{width:26px;height:26px;border-radius:50%;background:linear-gradient(#ffd96a,#ff9f1a);display:grid;place-items:center;font-size:13px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.lvl .lb{width:64px;height:8px;border-radius:9px;background:#dbe7ee;overflow:hidden}.lvl .lb i{display:block;height:100%;background:#3fd0ff}
+.badge2{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#e8202a;color:#fff;font-size:11px;font-weight:900;display:grid;place-items:center;padding:0 4px;font-style:normal}
+.sea{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.92);border-radius:999px;padding:3px;font-weight:900;font-size:13px;box-shadow:0 3px 0 rgba(0,0,0,.15)}.sea button{width:28px;height:28px;border:0;border-radius:50%;background:#e3edf2;font-size:11px}
+.dock .sep{width:10px;flex:none}
 .title{flex:1;text-align:center;font-weight:900;font-size:20px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
 .title em{font-style:normal;color:var(--gold)}
 .dock{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 10px);display:flex;justify-content:center;gap:8px;padding:0 10px;z-index:3}
-.dock button{flex:1;min-width:0;max-width:84px;height:62px;border:0;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 4px 0 rgba(0,0,0,.18);
+.dock button{flex:1;min-width:0;max-width:78px;height:56px;border:0;border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 4px 0 rgba(0,0,0,.18);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:900;font-size:11.5px;color:var(--ink)}
 .dock button span{font-size:24px;line-height:1}
 .dock button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
@@ -39,16 +48,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   white-space:nowrap;animation:toast 2.2s ease forwards;pointer-events:none;font-size:15px}
 @keyframes toast{0%{opacity:0;transform:translate(-50%,-10px)}10%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
 /* sheet */
-#modal{position:absolute;inset:0;z-index:10;display:flex;align-items:flex-end;background:rgba(4,30,48,.45);opacity:0;pointer-events:none;transition:opacity .2s}
+#modal{position:absolute;inset:0;z-index:10;display:flex;align-items:flex-end;justify-content:center;background:rgba(4,30,48,.45);opacity:0;pointer-events:none;transition:opacity .2s}
 #modal.open{opacity:1;pointer-events:auto}
-.sheet{width:100%;max-height:82%;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);
+.sheet{width:min(100%,620px);margin:0 auto;max-height:86%;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);
   transform:translateY(30px);transition:transform .25s cubic-bezier(.3,1.3,.6,1)}
 #modal.open .sheet{transform:none}
 .sheet h2{margin:0;font-size:22px;font-weight:900}
 .sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .x{width:36px;height:36px;border:0;border-radius:50%;background:var(--line);font-weight:900;font-size:16px}
 .sheet p{margin:4px 0 10px;color:var(--muted);font-size:14px;line-height:1.4}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
 .item{border:2px solid var(--line);background:#fff;border-radius:16px;padding:8px 6px;text-align:center;font-weight:800;font-size:12.5px;position:relative}
 .sheet canvas{position:static;inset:auto}
 .item canvas{position:static;width:100%;height:auto;aspect-ratio:1.3}
@@ -76,17 +85,24 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   <canvas id="cv"></canvas>
   <div class="top">
     <a class="home" href="../" aria-label="Alle spellen">🏠</a>
+    <button class="home" id="bTasks" aria-label="Taken" style="border:0;position:relative">📋<span id="taskBadge" class="badge2">1</span></button>
+    <div class="lvl"><b id="lvln">1</b><div class="lb"><i id="lvlbar"></i></div></div>
     <div class="pill"><i></i><span id="coins">0</span></div>
+    <button class="pill b" id="bPearls" style="border:0"><i></i><span id="pearls">0</span></button>
     <div class="title">Fish<em>4U</em></div>
-    <div class="pill b" title="Ontdekte soorten"><i></i><span id="disc">0</span></div>
+    <div class="sea"><button id="seaPrev">◀</button><span id="seaName">Zee 1</span><button id="seaNext">▶</button></div>
   </div>
   <div class="dock">
+    <button data-tool="pointer" class="on"><span>👆</span>Wijzer</button>
+    <button data-tool="food"><span>🍤</span>Voer</button>
+    <button data-tool="clean"><span>🧽</span>Poetsen</button>
+    <button data-tool="decor"><span>✋</span>Inrichten</button>
+    <i class="sep"></i>
     <button id="bShop"><span>🛒</span>Winkel</button>
-    <button id="bBreed"><span>💞</span>Kweken</button>
-    <button id="bDecor"><span>🪸</span>Inrichten</button>
-    <button id="bBook"><span>📖</span>Boek</button>
-    <button id="bLuck"><span>🍀</span>Geluk</button>
+    <button id="bEvo" style="position:relative"><span>🧬</span>Evolutie<b id="evoBadge" class="badge2" style="display:none">!</b></button>
+    <button id="bMore"><span>☰</span>Menu</button>
   </div>
+  <div id="rot"><span>📱</span>Draai je telefoon<br>een kwartslag</div>
   <div id="modal"><div class="sheet" id="sheet"></div></div>
 </div>
 <script src="../shared/art.js"></script>
@@ -266,152 +282,245 @@ function drawDecor(x,d,t,X,Y,s){
   x.restore();
 }
 
-/* ================= staat ================= */
-let S=store.get('state',null);
-function newState(){
-  const a={s:0,c1:0,c2:2,p:1,f:0,e:0,m:0},b={s:1,c1:6,c2:2,p:0,f:1,e:1,m:0};
-  return {coins:40,fish:[mkFish(a,true),mkFish(b,true)],eggs:[],decor:[{id:'kelp',x:.18},{id:'rock',x:.78}],disc:{[key(a)]:1,[key(b)]:1},last:Date.now(),stats:{bred:0,hatched:0}};
+/* ================= instelbare waarden (niet vastgelegd in de bron – vrij aan te passen) ================= */
+const CFG={
+  maxFish:12,            // vissen per zee
+  evoTime:[180,600],     // wachttijd evolutie in seconden: van basis -> vorm 1, vorm 1 -> vorm 2
+  evoCost:[40,120],      // munten per evolutie
+  skipPearls:5,          // parels om een evolutie direct af te ronden
+  dirtEvery:45,          // elke ~45 s een vuilplek (ook als de app dicht is)
+  dirtMax:24,
+  coinEvery:22,          // seconden tussen munten van een tevreden volwassen vis
+  jackpotCost:10,
+  seas:[{n:'Zee 1',lvl:1,p:0},{n:'Zee 2',lvl:4,p:300},{n:'Zee 3',lvl:8,p:900},{n:'Zee 4',lvl:12,p:2000},{n:'Zee 5',lvl:16,p:4000},{n:'Zee 6',lvl:20,p:8000}],
+};
+const lvlXP=l=>Math.round(40*Math.pow(l,1.45));
+
+/* ================= vaste rng + winkelcatalogus ================= */
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function catalogFish(){
+  const out=[];
+  for(let i=0;i<24;i++){const r=mulberry(1000+i*37);
+    const g={s:i<6?Math.floor(r()*3):Math.floor(r()*5),c1:Math.floor(r()*(i<8?10:12)),c2:Math.floor(r()*12),p:i<4?0:Math.floor(r()*5),f:Math.floor(r()*3),e:Math.floor(r()*3),m:0};
+    out.push({g,lvl:1+Math.floor(i/2),p:15+i*10+Math.floor(i*i*1.5)});}
+  ART_FISH.forEach((_,k)=>out.push({g:{s:0,c1:0,c2:3,p:0,f:0,e:0,m:0,a:k,h:0},lvl:2+k,p:40+k*20}));
+  return out;
 }
-function mkFish(g,adult){return {id:Math.random().toString(36).slice(2,9),g,grow:adult?6:0,hunger:30,born:Date.now()};}
+const DECOR_LVL={kelp:1,rock:1,star:2,coral:2,shell:3,moss:3,anemone:4,flower:5,bubbler:6,crystal:7,chest:8,castle:10};
+const BG_LVL={reef:1,lagoon:3,wreck:6,cave:9};
+
+/* ================= evolutie: één vis -> één van twee vormen ================= */
+function evoOptions(f){
+  const tier=f.tier||0;if(tier>=2||!adult(f))return null;
+  const base=hash(key(f.g)+'|'+tier+'|'+f.id);
+  return [0,1].map(bi=>{const r=mulberry(base+bi*7919),g=Object.assign({},f.g);
+    const traits=['c1','c2','p','f','e','s'];const n=2+(tier===1?1:0);
+    for(let k=0;k<n;k++){const t=traits[Math.floor(r()*traits.length)],max={s:5,c1:12,c2:12,p:5,f:3,e:3}[t];g[t]=(g[t]+1+Math.floor(r()*(max-1)))%max;}
+    if(g.a!=null)g.h=1+Math.floor(r()*5);
+    if(tier===1&&r()<.55)g.m=1+Math.floor(r()*3);else if(tier===0&&r()<.12)g.m=1+Math.floor(r()*2);
+    return g;});
+}
+
+/* ================= staat ================= */
+function mkFish(g,adultNow){return {id:Math.random().toString(36).slice(2,9),g,grow:adultNow?6:0,hunger:30,tier:0,born:Date.now()};}
+function newTank(bgId){return {fish:[],decor:[],bg:bgId||'reef',dirt:[]};}
+function newState(){
+  const t=newTank();t.fish=[mkFish({s:0,c1:1,c2:2,p:1,f:0,e:0,m:0},true),mkFish({s:1,c1:6,c2:2,p:0,f:1,e:1,m:0},false)];
+  t.decor=[{id:'kelp',x:.18},{id:'rock',x:.78}];
+  return {v:2,coins:60,pearls:5,xp:0,lvl:1,tanks:[t],cur:0,bgs:['reef'],disc:{},ever:{},evo:null,tasks:[],stats:{evolved:0,cleaned:0,fed:0},sound:true,last:Date.now(),jackDay:''};
+}
+let S=store.get('state',null);
+if(S&&!S.tanks){ // oude versie omzetten
+  const t=newTank(S.bg||'reef');t.fish=(S.fish||[]).map(f=>Object.assign({tier:0},f));t.decor=S.decor||[];
+  (S.eggs||[]).forEach(e=>t.fish.push(mkFish(e.g,false)));
+  S={v:2,coins:S.coins||0,pearls:5,xp:0,lvl:1,tanks:[t],cur:0,bgs:S.bgs||['reef'],disc:S.disc||{},ever:{},evo:null,tasks:[],stats:{evolved:0,cleaned:0,fed:0},sound:true,last:S.last||Date.now(),jackDay:''};
+}
 if(!S)S=newState();
+const T=()=>S.tanks[S.cur];
+for(const t of S.tanks)for(const f of t.fish){S.disc[key(f.g)]=1;}
 const save=()=>{S.last=Date.now();store.set('state',S);};
+
+/* ================= taken ================= */
+const TASKS=[
+  {t:'feed',d:n=>`Voer je vissen ${n}×`,n:[10,20,30]},{t:'coins',d:n=>`Verzamel ${n} munten`,n:[20,50,100]},
+  {t:'clean',d:n=>`Poets ${n} vuilplekken weg`,n:[5,10,15]},{t:'evolve',d:n=>`Laat ${n} vis evolueren`,n:[1,1,2]},
+  {t:'buyfish',d:n=>`Koop ${n} nieuwe vis`,n:[1,1,2]},{t:'buydecor',d:n=>`Koop ${n} decoratie`,n:[1,1,2]},
+  {t:'jackpot',d:n=>`Speel ${n}× jackpot`,n:[1,2,3]},{t:'discover',d:n=>`Ontdek ${n} nieuwe soort`,n:[1,1,2]},
+];
+function newTask(){const k=pick(TASKS),tier=Math.min(2,Math.floor(S.lvl/5)),goal=k.n[tier];
+  return {t:k.t,goal,n:0,rc:15+goal*(k.t==='evolve'?30:k.t==='discover'?25:2),rx:10+goal*3,rp:Math.random()<.35?1:0};}
+while(S.tasks.length<3)S.tasks.push(newTask());
+function track(type,amount){let any=false;for(const t of S.tasks)if(t.t===type&&t.n<t.goal){t.n=Math.min(t.goal,t.n+(amount||1));any=true;if(t.n>=t.goal)toast('📋 Taak voltooid! Haal je beloning op');}if(any)updTop();}
+
+/* ================= XP / niveaus ================= */
+function addXP(n,x0,y0){S.xp+=n;if(x0!=null)fx.push({x:x0,y:y0-16,t:0,txt:'+'+n+' XP',c:'#9ff'});
+  while(S.xp>=lvlXP(S.lvl)){S.xp-=lvlXP(S.lvl);S.lvl++;S.pearls+=3;sfx('new');setTimeout(()=>levelUp(),300);}updTop();}
+function levelUp(){
+  const un=[];catalogFish().forEach(c=>{if(c.lvl===S.lvl)un.push(fname(c.g));});
+  Object.entries(DECOR_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push(DECOR.find(d=>d.id===k).n);});
+  Object.entries(BG_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push('Thema: '+BGS.find(b=>b.id===k).n);});
+  CFG.seas.forEach(z=>{if(z.lvl===S.lvl&&z.lvl>1)un.push(z.n+' te koop');});
+  open(`<div style="text-align:center"><div style="font-size:54px" class="reveal">⭐</div><h2>Niveau ${S.lvl}!</h2><p>+3 parels</p>
+    ${un.length?'<p><b>Nieuw in de winkel:</b><br>'+un.join(' · ')+'</p>':''}</div><button class="btn p" onclick="close()">Top!</button>`);
+}
 
 /* ================= wereld (scherm) ================= */
 const cv=$('cv'),cx=cv.getContext('2d'),app=$('app');
 let W=360,H=640,dpr=1,SAND=560;
-function resize(){const r=app.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2.5);W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);SAND=H-118;}
+function resize(){const r=app.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2.5);W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);SAND=H-(H<500?84:128);}
 addEventListener('resize',resize);
-const SW=[];// zwemmers (runtime)
-function syncSwimmers(){
-  for(const f of S.fish)if(!SW.find(s=>s.f===f)){SW.push({f,x:40+Math.random()*(W-80),y:120+Math.random()*(SAND-220),vx:0,vy:0,tx:0,ty:0,ph:Math.random()*6,dir:1,next:0,happy:0});}
-  for(let i=SW.length-1;i>=0;i--)if(!S.fish.includes(SW[i].f))SW.splice(i,1);
+const SW=[];
+function syncSwimmers(rebuild){
+  if(rebuild)SW.length=0;
+  for(const f of T().fish)if(!SW.find(s=>s.f===f))SW.push({f,x:40+Math.random()*(W-80),y:130+Math.random()*(SAND-230),vx:0,vy:0,tx:0,ty:0,ph:Math.random()*6,dir:1,next:0,happy:0});
+  for(let i=SW.length-1;i>=0;i--)if(!T().fish.includes(SW[i].f))SW.splice(i,1);
 }
-const food=[],coinsF=[],bubbles=[],fx=[];
-const sizeOf=f=>{const t=Math.min(1,f.grow/6);return 26+t*30;};
+const food=[],drops=[],bubbles=[],fx=[];
+const sizeOf=f=>{const t=Math.min(1,f.grow/6);return (26+t*30)*(1+(f.tier||0)*.12);};
 const adult=f=>f.grow>=6;
+let tool='pointer';
 
 /* ================= offline voortgang ================= */
 (function offline(){
-  const dt=Math.min(8*3600,(Date.now()-(S.last||Date.now()))/1000);if(dt<20)return;
+  const dt=Math.min(12*3600,(Date.now()-(S.last||Date.now()))/1000);if(dt<20)return;
   let earned=0;
-  for(const f of S.fish){
-    const before=f.hunger;f.hunger=clamp(f.hunger+dt/4,0,100);
-    if(adult(f)){const fedSecs=Math.max(0,(70-before)*4);earned+=Math.floor(Math.min(dt,fedSecs)/22)*VALUE[rarity(f.g)];}
-  }
-  earned=Math.min(earned,250);
-  S.coins+=earned;
+  S.tanks.forEach(t=>{
+    for(const f of t.fish){const before=f.hunger;f.hunger=clamp(f.hunger+dt/4,0,100);
+      if(adult(f)){const fedSecs=Math.max(0,(70-before)*4);earned+=Math.floor(Math.min(dt,fedSecs)/CFG.coinEvery)*VALUE[rarity(f.g)];}}
+    const nd=Math.floor(dt/CFG.dirtEvery);for(let i=0;i<nd&&t.dirt.length<CFG.dirtMax;i++)t.dirt.push(newDirt());
+  });
+  earned=Math.min(earned,300);S.coins+=earned;
   const mins=Math.round(dt/60);
-  setTimeout(()=>toast(earned?`Terwijl je weg was (${mins<60?mins+' min':Math.round(mins/60)+' u'}): +${earned} munten`:'Welkom terug! Je vissen hebben honger 🍤'),600);
+  setTimeout(()=>toast(earned?`Terwijl je weg was (${mins<60?mins+' min':Math.round(mins/60)+' u'}): +${earned} munten`:'Welkom terug! Je vissen hebben honger 🍤'),700);
 })();
+function newDirt(){return {x:.05+Math.random()*.9,y:.12+Math.random()*.72,r:14+Math.random()*16,k:rnd(3)};}
 
 /* ================= invoer ================= */
+let dragging=false;
 app.addEventListener('pointerdown',e=>{
-  if(e.target.closest('button,a,.sheet,.pill'))return;
+  if(e.target.closest('button,a,.sheet,.pill,.lvl'))return;
   if(modalOpen())return;e.preventDefault();ensureAudio();
   const r=app.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
-  // munt?
-  for(let i=coinsF.length-1;i>=0;i--){const c=coinsF[i];if(Math.hypot(c.x-x,c.y-y)<26){collectCoin(i);return;}}
-  // ei?
-  for(const eg of S.eggs){const p=eggPos(eg);if(Math.hypot(p[0]-x,p[1]-y)<30){tapEgg(eg);return;}}
-  // vis?
+  if(tool==='clean'){dragging=true;wipe(x,y);return;}
+  // munten / XP aantikken (in elke modus)
+  for(let i=drops.length-1;i>=0;i--){const c=drops[i];if(Math.hypot(c.x-x,c.y-y)<28){collectDrop(i);return;}}
+  if(tool==='food'){if(y<SAND-10){for(let i=0;i<3;i++)food.push({x:x+(Math.random()-.5)*26,y:Math.max(y,90)+(Math.random()-.5)*10,vy:18+Math.random()*10,t:0});sfx('plop');}return;}
+  if(tool==='decor'){let bi=-1,bd=60;T().decor.forEach((d,i)=>{const dd=Math.abs(d.x*W-x);if(dd<bd&&y>SAND-100){bd=dd;bi=i;}});if(bi>=0){moving=bi;}return;}
+  // wijzer: vis bekijken
   let best=null,bd=1e9;for(const s of SW){const d=Math.hypot(s.x-x,s.y-y);if(d<sizeOf(s.f)*.7+12&&d<bd){bd=d;best=s;}}
-  if(best){fishInfo(best.f);return;}
-  // voer strooien
-  if(y<SAND-10){for(let i=0;i<3;i++)food.push({x:x+(Math.random()-.5)*26,y:Math.max(y,80)+(Math.random()-.5)*10,vy:18+Math.random()*10,t:0});sfx('plop');}
+  if(best)fishInfo(best.f);
 });
-function collectCoin(i){const c=coinsF[i];S.coins+=c.v;coinsF.splice(i,1);fx.push({x:c.x,y:c.y,t:0,txt:'+'+c.v});sfx('coin');updTop();save();}
+let moving=-1;
+app.addEventListener('pointermove',e=>{
+  const r=app.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+  if(tool==='clean'&&dragging)wipe(x,y);
+  if(tool==='decor'&&moving>=0){T().decor[moving].x=clamp(x/W,.04,.96);}
+});
+addEventListener('pointerup',()=>{if(dragging||moving>=0)save();dragging=false;moving=-1;});
+function wipe(x,y){
+  const t=T();for(let i=t.dirt.length-1;i>=0;i--){const d=t.dirt[i];if(Math.hypot(d.x*W-x,d.y*H-y)<d.r+22){
+    d.hp=(d.hp||3)-1;if(d.hp<=0){t.dirt.splice(i,1);S.coins+=1;S.stats.cleaned++;track('clean');addXP(2,x,y);fx.push({x,y,t:0,txt:'+1'});sfx('clean');}}}
+}
+function collectDrop(i){const c=drops[i];drops.splice(i,1);
+  if(c.xp){addXP(c.v,c.x,c.y);sfx('xp');}else{S.coins+=c.v;track('coins',c.v);fx.push({x:c.x,y:c.y,t:0,txt:'+'+c.v});sfx('coin');}
+  updTop();save();}
 
 /* ================= update ================= */
-let lastT=performance.now(),saveT=0;
+let lastT=performance.now(),saveT=0,dirtT=0;
 function update(dt){
-  const t=performance.now();
-  // voer zakt
+  const t=performance.now(),tank=T();
   for(let i=food.length-1;i>=0;i--){const p=food[i];p.t+=dt;p.y=Math.min(SAND-4,p.y+p.vy*dt);p.x+=Math.sin(p.t*3+i)*.2;if(p.t>14)food.splice(i,1);}
-  // zwemmen
+  // honger in alle zeeën, vuil in alle zeeën
+  S.tanks.forEach((tk,ti)=>{if(ti!==S.cur)for(const f of tk.fish)f.hunger=clamp(f.hunger+dt/4,0,100);});
+  dirtT+=dt;if(dirtT>CFG.dirtEvery){dirtT=0;S.tanks.forEach(tk=>{if(tk.dirt.length<CFG.dirtMax)tk.dirt.push(newDirt());});}
+  const dirtSlow=1+tank.dirt.length/CFG.dirtMax;
   for(const s of SW){
     const f=s.f,sz=sizeOf(f);f.hunger=clamp(f.hunger+dt/4,0,100);
     s.ph+=dt*(5+Math.hypot(s.vx,s.vy)/12);
+    const evoing=S.evo&&S.evo.id===f.id;
     let target=null;
-    if(f.hunger>15&&food.length){let bd=1e9;for(const p of food){const d=Math.hypot(p.x-s.x,p.y-s.y);if(d<bd){bd=d;target=p;}}}
+    if(!evoing&&f.hunger>15&&food.length){let bd=1e9;for(const p of food){const d=Math.hypot(p.x-s.x,p.y-s.y);if(d<bd){bd=d;target=p;}}}
     if(target){s.tx=target.x;s.ty=target.y;
-      if(Math.hypot(target.x-s.x,target.y-s.y)<sz*.4){food.splice(food.indexOf(target),1);f.hunger=clamp(f.hunger-22,0,100);if(f.grow<6){f.grow++;if(f.grow===6){fx.push({x:s.x,y:s.y-sz,t:0,txt:'Volwassen!'});sfx('grow');}}s.happy=1.2;sfx('munch');}}
-    else if(t>s.next){s.tx=30+Math.random()*(W-60);s.ty=100+Math.random()*(SAND-180);s.next=t+3000+Math.random()*5000;}
+      if(Math.hypot(target.x-s.x,target.y-s.y)<sz*.4){food.splice(food.indexOf(target),1);f.hunger=clamp(f.hunger-22,0,100);S.stats.fed++;track('feed');
+        if(f.grow<6){f.grow++;addXP(1);if(f.grow===6){fx.push({x:s.x,y:s.y-sz,t:0,txt:'Volwassen!'});sfx('grow');addXP(5);}}s.happy=1.2;sfx('munch');}}
+    else if(t>s.next){s.tx=30+Math.random()*(W-60);s.ty=110+Math.random()*(SAND-190);s.next=t+3000+Math.random()*5000;}
     const dx=s.tx-s.x,dy=s.ty-s.y,d=Math.hypot(dx,dy)||1,sp=(target?70:26)+(1-Math.min(1,f.grow/6))*10;
     s.vx+=(dx/d*sp-s.vx)*Math.min(1,dt*1.6);s.vy+=(dy/d*sp*.6-s.vy)*Math.min(1,dt*1.6);
     if(d<8){s.vx*=.9;s.vy*=.9;}
-    s.x=clamp(s.x+s.vx*dt,20,W-20);s.y=clamp(s.y+s.vy*dt+Math.sin(s.ph*.3)*.15,90,SAND-sz*.4);
+    s.x=clamp(s.x+s.vx*dt,20,W-20);s.y=clamp(s.y+s.vy*dt+Math.sin(s.ph*.3)*.15,100,SAND-sz*.4);
     if(Math.abs(s.vx)>4)s.dir=s.vx>0?1:-1;
     if(s.happy>0)s.happy-=dt;
-    // munten laten vallen
-    if(adult(f)&&f.hunger<70){s.coinT=(s.coinT||Math.random()*20)+dt;if(s.coinT>22){s.coinT=0;if(coinsF.length<30)coinsF.push({x:s.x,y:s.y,v:VALUE[rarity(f.g)],vy:0,t:0});}}
+    if(adult(f)&&f.hunger<70&&!evoing){s.coinT=(s.coinT||Math.random()*20)+dt;if(s.coinT>CFG.coinEvery*dirtSlow){s.coinT=0;
+      if(drops.length<30){const xp=Math.random()<.2;drops.push({x:s.x,y:s.y,v:xp?2+(f.tier||0)*2:VALUE[rarity(f.g)],xp,vy:0,t:0});}}}
   }
-  // munten zakken, verdwijnen na 40 s
-  for(let i=coinsF.length-1;i>=0;i--){const c=coinsF[i];c.t+=dt;c.vy=Math.min(60,c.vy+80*dt);c.y=Math.min(SAND-6,c.y+c.vy*dt);if(c.t>45){coinsF.splice(i,1);}}
-  // bubbels
+  for(let i=drops.length-1;i>=0;i--){const c=drops[i];c.t+=dt;c.vy=Math.min(60,c.vy+80*dt);c.y=Math.min(SAND-6,c.y+c.vy*dt);if(c.t>45)drops.splice(i,1);}
   if(Math.random()<dt*2.5)bubbles.push({x:Math.random()*W,y:SAND,r:2+Math.random()*4,v:30+Math.random()*30});
-  for(const d of S.decor)if(d.id==='bubbler'&&Math.random()<dt*6)bubbles.push({x:d.x*W+(Math.random()-.5)*8,y:SAND-10,r:2+Math.random()*3,v:50+Math.random()*30});
-  for(let i=bubbles.length-1;i>=0;i--){const b=bubbles[i];b.y-=b.v*dt;b.x+=Math.sin(b.y/20)*.3;if(b.y<60)bubbles.splice(i,1);}
+  for(const d of tank.decor)if(d.id==='bubbler'&&Math.random()<dt*6)bubbles.push({x:d.x*W+(Math.random()-.5)*8,y:SAND-10,r:2+Math.random()*3,v:50+Math.random()*30});
+  for(let i=bubbles.length-1;i>=0;i--){const b=bubbles[i];b.y-=b.v*dt;b.x+=Math.sin(b.y/20)*.3;if(b.y<70)bubbles.splice(i,1);}
   for(let i=fx.length-1;i>=0;i--){fx[i].t+=dt;if(fx[i].t>1.2)fx.splice(i,1);}
+  // evolutie klaar?
+  if(S.evo&&!S.evo.ready&&Date.now()>=S.evo.done){S.evo.ready=true;toast('🧬 Evolutie klaar! Open Evolutie');sfx('grow');updTop();}
   saveT+=dt;if(saveT>5){saveT=0;save();}
 }
 
 /* ================= tekenen ================= */
-function eggPos(eg){const i=S.eggs.indexOf(eg);return [W*.5+(i-(S.eggs.length-1)/2)*54,SAND-16];}
 const BGS=[{id:'reef',n:'Blauw rif',p:0,w:['#5ad1f2','#1d9ad6','#0c5c8a'],sand:['#f6dfa6','#d8b46a'],far:'rgba(8,70,110,.45)'},
   {id:'lagoon',n:'Groene lagune',p:150,w:['#b8f0a8','#4fbf7a','#1f6e48'],sand:['#8fcf6a','#4f9a44'],far:'rgba(30,100,60,.45)'},
   {id:'wreck',n:'Scheepswrak',p:250,w:['#7cc8e8','#2b7fb8','#123e66'],sand:['#e9e1c6','#bfb38e'],far:'rgba(20,60,100,.5)'},
   {id:'cave',n:'Kristalgrot',p:400,w:['#9ad8ff','#3a7ac8','#241e5a'],sand:['#e8d9b8','#b9a27a'],far:'rgba(40,30,90,.5)'}];
-function bg(){return BGS.find(b=>b.id===(S.bg||'reef'))||BGS[0];}
+function bg(){return BGS.find(b=>b.id===T().bg)||BGS[0];}
 function render(){
-  const t=performance.now(),x=cx,B=bg();
-  // water
+  const t=performance.now(),x=cx,B=bg(),tank=T();
   const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,B.w[0]);g.addColorStop(.45,B.w[1]);g.addColorStop(1,B.w[2]);x.fillStyle=g;x.fillRect(0,0,W,H);
   if(BG_ART[B.id]){const im=BG_ART[B.id],sc=Math.max(W/im.width,H/im.height);x.drawImage(im,(W-im.width*sc)/2,(H-im.height*sc)/2,im.width*sc,im.height*sc);}
   else if(B.id==='lagoon'){x.fillStyle='rgba(40,110,70,.35)';x.beginPath();x.moveTo(W*.1,SAND);x.lineTo(W*.12,H*.32);x.quadraticCurveTo(W*.5,H*.12,W*.88,H*.32);x.lineTo(W*.9,SAND);x.lineTo(W*.76,SAND);x.lineTo(W*.76,H*.4);x.quadraticCurveTo(W*.5,H*.26,W*.24,H*.4);x.lineTo(W*.24,SAND);x.fill();
     x.strokeStyle='rgba(30,90,50,.35)';x.lineWidth=3;for(let i=0;i<6;i++){x.beginPath();x.moveTo(W*(.15+i*.14),H*.2);x.quadraticCurveTo(W*(.18+i*.14)+Math.sin(t/1500+i)*8,H*.35,W*(.16+i*.14),H*.48);x.stroke();}}
-  if(B.id==='wreck'){x.fillStyle='rgba(15,50,85,.45)';x.save();x.translate(W*.62,SAND-30);x.rotate(-.12);x.beginPath();x.moveTo(-120,0);x.lineTo(110,0);x.lineTo(140,-50);x.lineTo(-130,-40);x.fill();
+  else if(B.id==='wreck'){x.fillStyle='rgba(15,50,85,.45)';x.save();x.translate(W*.62,SAND-30);x.rotate(-.12);x.beginPath();x.moveTo(-120,0);x.lineTo(110,0);x.lineTo(140,-50);x.lineTo(-130,-40);x.fill();
     x.fillRect(-40,-170,6,130);x.fillRect(40,-150,5,110);x.beginPath();x.moveTo(-34,-160);x.lineTo(30,-140);x.lineTo(-30,-90);x.fill();x.restore();}
-  if(B.id==='cave'){x.fillStyle='rgba(30,20,70,.55)';x.beginPath();x.moveTo(0,0);x.lineTo(W*.25,0);x.quadraticCurveTo(W*.08,H*.3,W*.12,SAND);x.lineTo(0,SAND);x.fill();
+  else if(B.id==='cave'){x.fillStyle='rgba(30,20,70,.55)';x.beginPath();x.moveTo(0,0);x.lineTo(W*.25,0);x.quadraticCurveTo(W*.08,H*.3,W*.12,SAND);x.lineTo(0,SAND);x.fill();
     x.beginPath();x.moveTo(W,0);x.lineTo(W*.72,0);x.quadraticCurveTo(W*.95,H*.35,W*.86,SAND);x.lineTo(W,SAND);x.fill();
     for(let i=0;i<14;i++){const sx=(i*71)%W,sy=(i*113)%(SAND-100)+60,a=.4+.4*Math.sin(t/600+i);x.fillStyle=`rgba(200,230,255,${a})`;x.fillRect(sx,sy,2,2);}}
-  // lichtstralen
-  x.save();x.globalCompositeOperation='lighter';
-  for(let i=0;i<5;i++){const bx=(i*W/4+Math.sin(t/3000+i)*30);const lg=x.createLinearGradient(0,0,0,SAND);lg.addColorStop(0,'rgba(255,255,255,.14)');lg.addColorStop(1,'rgba(255,255,255,0)');
-    x.fillStyle=lg;x.beginPath();x.moveTo(bx-14,0);x.lineTo(bx+20,0);x.lineTo(bx+80,SAND);x.lineTo(bx+20,SAND);x.fill();}
-  x.restore();
-  // verre achtergrond-rotsen
-  x.fillStyle=B.far;x.beginPath();x.moveTo(0,SAND);for(let i=0;i<=8;i++)x.lineTo(i*W/8,SAND-40-Math.sin(i*1.7)*26-((i*37)%23));x.lineTo(W,SAND);x.fill();
-  // zand
-  const sg=x.createLinearGradient(0,SAND,0,H);sg.addColorStop(0,B.sand[0]);sg.addColorStop(1,B.sand[1]);x.fillStyle=sg;
-  x.beginPath();x.moveTo(0,SAND+6);for(let i=0;i<=12;i++)x.quadraticCurveTo(i*W/12-W/24,SAND-4+Math.sin(i)*4,i*W/12,SAND+2+Math.cos(i*1.3)*3);x.lineTo(W,H);x.lineTo(0,H);x.fill();
-  x.fillStyle='rgba(180,140,70,.35)';for(let i=0;i<40;i++){x.fillRect((i*97)%W,SAND+12+(i*53)%(H-SAND-20),2,2);}
-  // decor
-  for(const d of S.decor)drawDecor(x,d.id,t,d.x*W,SAND+10,1.15);
-  // eieren
-  for(const eg of S.eggs){const [ex,ey]=eggPos(eg),left=Math.max(0,eg.ready-Date.now()),ready=left<=0,wob=ready?Math.sin(t/120)*.12:0;
-    x.save();x.translate(ex,ey);x.rotate(wob);x.fillStyle=eg.lux?'#ffe27a':'#fff4e6';x.strokeStyle='rgba(18,50,71,.25)';x.lineWidth=2;
-    x.beginPath();x.ellipse(0,-6,15,19,0,0,7);x.fill();x.stroke();x.fillStyle=eg.lux?'#ffb83d':'#9fd8f2';for(let i=0;i<4;i++){x.beginPath();x.arc(-7+i*5,-8+(i&1)*7,3,0,7);x.fill();}x.restore();
-    x.fillStyle='rgba(18,50,71,.85)';x.font='800 11px system-ui';x.textAlign='center';x.fillText(ready?'Tik!':Math.ceil(left/1000)+'s',ex,ey+18);}
-  // voer
-  x.fillStyle='#c46a2a';for(const p of food){x.fillRect(p.x-2,p.y-2,4,3);}
-  // munten
-  for(const c of coinsF){const sp=Math.abs(Math.cos(t/250+c.x));x.save();x.translate(c.x,c.y);x.scale(sp*.9+.1,1);
-    const cg=x.createRadialGradient(-3,-3,1,0,0,9);cg.addColorStop(0,'#fff3a8');cg.addColorStop(.6,'#ffc83d');cg.addColorStop(1,'#d99a10');x.fillStyle=cg;x.beginPath();x.arc(0,0,8,0,7);x.fill();x.restore();}
-  // vissen
+  if(!BG_ART[B.id]){
+    x.save();x.globalCompositeOperation='lighter';
+    for(let i=0;i<5;i++){const bx=(i*W/4+Math.sin(t/3000+i)*30);const lg=x.createLinearGradient(0,0,0,SAND);lg.addColorStop(0,'rgba(255,255,255,.12)');lg.addColorStop(1,'rgba(255,255,255,0)');
+      x.fillStyle=lg;x.beginPath();x.moveTo(bx-14,0);x.lineTo(bx+20,0);x.lineTo(bx+80,SAND);x.lineTo(bx+20,SAND);x.fill();}
+    x.restore();
+    x.fillStyle=B.far;x.beginPath();x.moveTo(0,SAND);for(let i=0;i<=8;i++)x.lineTo(i*W/8,SAND-40-Math.sin(i*1.7)*26-((i*37)%23));x.lineTo(W,SAND);x.fill();
+    const sg=x.createLinearGradient(0,SAND,0,H);sg.addColorStop(0,B.sand[0]);sg.addColorStop(1,B.sand[1]);x.fillStyle=sg;
+    x.beginPath();x.moveTo(0,SAND+6);for(let i=0;i<=12;i++)x.quadraticCurveTo(i*W/12-W/24,SAND-4+Math.sin(i)*4,i*W/12,SAND+2+Math.cos(i*1.3)*3);x.lineTo(W,H);x.lineTo(0,H);x.fill();
+  }
+  for(const d of tank.decor)drawDecor(x,d.id,t,d.x*W,SAND+10,1.15);
+  if(tool==='decor'){x.fillStyle='rgba(255,255,255,.85)';x.font='800 13px system-ui';x.textAlign='center';x.fillText('Sleep een decoratie naar links of rechts',W/2,SAND-120);}
+  x.fillStyle='#c46a2a';for(const p of food)x.fillRect(p.x-2,p.y-2,4,3);
+  for(const c of drops){const sp=Math.abs(Math.cos(t/250+c.x));x.save();x.translate(c.x,c.y);
+    if(c.xp){x.rotate(t/600);x.fillStyle='#7ff0ff';x.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5,r=i&1?4:9;x.lineTo(Math.cos(a)*r,Math.sin(a)*r);}x.fill();}
+    else{x.scale(sp*.9+.1,1);const cg=x.createRadialGradient(-3,-3,1,0,0,9);cg.addColorStop(0,'#fff3a8');cg.addColorStop(.6,'#ffc83d');cg.addColorStop(1,'#d99a10');x.fillStyle=cg;x.beginPath();x.arc(0,0,8,0,7);x.fill();}
+    x.restore();}
   const order=SW.slice().sort((a,b)=>sizeOf(a.f)-sizeOf(b.f));
-  for(const s of order){const sz=sizeOf(s.f);drawFish(x,s.f.g,s.x,s.y,sz,s.ph,s.dir,{blush:s.happy>0});
-    if(s.f.hunger>70){x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.arc(s.x+s.dir*sz*.3,s.y-sz*.65,9,0,7);x.fill();x.font='11px system-ui';x.textAlign='center';x.fillText('🍤',s.x+s.dir*sz*.3,s.y-sz*.65+4);}}
-  // bubbels
+  for(const s of order){const sz=sizeOf(s.f),evoing=S.evo&&S.evo.id===s.f.id;
+    if(evoing){x.save();x.globalAlpha=.35+.15*Math.sin(t/300);x.fillStyle='#e9d5ff';x.beginPath();x.arc(s.x,s.y,sz*.75,0,7);x.fill();x.restore();}
+    drawFish(x,s.f.g,s.x,s.y,sz,s.ph,s.dir,{blush:s.happy>0});
+    if(s.f.hunger>70&&!evoing){x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.arc(s.x+s.dir*sz*.3,s.y-sz*.65,9,0,7);x.fill();x.font='11px system-ui';x.textAlign='center';x.fillText('🍤',s.x+s.dir*sz*.3,s.y-sz*.65+4);}}
   x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=1.2;for(const b of bubbles){x.beginPath();x.arc(b.x,b.y,b.r,0,7);x.stroke();}
-  // teksteffecten
-  for(const f of fx){x.globalAlpha=1-f.t/1.2;x.fillStyle='#fff';x.font='900 16px system-ui';x.textAlign='center';x.strokeStyle='rgba(18,50,71,.6)';x.lineWidth=3;
+  // vuil op het glas
+  for(const d of tank.dirt){const a=.18+.08*(d.hp||3);x.fillStyle=['rgba(90,120,40,'+a+')','rgba(110,100,50,'+a+')','rgba(70,110,80,'+a+')'][d.k];
+    x.beginPath();for(let i=0;i<9;i++){const an=i/9*Math.PI*2,rr=d.r*(.75+.25*Math.sin(i*2.3+d.x*20));x.lineTo(d.x*W+Math.cos(an)*rr,d.y*H+Math.sin(an)*rr);}x.fill();}
+  for(const f of fx){x.globalAlpha=1-f.t/1.2;x.fillStyle=f.c||'#fff';x.font='900 16px system-ui';x.textAlign='center';x.strokeStyle='rgba(18,50,71,.6)';x.lineWidth=3;
     x.strokeText(f.txt,f.x,f.y-f.t*30);x.fillText(f.txt,f.x,f.y-f.t*30);x.globalAlpha=1;}
-  // hint bij leeg voer
-  if(!food.length&&S.fish.some(f=>f.hunger>70)&&!modalOpen()){x.fillStyle='rgba(255,255,255,.85)';x.font='800 13px system-ui';x.textAlign='center';x.fillText('Tik in het water om te voeren',W/2,SAND-60);}
+  if(!modalOpen()&&tool==='pointer'&&T().fish.some(f=>f.hunger>70)){x.fillStyle='rgba(255,255,255,.85)';x.font='800 13px system-ui';x.textAlign='center';x.fillText('Kies 🍤 Voer en tik in het water',W/2,SAND-70);}
+  if(!modalOpen()&&tool==='pointer'&&tank.dirt.length>=CFG.dirtMax*.6){x.fillStyle='rgba(255,255,255,.85)';x.font='800 13px system-ui';x.textAlign='center';x.fillText('Het glas is vies – kies 🧽 Poetsen',W/2,SAND-90);}
 }
 
 /* ================= UI ================= */
-function updTop(){$('coins').textContent=S.coins;$('disc').textContent=Object.keys(S.disc).length;}
+function updTop(){
+  $('coins').textContent=S.coins;$('pearls').textContent=S.pearls;$('lvln').textContent=S.lvl;
+  $('lvlbar').style.width=Math.min(100,S.xp/lvlXP(S.lvl)*100)+'%';
+  const done=S.tasks.filter(t=>t.n>=t.goal).length;$('taskBadge').textContent=done||'';$('taskBadge').style.display=done?'':'none';
+  $('evoBadge').style.display=S.evo&&(S.evo.ready||Date.now()>=S.evo.done)?'':'none';
+  $('seaName').textContent=CFG.seas[S.cur].n;
+  $('seaPrev').style.visibility=S.tanks.length>1?'':'hidden';$('seaNext').style.visibility=S.tanks.length>1?'':'hidden';
+}
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;app.appendChild(d);setTimeout(()=>d.remove(),2300);}
 const modal=$('modal'),sheet=$('sheet');
 const modalOpen=()=>modal.classList.contains('open');
@@ -421,126 +530,174 @@ modal.addEventListener('pointerdown',e=>{if(e.target===modal)close();});
 const hd=t=>`<div class="hd"><h2>${t}</h2><button class="x" onclick="close()">✕</button></div>`;
 const rt=r=>`<span class="rt r${r}">${RANK[r]}</span>`;
 function mount(sel,canvases){sheet.querySelectorAll(sel).forEach((el,i)=>{if(canvases[i])el.prepend(canvases[i]);});}
+function liveFish(id,g,w,h,sz){const c=$(id),d=2;c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.scale(d,d);
+  const loop=()=>{if(!modalOpen()||!$(id))return;x.clearRect(0,0,w,h);drawFish(x,g,w/2,h/2+4,sz,performance.now()/160,1);requestAnimationFrame(loop);};loop();}
+const lockTag=l=>`<span class="tag" style="background:#123247">🔒 Niv. ${l}</span>`;
+
+// gereedschap
+function setTool(t){tool=t;document.querySelectorAll('.dock [data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===t));
+  if(t==='clean')toast('Veeg over het vuil om te poetsen');if(t==='food')toast('Tik in het water om te voeren');}
+document.querySelectorAll('.dock [data-tool]').forEach(b=>b.onclick=()=>{ensureAudio();setTool(b.dataset.tool);});
 
 // vis-info
 function fishInfo(f){
-  const r=rarity(f.g),val=VALUE[r]*(adult(f)?15:5);
+  const r=rarity(f.g),val=VALUE[r]*(adult(f)?15:5)*(1+(f.tier||0));
   open(hd(fname(f.g))+`<canvas class="big" id="bigc"></canvas>
-    <div style="text-align:center;margin:4px 0 12px">${rt(r)}</div>
+    <div style="text-align:center;margin:4px 0 12px">${rt(r)} <span class="rt" style="background:#5b7d93">Vorm ${(f.tier||0)+1}/3</span></div>
     <div class="kv"><span>${adult(f)?'Volwassen':'Groeit nog'}</span><span>${Math.min(6,f.grow)}/6</span></div><div class="bar"><i style="width:${Math.min(1,f.grow/6)*100}%;background:#3fb06a"></i></div>
     <div class="kv"><span>Honger</span><span>${Math.round(f.hunger)}%</span></div><div class="bar"><i style="width:${f.hunger}%;background:${f.hunger>70?'#e8202a':'#ff9f43'}"></i></div>
-    <p>${adult(f)?`Laat elke ~20 s ${VALUE[r]} munt${VALUE[r]>1?'en':''} vallen als hij genoeg te eten heeft.`:'Voer hem om te laten groeien. Volwassen vissen laten munten vallen en kunnen kweken.'}</p>
-    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button><button class="btn p" onclick="close()">Oké</button></div>`);
-  const c=$('bigc'),d=2;c.width=280*d;c.height=200*d;const x=c.getContext('2d');x.scale(d,d);
-  let raf;const loop=()=>{if(!modalOpen()||!$('bigc'))return;x.clearRect(0,0,280,200);drawFish(x,f.g,140,104,150,performance.now()/160,1);raf=requestAnimationFrame(loop);};loop();
+    <p>${adult(f)?((f.tier||0)<2?'Deze vis kan evolueren via 🧬 Evolutie.':'Deze vis is volledig geëvolueerd.'):'Voer hem om te laten groeien. Volwassen vissen laten munten en XP vallen en kunnen evolueren.'}</p>
+    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button>${adult(f)&&(f.tier||0)<2?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="close()">Oké</button>'}</div>`);
+  liveFish('bigc',f.g,280,200,150);
 }
-window.sellFish=id=>{if(S.fish.length<=1){toast('Je hebt minstens één vis nodig');return;}
-  const f=S.fish.find(q=>q.id===id);if(!f)return;const val=VALUE[rarity(f.g)]*(adult(f)?15:5);
-  S.fish.splice(S.fish.indexOf(f),1);S.coins+=val;syncSwimmers();updTop();save();close();sfx('coin');toast(`Verkocht: +${val}`);};
+window.sellFish=id=>{const t=T();if(t.fish.length<=1){toast('Je hebt minstens één vis nodig');return;}
+  if(S.evo&&S.evo.id===id){toast('Deze vis zit in de evolutie');return;}
+  const f=t.fish.find(q=>q.id===id);if(!f)return;const val=VALUE[rarity(f.g)]*(adult(f)?15:5)*(1+(f.tier||0));
+  t.fish.splice(t.fish.indexOf(f),1);S.coins+=val;addXP(3);syncSwimmers();updTop();save();close();sfx('coin');toast(`Verkocht: +${val}`);};
 
-// winkel
-const EGGS=[{id:'egg',n:'Visei',p:20,d:'Gewone vissen, soms bijzonder',time:30},{id:'lux',n:'Gouden ei',p:120,d:'Meer kans op zeldzaam en magisch',time:60}];
-const MAXF=16;
+// winkel: Vissen, Decor, Thema's, Zeeën
 function shop(tab){
-  tab=tab||'eggs';
-  let body='';
-  if(tab==='eggs')body='<div class="grid">'+EGGS.map(e=>`<div class="item ${S.coins<e.p?'dis':''}" onclick="buyEgg('${e.id}')"><div style="font-size:40px;line-height:1.6">${e.id==='lux'?'🥚✨':'🥚'}</div>${e.n}<br><small style="color:var(--muted);font-weight:700">${e.d}</small><div class="pr"><i></i>${e.p}</div></div>`).join('')+'</div>';
-  else if(tab==='bg')body='<div class="grid">'+BGS.map(b=>{const own=(S.bgs||['reef']).includes(b.id);return `<div class="item ${!own&&S.coins<b.p?'dis':''} ${S.bg===b.id||(!S.bg&&b.id==='reef')?'sel':''}" onclick="buyBg('${b.id}')"><div style="height:62px;border-radius:10px;background:linear-gradient(${b.w[0]},${b.w[1]} 60%,${b.sand[0]} 61%)"></div>${b.n}<div class="pr">${own?'In bezit':'<i></i>'+b.p}</div></div>`;}).join('')+'</div>';
-  else body='<div class="grid">'+DECOR.map(d=>`<div class="item ${S.coins<d.p?'dis':''}" onclick="buyDecor('${d.id}')"><canvas data-d="${d.id}" width="160" height="120" style="width:100%;aspect-ratio:1.33"></canvas>${d.n}<div class="pr"><i></i>${d.p}</div></div>`).join('')+'</div>';
-  open(hd('Winkel')+`<div class="tabs"><button class="${tab==='eggs'?'on':''}" onclick="shop('eggs')">Eieren</button><button class="${tab==='decor'?'on':''}" onclick="shop('decor')">Decoratie</button><button class="${tab==='bg'?'on':''}" onclick="shop('bg')">Achtergrond</button></div>${body}
-    <p style="margin-top:12px">Je aquarium: ${S.fish.length+S.eggs.length}/${MAXF} vissen en eieren.</p>`);
+  tab=tab||'fish';let body='';
+  if(tab==='fish'){const cat=catalogFish();
+    body='<div class="grid">'+cat.map((c,i)=>{const lock=S.lvl<c.lvl;return `<div class="item ${lock||S.coins<c.p?'dis':''}" onclick="buyFish(${i})">${lock?lockTag(c.lvl):`<span class="tag r${rarity(c.g)}">${RANK[rarity(c.g)]}</span>`}<div style="font-size:11px">${fname(c.g)}</div><div class="pr"><i></i>${c.p}</div></div>`;}).join('')+'</div>';}
+  else if(tab==='decor')body='<div class="grid">'+DECOR.map(d=>{const l=DECOR_LVL[d.id]||1,lock=S.lvl<l;return `<div class="item ${lock||S.coins<d.p?'dis':''}" onclick="buyDecor('${d.id}')">${lock?lockTag(l):''}<canvas data-d="${d.id}" width="160" height="120" style="width:100%;aspect-ratio:1.33"></canvas>${d.n}<div class="pr"><i></i>${d.p}</div></div>`;}).join('')+'</div>';
+  else if(tab==='bg')body='<div class="grid">'+BGS.map(b=>{const own=S.bgs.includes(b.id),l=BG_LVL[b.id],lock=!own&&S.lvl<l;return `<div class="item ${lock||(!own&&S.coins<b.p)?'dis':''} ${T().bg===b.id?'sel':''}" onclick="buyBg('${b.id}')">${lock?lockTag(l):''}<div style="height:62px;border-radius:10px;background:linear-gradient(${b.w[0]},${b.w[1]} 60%,${b.sand[0]} 61%)"></div>${b.n}<div class="pr">${own?'In bezit':'<i></i>'+b.p}</div></div>`;}).join('')+'</div>';
+  else body='<div class="grid">'+CFG.seas.map((z,i)=>{const own=i<S.tanks.length,lock=!own&&S.lvl<z.lvl,next=i===S.tanks.length;return `<div class="item ${(!own&&(lock||!next||S.coins<z.p))?'dis':''} ${S.cur===i?'sel':''}" onclick="buySea(${i})">${lock?lockTag(z.lvl):''}<div style="font-size:34px;line-height:1.7">🌊</div>${z.n}<div class="pr">${own?'In bezit':'<i></i>'+z.p}</div></div>`;}).join('')+'</div>';
+  open(hd('Winkel')+`<div class="tabs"><button class="${tab==='fish'?'on':''}" onclick="shop('fish')">Vissen</button><button class="${tab==='decor'?'on':''}" onclick="shop('decor')">Decor</button><button class="${tab==='bg'?'on':''}" onclick="shop('bg')">Thema's</button><button class="${tab==='sea'?'on':''}" onclick="shop('sea')">Zeeën</button></div>${body}
+    <p style="margin-top:12px">${CFG.seas[S.cur].n}: ${T().fish.length}/${CFG.maxFish} vissen · ${T().decor.length}/10 decoraties</p>`);
+  if(tab==='fish'){const cat=catalogFish();sheet.querySelectorAll('.item').forEach((el,i)=>el.insertBefore(thumb(cat[i].g,90,66),el.children[1]));}
   sheet.querySelectorAll('canvas[data-d]').forEach(c=>{const x=c.getContext('2d');x.fillStyle='#bfe8f7';x.fillRect(0,0,160,120);x.fillStyle='#f6dfa6';x.fillRect(0,96,160,24);drawDecor(x,c.dataset.d,0,80,104,1.1);});
 }
 window.shop=shop;
-window.buyEgg=id=>{const e=EGGS.find(q=>q.id===id);if(S.coins<e.p){toast('Niet genoeg munten');return;}if(S.fish.length+S.eggs.length>=MAXF){toast('Je aquarium is vol');return;}if(S.eggs.length>=5){toast('Max. 5 eieren tegelijk');return;}
-  S.coins-=e.p;S.eggs.push({g:randGenes(id==='lux'),ready:Date.now()+e.time*1000,lux:id==='lux'});updTop();save();close();sfx('buy');toast('Ei gelegd! Even wachten…');};
-window.buyBg=id=>{const b=BGS.find(q=>q.id===id);S.bgs=S.bgs||['reef'];
-  if(!S.bgs.includes(id)){if(S.coins<b.p){toast('Niet genoeg munten');return;}S.coins-=b.p;S.bgs.push(id);sfx('buy');}
-  S.bg=id;updTop();save();shop('bg');};
-window.buyDecor=id=>{const d=DECOR.find(q=>q.id===id);if(S.coins<d.p){toast('Niet genoeg munten');return;}if(S.decor.length>=10){toast('Max. 10 decoraties');return;}
-  S.coins-=d.p;S.decor.push({id,x:.08+Math.random()*.84});updTop();save();close();sfx('buy');toast(d.n+' geplaatst');};
+window.buyFish=i=>{const c=catalogFish()[i];if(S.lvl<c.lvl){toast('Vrij op niveau '+c.lvl);return;}if(S.coins<c.p){toast('Niet genoeg munten');return;}if(T().fish.length>=CFG.maxFish){toast('Deze zee is vol');return;}
+  S.coins-=c.p;const f=mkFish(Object.assign({},c.g),false);T().fish.push(f);const k=key(f.g);if(!S.disc[k]){S.disc[k]=1;track('discover');}track('buyfish');addXP(5);
+  syncSwimmers();updTop();save();close();sfx('buy');toast(fname(c.g)+' is erbij! Voer hem om te groeien');};
+window.buyBg=id=>{const b=BGS.find(q=>q.id===id);if(!S.bgs.includes(id)){if(S.lvl<BG_LVL[id]){toast('Vrij op niveau '+BG_LVL[id]);return;}if(S.coins<b.p){toast('Niet genoeg munten');return;}S.coins-=b.p;S.bgs.push(id);addXP(10);sfx('buy');}
+  T().bg=id;updTop();save();shop('bg');};
+window.buyDecor=id=>{const d=DECOR.find(q=>q.id===id),l=DECOR_LVL[id]||1;if(S.lvl<l){toast('Vrij op niveau '+l);return;}if(S.coins<d.p){toast('Niet genoeg munten');return;}if(T().decor.length>=10){toast('Max. 10 decoraties per zee');return;}
+  S.coins-=d.p;T().decor.push({id,x:.08+Math.random()*.84});track('buydecor');addXP(4);updTop();save();close();sfx('buy');toast(d.n+' geplaatst – verschuif met ✋ Inrichten');};
+window.buySea=i=>{if(i<S.tanks.length){switchSea(i);close();return;}const z=CFG.seas[i];
+  if(i!==S.tanks.length){toast('Koop eerst '+CFG.seas[S.tanks.length].n);return;}if(S.lvl<z.lvl){toast('Vrij op niveau '+z.lvl);return;}if(S.coins<z.p){toast('Niet genoeg munten');return;}
+  S.coins-=z.p;const t=newTank(pick(S.bgs));t.fish=[mkFish(catalogFish()[rnd(4)].g,false)];S.tanks.push(t);addXP(25);switchSea(i);close();sfx('new');toast(z.n+' is van jou!');};
+function switchSea(i){S.cur=(i+S.tanks.length)%S.tanks.length;food.length=0;drops.length=0;syncSwimmers(true);updTop();save();}
+$('seaPrev').onclick=()=>switchSea(S.cur-1);$('seaNext').onclick=()=>switchSea(S.cur+1);
 
-// kweken
-let bsel=[];
-function breedUI(){
-  const ad=S.fish.filter(adult);
-  if(ad.length<2){open(hd('Kweken')+'<p>Je hebt twee volwassen vissen nodig. Voer je vissen tot ze volwassen zijn (6× eten).</p><button class="btn p" onclick="close()">Oké</button>');return;}
-  const cost=15;
-  open(hd('Kweken')+`<p>Kies twee volwassen vissen. Ze leggen samen een verrassingsei – soms komt er een nieuwe soort of zelfs een magische vis uit!</p>
-    <div class="grid">${ad.map(f=>`<div class="item ${bsel.includes(f.id)?'sel':''}" onclick="bpick('${f.id}')"><span class="tag r${rarity(f.g)}">${RANK[rarity(f.g)]}</span><div style="font-size:11px">${fname(f.g)}</div></div>`).join('')}</div>
-    <button class="btn p" ${bsel.length===2&&S.coins>=cost?'':'disabled'} onclick="doBreed()">Kweek een ei (${cost} munten)</button>`);
-  mount('.item',ad.map(f=>thumb(f.g,90,66)));
+// evolutie: vis in het midden, twee uitkomsten, Start / Opnieuw kiezen
+let evoPick=0;
+function evoUI(fid){
+  if(S.evo){ // lopende evolutie
+    const e=S.evo,tk=S.tanks[e.tank],f=tk&&tk.fish.find(q=>q.id===e.id);
+    if(!f){S.evo=null;return evoUI();}
+    const left=Math.max(0,e.done-Date.now()),ready=left<=0;
+    open(hd('Evolutie')+`<p style="text-align:center">${fname(f.g)} wordt…</p><canvas class="big" id="evoT"></canvas>
+      <div style="text-align:center;font-weight:900;font-size:18px">${fname(e.g)}</div>
+      <p style="text-align:center">${ready?'Klaar!':'Nog '+fmtT(left/1000)}</p>
+      ${ready?'<button class="btn p" onclick="finishEvo()">Bekijk je nieuwe vis</button>':`<button class="btn p" ${S.pearls<CFG.skipPearls?'disabled':''} onclick="skipEvo()">Direct klaar (${CFG.skipPearls} parels)</button><button class="btn" onclick="close()">Wachten</button>`}`);
+    liveSil('evoT',e.g,!ready);
+    if(!ready)setTimeout(()=>{if(modalOpen()&&$('evoT'))evoUI();},1000);
+    return;
+  }
+  const t=T(),cands=t.fish.filter(f=>adult(f)&&(f.tier||0)<2);
+  if(!fid){
+    if(!cands.length){open(hd('Evolutie')+'<p>Je hebt een volwassen vis nodig die nog niet volledig geëvolueerd is. Voer je vissen tot ze volwassen zijn.</p><button class="btn p" onclick="close()">Oké</button>');return;}
+    open(hd('Evolutie')+`<p>Kies een vis. Elke vis kan naar één van twee nieuwe vormen evolueren – en daarna nog één keer.</p>
+      <div class="grid">${cands.map(f=>`<div class="item" onclick="evoUI('${f.id}')"><span class="tag r${rarity(f.g)}">Vorm ${(f.tier||0)+1}</span><div style="font-size:11px">${fname(f.g)}</div></div>`).join('')}</div>`);
+    mount('.item',cands.map(f=>thumb(f.g,90,66)));return;
+  }
+  const f=t.fish.find(q=>q.id===fid);if(!f)return evoUI();
+  const opts=evoOptions(f),tier=f.tier||0,cost=CFG.evoCost[tier],time=CFG.evoTime[tier];
+  open(hd('Evolutie')+`<div style="display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:6px;align-items:center;text-align:center">
+      ${opts.map((g,i)=>`${i===1?`<div><canvas id="evoC" style="width:100%;aspect-ratio:1.2"></canvas><div style="font-weight:900;font-size:12px">${fname(f.g)}</div></div>`:''}
+        <div class="item ${evoPick===i?'sel':''}" onclick="evoPick=${i};evoUI('${fid}')"><canvas id="evo${i}" style="width:100%;aspect-ratio:1.2"></canvas>
+        <div style="font-size:11px">${fname(g)}</div>${rt(rarity(g))}<div style="font-size:11px;color:var(--muted);margin-top:4px">⏱ ${fmtT(time)}</div></div>`).join('')}
+    </div>
+    <p style="text-align:center;margin-top:10px">Kies een uitkomst. Kosten: <b>${cost} munten</b>.</p>
+    <div class="row2"><button class="btn" onclick="evoPick=0;evoUI()">Opnieuw kiezen</button><button class="btn p" ${S.coins<cost?'disabled':''} onclick="startEvo('${fid}')">Start</button></div>`);
+  liveFish('evoC',f.g,140,116,74);opts.forEach((g,i)=>liveFish('evo'+i,g,120,100,60));
 }
-window.bpick=id=>{const i=bsel.indexOf(id);if(i>=0)bsel.splice(i,1);else{bsel.push(id);if(bsel.length>2)bsel.shift();}breedUI();};
-window.doBreed=()=>{if(S.fish.length+S.eggs.length>=MAXF){toast('Je aquarium is vol');return;}if(S.eggs.length>=5){toast('Max. 5 eieren tegelijk');return;}
-  const [a,b]=bsel.map(id=>S.fish.find(f=>f.id===id));if(!a||!b)return;
-  S.coins-=15;S.eggs.push({g:breed(a.g,b.g),ready:Date.now()+45000,lux:!!(a.g.m||b.g.m)});S.stats.bred++;bsel=[];updTop();save();close();sfx('love');toast('💞 Er is een ei gelegd!');};
-
-// ei uitkomen
-function tapEgg(eg){
-  if(eg.ready>Date.now()){toast('Dit ei is nog niet klaar');return;}
-  if(S.fish.length>=MAXF){toast('Je aquarium is vol – verkoop eerst een vis');return;}
-  S.eggs.splice(S.eggs.indexOf(eg),1);
-  const f=mkFish(eg.g,false);S.fish.push(f);syncSwimmers();
-  const k=key(eg.g),isNew=!S.disc[k];S.disc[k]=1;S.stats.hatched++;
-  const sw=SW.find(s=>s.f===f);if(sw){const p=eggPos(eg);sw.x=W/2;sw.y=SAND-30;}
+window.evoPick=0;
+Object.defineProperty(window,'evoPick',{get:()=>evoPick,set:v=>{evoPick=v;}});
+window.evoUI=evoUI;
+function liveSil(id,g,sil){const c=$(id),d=2;c.width=280*d;c.height=200*d;const x=c.getContext('2d');x.scale(d,d);
+  const loop=()=>{if(!modalOpen()||!$(id))return;x.clearRect(0,0,280,200);x.filter=sil?'brightness(0) opacity(.35)':'none';drawFish(x,g,140,104,150,performance.now()/160,1);x.filter='none';requestAnimationFrame(loop);};loop();}
+function fmtT(s){s=Math.ceil(s);return s>=60?Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s':s+'s';}
+window.startEvo=fid=>{const f=T().fish.find(q=>q.id===fid);if(!f)return;const tier=f.tier||0,cost=CFG.evoCost[tier];if(S.coins<cost){toast('Niet genoeg munten');return;}
+  const g=evoOptions(f)[evoPick];S.coins-=cost;S.evo={id:f.id,tank:S.cur,g,done:Date.now()+CFG.evoTime[tier]*1000,ready:false};evoPick=0;updTop();save();sfx('love');evoUI();};
+window.skipEvo=()=>{if(!S.evo||S.pearls<CFG.skipPearls)return;S.pearls-=CFG.skipPearls;S.evo.done=Date.now();S.evo.ready=true;save();evoUI();};
+window.finishEvo=()=>{const e=S.evo;if(!e)return;const tk=S.tanks[e.tank],f=tk&&tk.fish.find(q=>q.id===e.id);S.evo=null;
+  if(!f){updTop();close();return;}
+  f.g=e.g;f.tier=(f.tier||0)+1;const k=key(f.g),isNew=!S.disc[k];S.disc[k]=1;if(isNew)track('discover');track('evolve');S.stats.evolved++;addXP(20+f.tier*15);
   updTop();save();sfx(isNew?'new':'hatch');
-  open(`<div style="text-align:center"><h2>${isNew?'Nieuwe soort ontdekt!':'Uitgekomen!'}</h2>
-    <canvas class="big reveal" id="bigc"></canvas><div style="font-weight:900;font-size:18px;margin:6px 0">${fname(eg.g)}</div>${rt(rarity(eg.g))}${isNew?'<span class="new">NIEUW</span>':''}
-    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p></div><button class="btn p" onclick="close()">Hoera!</button>`);
-  const c=$('bigc'),d=2;c.width=280*d;c.height=200*d;const x=c.getContext('2d');x.scale(d,d);
-  const loop=()=>{if(!modalOpen()||!$('bigc'))return;x.clearRect(0,0,280,200);drawFish(x,eg.g,140,104,150,performance.now()/160,1);requestAnimationFrame(loop);};loop();
-}
+  open(`<div style="text-align:center"><h2>${isNew?'Nieuwe soort ontdekt!':'Geëvolueerd!'}</h2><canvas class="big reveal" id="bigc"></canvas>
+    <div style="font-weight:900;font-size:18px;margin:6px 0">${fname(f.g)}</div>${rt(rarity(f.g))}${isNew?'<span class="new">NIEUW</span>':''}
+    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p></div><button class="btn p" onclick="close()">Prachtig!</button>`);
+  liveFish('bigc',f.g,280,200,150);};
 
-// inrichten: decor verplaatsen of weghalen
-function decorUI(){
-  open(hd('Inrichten')+`<p>Tik op een decoratie om hem te verplaatsen of weg te halen. Nieuwe decoratie koop je in de winkel.</p>
-    <div class="grid">${S.decor.map((d,i)=>`<div class="item" onclick="decorEdit(${i})"><canvas data-d="${d.id}" width="160" height="120" style="width:100%;aspect-ratio:1.33"></canvas>${DECOR.find(q=>q.id===d.id).n}</div>`).join('')||'<p>Nog geen decoratie.</p>'}</div>
-    <button class="btn p" onclick="shop('decor')">Naar de winkel</button>`);
-  sheet.querySelectorAll('canvas[data-d]').forEach(c=>{const x=c.getContext('2d');x.fillStyle='#bfe8f7';x.fillRect(0,0,160,120);x.fillStyle='#f6dfa6';x.fillRect(0,96,160,24);drawDecor(x,c.dataset.d,0,80,104,1.1);});
+// taken
+function tasksUI(){
+  open(hd('Taken')+S.tasks.map((t,i)=>{const d=TASKS.find(q=>q.t===t.t).d(t.goal),done=t.n>=t.goal;
+    return `<div class="item" style="text-align:left;margin-bottom:8px;padding:12px"><div style="font-size:14px">${d}</div>
+      <div class="bar"><i style="width:${t.n/t.goal*100}%;background:${done?'#3fb06a':'#ff9f43'}"></i></div>
+      <div class="kv"><span>${t.n}/${t.goal}</span><span>🪙 ${t.rc} · ⭐ ${t.rx} XP${t.rp?' · 🫧 '+t.rp:''}</span></div>
+      ${done?`<button class="btn p" style="height:40px" onclick="claim(${i})">Beloning ophalen</button>`:''}</div>`;}).join(''));
 }
-window.decorEdit=i=>{const d=S.decor[i],n=DECOR.find(q=>q.id===d.id).n;
-  open(hd(n)+`<p>Positie</p><input type="range" min="5" max="95" value="${Math.round(d.x*100)}" style="width:100%" oninput="S.decor[${i}].x=this.value/100">
-    <div class="row2"><button class="btn" onclick="S.decor.splice(${i},1);save();decorUI()">Weghalen</button><button class="btn p" onclick="save();close()">Klaar</button></div>`);};
+window.claim=i=>{const t=S.tasks[i];if(!t||t.n<t.goal)return;S.coins+=t.rc;S.pearls+=t.rp;addXP(t.rx);S.tasks[i]=newTask();sfx('coin');updTop();save();tasksUI();};
 
-// verzamelboek
-function book(){
+// jackpot
+const SYM=['🐟','🐚','🪙','⭐','🦀','💎'];
+function jackpotUI(){
+  const free=S.jackDay!==today();
+  open(hd('Jackpot')+`<p>Drie dezelfde? Prijs! Drie 💎 is de <b>jackpot</b> (500 munten).</p>
+    <div id="reels" style="display:flex;gap:8px;justify-content:center;margin:14px 0">${[0,1,2].map(()=>`<div style="width:78px;height:86px;border-radius:16px;background:#123247;display:grid;place-items:center;font-size:46px">❔</div>`).join('')}</div>
+    <div class="kv" style="justify-content:center;gap:12px"><span>3× 💎 = 500</span><span>3× ⭐ = 150</span><span>3× = 60</span><span>2× = 12</span></div>
+    <button class="btn p" id="spin" onclick="spin()">${free?'Gratis draaien (vandaag)':'Draaien ('+CFG.jackpotCost+' munten)'}</button>`);
+}
+const today=()=>new Date().toISOString().slice(0,10);
+let spinning=false;
+window.spin=()=>{if(spinning)return;const free=S.jackDay!==today();if(!free){if(S.coins<CFG.jackpotCost){toast('Niet genoeg munten');return;}S.coins-=CFG.jackpotCost;}
+  S.jackDay=today();spinning=true;track('jackpot');updTop();
+  const w=[30,24,22,12,10,4],pickW=()=>{let r=Math.random()*100;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;};
+  let res=[pickW(),pickW(),pickW()];if(Math.random()<.18)res[1]=res[0];if(Math.random()<.08)res[2]=res[0];
+  const cells=[...$('reels').children];let n=0;
+  const iv=setInterval(()=>{n++;cells.forEach((c,i)=>{if(n<8+i*5)c.textContent=SYM[rnd(SYM.length)];else c.textContent=SYM[res[i]];});tone(400+n*20,.03,'square',.03);
+    if(n>=18){clearInterval(iv);spinning=false;
+      let win=0;const [a,b,c]=res;if(a===b&&b===c)win=a===5?500:a===3?150:60;else if(a===b||b===c||a===c)win=12;
+      if(win){S.coins+=win;sfx(win>=150?'new':'coin');toast(win>=500?'💎 JACKPOT! +500':'+'+win+' munten');}else toast('Helaas, nog eens?');
+      addXP(2);updTop();save();$('spin').textContent='Draaien ('+CFG.jackpotCost+' munten)';}},70);};
+
+// trofeeën: alle soorten die je ooit had
+function trophies(){
   const ks=Object.keys(S.disc),list=ks.map(k=>{if(k[0]==='A'){const [a,h,m]=k.slice(1).split('-').map(Number);return {s:0,c1:0,c2:3,p:0,f:0,e:0,m,a,h};}const [s,c1,p,m]=k.split('-').map(Number);return {s,c1,c2:(c1+3)%12,p,f:0,e:0,m};}).sort((a,b)=>rarity(b)-rarity(a));
   const byR=[0,0,0,0,0];list.forEach(g=>byR[rarity(g)]++);
-  open(hd('Verzamelboek')+`<p><b>${ks.length}</b> van <b>${total()}</b> soorten ontdekt · ${S.stats.bred} keer gekweekt</p>
+  open(hd('Trofeeën')+`<p><b>${ks.length}</b> van <b>${total()}</b> soorten ooit gehad · ${S.stats.evolved}× geëvolueerd · ${S.stats.cleaned} plekken gepoetst</p>
     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">${byR.map((n,i)=>`<span class="rt r${i}">${RANK[i]}: ${n}</span>`).join('')}</div>
     <div class="grid">${list.map(g=>`<div class="item"><span class="tag r${rarity(g)}">${RANK[rarity(g)]}</span><div style="font-size:11px">${fname(g)}</div></div>`).join('')}</div>`);
   mount('.item',list.map(g=>thumb(g,90,66)));
 }
-
-// geluksspel: kies 1 van 3 schelpen (dagelijks gratis, anders 10 munten)
-const today=()=>new Date().toISOString().slice(0,10);
-function luck(){
-  const free=S.luckDay!==today();
-  open(hd('Gelukschelpen')+`<p>Kies een schelp. Er zit munten, een ei, decoratie of de <b>jackpot</b> (300 munten) in!</p>
-    <div class="grid" style="margin:14px 0">${[0,1,2].map(i=>`<div class="item" style="font-size:54px;padding:18px 0" onclick="openShell(${i})">🐚</div>`).join('')}</div>
-    <p style="text-align:center;font-weight:800">${free?'Vandaag gratis!':'Nog een keer: 10 munten'}</p>`);
+// meer-menu
+function moreUI(){
+  const it=(ic,n,fn)=>`<div class="item" style="padding:14px 4px" onclick="${fn}"><div style="font-size:30px">${ic}</div>${n}</div>`;
+  open(hd('Menu')+`<div class="grid">${it('🎰','Jackpot','jackpotUI()')}${it('🏆','Trofeeën','trophies()')}${it('📋','Taken','tasksUI()')}${it('🌊','Zeeën',"shop('sea')")}${it('🫧','Parels','pearlsUI()')}${it('❓','Help','helpUI()')}${it('⚙️','Instellingen','settingsUI()')}${it('🏠','Alle spellen',"location.href='../'")}</div>`);
 }
-window.openShell=i=>{
-  const free=S.luckDay!==today();if(!free){if(S.coins<10){toast('Niet genoeg munten');return;}S.coins-=10;}
-  S.luckDay=today();
-  const r=Math.random();let txt,icon;
-  if(r<.04){S.coins+=300;txt='JACKPOT! +300 munten';icon='💰';sfx('new');}
-  else if(r<.22&&S.eggs.length<5&&S.fish.length+S.eggs.length<MAXF){S.eggs.push({g:randGenes(Math.random()<.4),ready:Date.now()+30000,lux:false});txt='Een verrassingsei!';icon='🥚';sfx('hatch');}
-  else if(r<.36&&S.decor.length<10){const d=pick(DECOR.filter(q=>q.p<=150));S.decor.push({id:d.id,x:.08+Math.random()*.84});txt='Gratis decoratie: '+d.n;icon='🎁';sfx('buy');}
-  else{const c=[5,10,15,25,40][rnd(5)];S.coins+=c;txt='+'+c+' munten';icon='🪙';sfx('coin');}
-  updTop();save();
-  const cells=sheet.querySelectorAll('.item');cells.forEach((c,j)=>{c.onclick=null;c.style.opacity=j===i?1:.35;});cells[i].innerHTML=`<div class="reveal" style="font-size:46px">${icon}</div><div style="font-size:12px">${txt}</div>`;
-  const p=document.createElement('div');p.innerHTML=`<button class="btn p" onclick="luck()">Nog eens (10 munten)</button>`;sheet.appendChild(p);
-};
-window.luck=luck;
-window.close=close;
+window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="close()">Oké</button>`);
+window.helpUI=()=>open(hd('Help')+`<p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
+  <p><b>🍤 Voer</b> – tik in het water om voer te strooien. Vissen groeien door te eten; volwassen vissen laten munten en XP vallen.</p>
+  <p><b>🧽 Poetsen</b> – er komt vanzelf vuil op het glas. Veeg eroverheen voor munten en XP. Veel vuil = minder munten.</p>
+  <p><b>✋ Inrichten</b> – sleep decoraties naar een andere plek.</p>
+  <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
+  <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
+  <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
+  <p style="font-size:12px">Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p><button class="btn p" onclick="close()">Begrepen</button>`);
+window.settingsUI=()=>open(hd('Instellingen')+`<div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
+  <button class="btn" style="margin-top:18px;color:#c0303a" onclick="if(confirmReset){localStorage.removeItem('fish4u_state');location.reload();}else{confirmReset=1;this.textContent='Zeker weten? Tik nogmaals'}">Opnieuw beginnen</button>`);
+let confirmReset=0;
+window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.close=close;
 $('bShop').onclick=()=>{ensureAudio();shop();};
-$('bBreed').onclick=()=>{ensureAudio();bsel=[];breedUI();};
-$('bDecor').onclick=()=>{ensureAudio();decorUI();};
-$('bBook').onclick=()=>{ensureAudio();book();};
-$('bLuck').onclick=()=>{ensureAudio();luck();};
-document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{lastT=performance.now();}});
+$('bEvo').onclick=()=>{ensureAudio();evoUI();};
+$('bMore').onclick=()=>{ensureAudio();moreUI();};
+$('bTasks').onclick=()=>{ensureAudio();tasksUI();};
+$('bPearls').onclick=()=>{ensureAudio();pearlsUI();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else lastT=performance.now();});
 addEventListener('pagehide',save);
 ['gesturestart','gesturechange','gestureend','dblclick'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 
@@ -550,7 +707,9 @@ function ensureAudio(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudi
 function tone(f,d,type,v,slide,delay){if(!AC)return;const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();
   o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f*slide),t+d);
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02);}
-function sfx(k){switch(k){
+function sfx(k){if(S&&S.sound===false)return;switch(k){
+  case 'clean':tone(900,.05,'triangle',.04,1.6);break;
+  case 'xp':tone(1400,.08,'sine',.05,1.3);break;
   case 'plop':tone(520,.08,'sine',.06,.5);break;
   case 'munch':tone(300,.05,'triangle',.05,1.4);break;
   case 'coin':tone(1175,.06,'sine',.06);tone(1568,.12,'sine',.06,1,.05);break;
@@ -561,7 +720,7 @@ function sfx(k){switch(k){
   case 'new':[523,659,784,1047,1319].forEach((f,i)=>tone(f,.14,'triangle',.06,1,i*.09));break;}}
 
 /* ================= start ================= */
-resize();syncSwimmers();updTop();
+resize();syncSwimmers(true);updTop();setTool('pointer');
 G4U_ART_SERIES('art/','vis_',99,(i,img)=>{ART_FISH[i]=img;updTop();});
 G4U_JSON('art/vissen.json').then(j=>{if(Array.isArray(j))j.forEach((v,i)=>ART_INFO[i]=v||{});});
 G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
