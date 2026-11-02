@@ -346,7 +346,7 @@ if(S&&!S.tanks){ // oude versie omzetten
 if(!S)S=newState();
 const T=()=>S.tanks[S.cur];
 for(const t of S.tanks)for(const f of t.fish){S.disc[key(f.g)]=1;}
-const save=()=>{S.last=Date.now();store.set('state',S);};
+const save=()=>{if(typeof resetting!=='undefined'&&resetting)return;S.last=Date.now();store.set('state',S);};
 
 /* ================= taken ================= */
 const TASKS=[
@@ -698,10 +698,14 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='2.4 · 2 nov 17:50';
+const VERSION='2.5 · 2 nov 17:55';
 window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
-  <button class="btn" style="margin-top:18px;color:#c0303a" onclick="if(confirmReset){localStorage.removeItem('fish4u_state');location.reload();}else{confirmReset=1;this.textContent='Zeker weten? Tik nogmaals'}">Opnieuw beginnen</button>`);
-let confirmReset=0;
+  <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
+let confirmReset=0,resetting=false;
+window.resetGame=btn=>{
+  if(!confirmReset){confirmReset=1;btn.textContent='Zeker weten? Tik nogmaals';return;}
+  resetting=true;try{localStorage.removeItem('fish4u_state');}catch(e){}location.reload();
+};
 window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.closeM=close;
 $('bShop').onclick=()=>{ensureAudio();shop();};
 $('bEvo').onclick=()=>{ensureAudio();evoUI();};
