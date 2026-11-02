@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GAMES4U">
-<meta name="description" content="Retro spelletjes: TikBlok, FlappyMe, Bergloop en Hoogvlieger.">
+<meta name="description" content="Retro spelletjes: TikBlok, FlappyMe, Bergloop, Hoogvlieger en Fish4U.">
 <title>GAMES4U</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -49,6 +49,7 @@ footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12.5px;fon
     <a class="game" href="tikblok/"><img src="tikblok/icon-192.png" alt=""><b>TikBlok</b><small>Tik groepen gekleurde blokjes weg</small><span class="best" data-g="tikblok"></span></a>
     <a class="game" href="flappyme/"><img src="flappyme/icon-192.png" alt=""><b>FlappyMe</b><small>Fladder door de printwerkplaats</small><span class="best" data-g="flappyme"></span></a>
     <a class="game" href="bergloop/"><img src="bergloop/icon-192.png" alt=""><b>Bergloop</b><small>Samen rennen door Alpen en jungle</small><span class="best" data-g="bergloop"></span></a>
+    <a class="game" href="fish4u/"><img src="fish4u/icon-192.png" alt=""><b>Fish4U</b><small>Kweek je eigen magische vissen</small><span class="best" data-g="fish4u"></span></a>
     <a class="game" href="hoogvlieger/"><img src="hoogvlieger/icon-192.png" alt=""><b>Hoogvlieger</b><small>Samen omhoog springen</small><span class="best" data-g="hoogvlieger"></span></a>
   </div>
   <footer>Zet GAMES4U op je beginscherm voor schermvullend spelen – werkt ook offline.</footer>
@@ -59,6 +60,7 @@ const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){re
 document.querySelectorAll('.best').forEach(el=>{
   const g=el.dataset.g;let best=0;
   if(g==='tikblok'){for(const m of['vast','stijg']){const l=get('tikblok_top_'+m);if(l&&l[0])best=Math.max(best,l[0].score);}}
+  else if(g==='fish4u'){const st=get('fish4u_state');if(st&&st.disc){el.textContent='🐟 '+Object.keys(st.disc).length+' soorten';return;}}
   else{const l=get(g+'_top');if(l&&l[0])best=l[0].score;}
   if(best)el.textContent='🏆 '+best.toLocaleString('nl-NL');
 });
