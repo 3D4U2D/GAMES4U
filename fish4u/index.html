@@ -98,6 +98,27 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 /* telefoon rechtop (spel gedraaid): links van het spel = statusbalk, rechts = thuisbalk */
 @media (orientation:portrait){.top{top:6px;padding-left:calc(env(safe-area-inset-top) + 14px);padding-right:calc(env(safe-area-inset-bottom) + 12px + var(--xr,0px))}.dock{bottom:6px;padding-right:calc(10px + var(--xr,0px))}}
 @media (orientation:landscape){.dock{bottom:calc(max(6px,env(safe-area-inset-bottom)) + var(--xb,0px))}}
+.tchips{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:4px;margin-bottom:4px}
+.tchip{appearance:none;border:1px solid #dbe5ea;background:#fff;border-radius:10px;padding:2px 4px;justify-content:center;display:flex;align-items:center;gap:3px;font:800 11px system-ui;color:#17384a;cursor:pointer}
+.tchip.on{border-color:#ff8a3d;background:#fff4ea}.tchip.done b{color:#2f9a5a}.tchip canvas{width:34px;height:22px;display:block}
+.thead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:2px 0 4px}.thead b{font-size:16px}.thead span{font-size:12px;color:var(--muted);font-weight:700}.thead .tall{margin-left:auto}
+.tree{position:relative;display:grid;grid-template-columns:1fr 1fr 1.25fr;height:min(250px,calc(var(--ah,390px) - 150px))}
+.tlines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.tlines path{fill:none;stroke:#b9d3df;stroke-width:2;vector-effect:non-scaling-stroke}
+.tcol{position:relative;display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.tnode{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.92);border:1px solid #dbe5ea;border-radius:12px;padding:2px 8px 3px;min-width:96px;text-align:center}
+.tnode canvas{display:block}.tnode .tn{font-size:11.5px;font-weight:900;line-height:1.1}.tnode .rt{font-size:9.5px;padding:0 6px}
+.tnode.unk{background:#eef3f6}.tnode .tq{font-size:9.5px;color:var(--muted);font-weight:700;max-width:110px;line-height:1.1}
+.tcol:nth-child(4) .tnode{flex-direction:row;gap:6px;padding:1px 8px;text-align:left;width:94%;min-width:0}.tcol:nth-child(4) .tnode>div,.tcol:nth-child(4) .tnode>span{display:block}
+.asum{font-size:12px;font-weight:700;color:var(--muted);margin-left:8px}
+.atabs{display:flex;gap:3px;margin-bottom:6px;flex-wrap:wrap}.atab{position:relative;appearance:none;border:1px solid #dbe5ea;background:#fff;border-radius:999px;padding:3px 7px;font:800 11px system-ui;color:#17384a;cursor:pointer}
+.atab.on{background:#17384a;color:#fff;border-color:#17384a}.atab small{opacity:.7;font-weight:700}
+.alist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.ach{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #dbe5ea;border-radius:12px;padding:4px 7px;min-height:46px}
+.ach.rd{border-color:#3fb06a;background:#effaf2}.ach.cl{opacity:.6}
+.aic{width:28px;height:28px;flex:none;object-fit:contain;display:grid;place-items:center}.aic.e{font-size:22px}
+.am{flex:1;min-width:0}.am b{display:block;font-size:12px;line-height:1.15}.am small{display:block;font-size:10px;color:var(--muted);font-weight:700;line-height:1.2}.am .bar{margin:3px 0 0;height:6px}
+.ar{flex:none;text-align:right}.ar .btn{width:auto;height:30px;margin:0;padding:0 8px;font-size:13px}.ar .pp{font-size:10.5px;font-weight:800;color:var(--muted)}.ar .ok{color:#2f9a5a;font-weight:900;font-size:18px}
+@media (max-width:620px){.alist{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -120,7 +141,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
     <i class="sep"></i>
     <button id="bShop" data-ic="shop"><span>🛒</span>Winkel</button>
     <button id="bEvo" style="position:relative" data-ic="evolution"><span>🧬</span>Evolutie<b id="evoBadge" class="badge2" style="display:none">!</b></button>
-    <button id="bMore" data-ic="menu"><span>☰</span>Menu</button>
+    <button id="bMore" style="position:relative" data-ic="menu"><span>☰</span>Menu<b id="achBadge" class="badge2" style="display:none"></b></button>
   </div>
   
   <div id="modal"><div class="sheet" id="sheet"></div></div>
@@ -531,7 +552,7 @@ function tasksUI(){
       <div class="kv"><span>${t.n}/${t.goal}</span><span>🪙 ${t.rc} · ⭐ ${t.rx} XP${t.rp?' · 🫧 '+t.rp:''}</span></div>
       ${done?`<button class="btn p" style="height:38px" onclick="claim(${i})">Ophalen</button>`:''}</div>`;}).join('')+'</div>');
 }
-window.claim=i=>{const t=S.tasks[i];if(!t||t.n<t.goal)return;S.coins+=t.rc;S.pearls+=t.rp;addXP(t.rx);S.tasks[i]=newTask();sfx('coin');updTop();save();tasksUI();};
+window.claim=i=>{const t=S.tasks[i];if(!t||t.n<t.goal)return;S.coins+=t.rc;S.pearls+=t.rp;S.stats.tasks=(S.stats.tasks||0)+1;addXP(t.rx);S.tasks[i]=newTask();sfx('coin');updTop();save();tasksUI();};
 
 // jackpot
 const SYM=['🐟','🐚','🪙','⭐','🦀','💎'],JPK=['fish','shell','coin','star','crab','gem'];
@@ -546,14 +567,14 @@ function jackpotUI(){
 const today=()=>new Date().toISOString().slice(0,10);
 let spinning=false;
 window.spin=()=>{if(spinning)return;const free=S.jackDay!==today();if(!free){if(S.coins<CFG.jackpotCost){toast('Niet genoeg munten');return;}S.coins-=CFG.jackpotCost;}
-  S.jackDay=today();spinning=true;track('jackpot');updTop();
+  S.jackDay=today();spinning=true;track('jackpot');S.stats.spins=(S.stats.spins||0)+1;updTop();
   const w=[30,24,22,12,10,4],pickW=()=>{let r=Math.random()*100;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;};
   let res=[pickW(),pickW(),pickW()];if(Math.random()<.18)res[1]=res[0];if(Math.random()<.08)res[2]=res[0];
   const cells=[...$('reels').children];let n=0;
   const iv=setInterval(()=>{n++;cells.forEach((c,i)=>{c.innerHTML=symHTML(n<8+i*5?rnd(SYM.length):res[i]);});tone(400+n*20,.03,'square',.03);
     if(n>=18){clearInterval(iv);spinning=false;
       let win=0;const [a,b,c]=res;if(a===b&&b===c)win=a===5?500:a===3?150:60;else if(a===b||b===c||a===c)win=12;
-      if(win){S.coins+=win;sfx(win>=150?'new':'coin');toast(win>=500?'💎 JACKPOT! +500':'+'+win+' munten');}else toast('Helaas, nog eens?');
+      if(a===5&&b===5&&c===5)S.stats.jackpots=(S.stats.jackpots||0)+1;if(win){S.coins+=win;sfx(win>=150?'new':'coin');toast(win>=500?'💎 JACKPOT! +500':'+'+win+' munten');}else toast('Helaas, nog eens?');
       addXP(2);updTop();save();$('spin').textContent='Draaien ('+CFG.jackpotCost+' munten)';}},70);};
 
 // trofeeën: alle soorten die je ooit had
@@ -565,25 +586,114 @@ function trophies(){
     <div class="grid">${list.map(g=>`<div class="item"><span class="tag r${rarity(g)}">${RANK[rarity(g)]}</span><div style="font-size:11px">${fname(g)}</div></div>`).join('')}</div>`);
   mount('.item',list.map(g=>thumb(g,90,66)));
 }
+// ================= stamboom: per familie basis → a/b → aa/ab/ba/bb =================
+const PATHS=['','a','b','aa','ab','ba','bb'];
+const famIdx=()=>ART_FISH.map((x,k)=>x?k:-1).filter(k=>k>=0);
+const famName=a=>{const i=ART_NAMES[artFile(a,'')];return (i&&i.familienaam)||('Familie '+(a+1));};
+const famHave=a=>PATHS.filter(p=>(p?ART_EVO[a]&&ART_EVO[a][p]:ART_FISH[a])).filter(p=>S.disc[key(fishG(a,p))]).length;
+const famSize=a=>PATHS.filter(p=>p?ART_EVO[a]&&ART_EVO[a][p]:ART_FISH[a]).length;
+const famDone=a=>famSize(a)===7&&famHave(a)===7;
+function silThumb(g,w,h){const c=thumb(g,w,h),x=c.getContext('2d');x.save();x.setTransform(1,0,0,1,0,0);x.globalCompositeOperation='source-atop';x.fillStyle='rgba(23,56,74,.82)';x.fillRect(0,0,c.width,c.height);x.restore();return c;}
+let treeFam=0;
+function stamboomUI(a){
+  const fams=famIdx();if(!fams.length){toast('Vissen worden nog geladen');return;}
+  if(a!=null)treeFam=a;if(!fams.includes(treeFam))treeFam=fams[0];a=treeFam;
+  const tot=fams.reduce((n,k)=>n+famHave(k),0),max=fams.reduce((n,k)=>n+famSize(k),0),full=fams.filter(famDone).length;
+  const node=p=>{const g=fishG(a,p),has=!!S.disc[key(g)];
+    return `<div class="tnode ${has?'':'unk'}" data-p="${p}"><div class="tn">${has?fname(g):'???'}</div>${has?rt(rarity(g)):`<span class="tq">${p.length===0?'Koop in de winkel':'Evolueer '+(p.length===1?fname(fishG(a,'')):(S.disc[key(fishG(a,p[0]))]?fname(fishG(a,p[0])):'???'))}</span>`}</div>`;};
+  open(hd('Stamboom')+`<div class="tchips">${fams.map(k=>`<button class="tchip ${k===a?'on':''} ${famDone(k)?'done':''}" onclick="stamboomUI(${k})" aria-label="${famName(k)}"><span class="tc" data-a="${k}"></span><b>${famHave(k)}/${famSize(k)}</b></button>`).join('')}</div>
+    <div class="thead"><b>${famName(a)}</b><span>${famHave(a)} van ${famSize(a)} ontdekt${famDone(a)?' · ✔ compleet'+(S.ach&&S.ach['tree_'+a]?'':' · <a href="#" onclick="achUI(\'Stamboom\');return false">haal je 3 parels op</a>'):''}</span><span class="tall">Totaal ${tot}/${max} · ${full} ${full===1?'stamboom':'stambomen'} compleet</span></div>
+    <div class="tree"><svg class="tlines" viewBox="0 0 300 100" preserveAspectRatio="none">${[[50,50,150,25],[50,50,150,75],[150,25,250,12.5],[150,25,250,37.5],[150,75,250,62.5],[150,75,250,87.5]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1} C${x1+50} ${y1},${x2-50} ${y2},${x2} ${y2}"/>`).join('')}</svg>
+      <div class="tcol">${node('')}</div><div class="tcol">${node('a')}${node('b')}</div><div class="tcol">${node('aa')}${node('ab')}${node('ba')}${node('bb')}</div></div>`);
+  sheet.querySelectorAll('.tc').forEach(el=>{const k=+el.dataset.a,g=fishG(k,'');el.appendChild(S.disc[key(g)]?thumb(g,34,22):silThumb(g,34,22));});
+  sheet.querySelectorAll('.tnode').forEach(el=>{const p=el.dataset.p,g=fishG(a,p),big=p.length===2?[54,30]:[80,46];if(!artImg(g))return;const c=S.disc[key(g)]?thumb(g,...big):silThumb(g,...big);c.style.width=big[0]+'px';c.style.height=big[1]+'px';el.prepend(c);});
+}
+window.stamboomUI=stamboomUI;
+
+// ================= prestaties: halen in het spel, parels ophalen in het menu =================
+function st(k){S.stats=S.stats||{};return S.stats[k]||0;}
+const decorEver=()=>{S.ever=S.ever||{};S.ever.decor=S.ever.decor||{};for(const t of S.tanks)for(const d of t.decor)S.ever.decor[d.id]=1;return Object.keys(S.ever.decor).length;};
+const finals=()=>Object.keys(S.disc).filter(k=>/^A\d+[ab]{2}$/.test(k)).length;
+const twin=()=>famIdx().some(a=>S.disc[key(fishG(a,'a'))]&&S.disc[key(fishG(a,'b'))])?1:0;
+const maxFishSea=()=>Math.max(0,...S.tanks.map(t=>t.fish.length));
+function achList(){
+  const D=Object.keys(S.disc).length,fams=famIdx();
+  const L=[
+    {id:'disc10',grp:'Ontdekken',n:'Verzamelaar',d:'Ontdek 10 soorten',v:D,g:10,p:2},
+    {id:'disc25',grp:'Ontdekken',n:'Vissenkenner',d:'Ontdek 25 soorten',v:D,g:25,p:4},
+    {id:'disc40',grp:'Ontdekken',n:'Zeebioloog',d:'Ontdek 40 soorten',v:D,g:40,p:6},
+    {id:'evo1',grp:'Evolutie',n:'Eerste stap',d:'Laat een vis evolueren',v:st('evolved'),g:1,p:1},
+    {id:'evo10',grp:'Evolutie',n:'Kweker',d:'Laat 10× een vis evolueren',v:st('evolved'),g:10,p:3},
+    {id:'evo30',grp:'Evolutie',n:'Meesterkweker',d:'Laat 30× een vis evolueren',v:st('evolved'),g:30,p:6},
+    {id:'final1',grp:'Evolutie',n:'Volgroeid',d:'Ontdek je eerste eindvorm',v:finals(),g:1,p:2},
+    {id:'twin',grp:'Evolutie',n:'Twee wegen',d:'Ontdek beide tussenvormen van één familie',v:twin(),g:1,p:2},
+    ...fams.map(a=>({id:'tree_'+a,grp:'Stamboom',n:famName(a),d:'Hele stamboom ontdekt',v:famHave(a),g:7,p:3,fam:a})),
+    {id:'treeAll',grp:'Stamboom',n:'Grote stamboom',d:'Maak alle stambomen compleet',v:fams.filter(famDone).length,g:Math.max(9,fams.length),p:10},
+    {id:'feed100',grp:'Verzorging',n:'Goed gevoed',d:'Voer 100 hapjes',v:st('fed'),g:100,p:1},
+    {id:'feed1000',grp:'Verzorging',n:'Chef-kok',d:'Voer 1000 hapjes',v:st('fed'),g:1000,p:3},
+    {id:'clean50',grp:'Verzorging',n:'Glashelder',d:'Poets 50 vuilplekken weg',v:st('cleaned'),g:50,p:1},
+    {id:'clean500',grp:'Verzorging',n:'Glazenwasser',d:'Poets 500 vuilplekken weg',v:st('cleaned'),g:500,p:3},
+    {id:'full',grp:'Verzorging',n:'Volle zee',d:'Heb '+CFG.maxFish+' vissen in één zee',v:maxFishSea(),g:CFG.maxFish,p:3},
+    {id:'decor5',grp:'Inrichten',n:'Binnenhuisarchitect',d:'Koop 5 verschillende decoraties',v:decorEver(),g:5,p:2},
+    {id:'decorAll',grp:'Inrichten',n:'Alles erin',d:'Koop alle '+DECOR.length+' decoraties',v:decorEver(),g:DECOR.length,p:5},
+    {id:'themes',grp:'Inrichten',n:'Wereldreiziger',d:'Koop alle '+BGS.length+' thema\'s',v:S.bgs.length,g:BGS.length,p:3},
+    {id:'sea2',grp:'Inrichten',n:'Tweede zee',d:'Koop een tweede zee',v:S.tanks.length,g:2,p:3},
+    {id:'seaAll',grp:'Inrichten',n:'Oceaanbaas',d:'Koop alle '+CFG.seas.length+' zeeën',v:S.tanks.length,g:CFG.seas.length,p:6},
+    {id:'lvl10',grp:'Groei',n:'Niveau 10',d:'Bereik niveau 10',v:S.lvl,g:10,p:3},
+    {id:'lvl20',grp:'Groei',n:'Niveau 20',d:'Bereik niveau 20',v:S.lvl,g:20,p:5},
+    {id:'task10',grp:'Groei',n:'Klusjesvis',d:'Rond 10 taken af',v:st('tasks'),g:10,p:2},
+    {id:'task50',grp:'Groei',n:'Takenkampioen',d:'Rond 50 taken af',v:st('tasks'),g:50,p:5},
+    {id:'spin25',grp:'Jackpot',n:'Draaier',d:'Speel 25× jackpot',v:st('spins'),g:25,p:1},
+    {id:'jack',grp:'Jackpot',n:'Diamantenregen',d:'Draai drie diamanten',v:st('jackpots'),g:1,p:5},
+  ];
+  S.ach=S.ach||{};L.forEach(x=>{x.got=x.v>=x.g;x.claimed=!!S.ach[x.id];});return L;
+}
+const achReady=()=>achList().filter(x=>x.got&&!x.claimed).length;
+let achSeen=null;
+function achCheck(){ // melding zodra er iets nieuws te innen is
+  const r=achList().filter(x=>x.got&&!x.claimed).map(x=>x.id);const b=$('achBadge');if(b){b.textContent=r.length||'';b.style.display=r.length?'':'none';}
+  if(achSeen){const nw=r.filter(id=>!achSeen.includes(id));if(nw.length){const x=achList().find(q=>q.id===nw[0]);toast('🏅 Prestatie gehaald: '+x.n+' – haal je parels op in Menu → Prestaties');}}
+  achSeen=r;
+}
+const achIc=x=>UIA['ach_'+x.id.replace(/_\d+$/,'')]?`<img class="aic" src="art/ach_${x.id.replace(/_\d+$/,'')}.png" alt="">`:`<span class="aic e">${({Ontdekken:'🔎',Evolutie:'🧬',Stamboom:'🌳',Verzorging:'🫧',Inrichten:'🪸',Groei:'⭐',Jackpot:'🎰'})[x.grp]}</span>`;
+const ACH_GRP=['Ontdekken','Evolutie','Stamboom','Verzorging','Inrichten','Groei','Jackpot'];
+let achTab=null;
+function achUI(tab){
+  const all=achList();if(tab)achTab=tab;
+  if(!achTab){const r=all.find(x=>x.got&&!x.claimed);achTab=r?r.grp:ACH_GRP[0];}
+  const L=all.filter(x=>x.grp===achTab).sort((a,b)=>(b.got&&!b.claimed)-(a.got&&!a.claimed)||(a.claimed-b.claimed));
+  const n=all.filter(x=>x.claimed).length,earned=all.filter(x=>x.claimed).reduce((s,x)=>s+x.p,0),rest=all.filter(x=>!x.claimed).reduce((s,x)=>s+x.p,0);
+  open(hd(`Prestaties <small class="asum">${n}/${all.length} behaald · ${earned} parels verdiend · nog ${rest} te halen</small>`)+`
+    <div class="atabs">${ACH_GRP.map(g=>{const r=all.filter(x=>x.grp===g&&x.got&&!x.claimed).length,d=all.filter(x=>x.grp===g&&x.claimed).length,t=all.filter(x=>x.grp===g).length;
+      return `<button class="atab ${g===achTab?'on':''}" onclick="achUI('${g}')">${g} <small>${d}/${t}</small>${r?`<i class="badge2" style="top:-6px;right:-6px">${r}</i>`:''}</button>`;}).join('')}</div>
+    <div class="alist">${L.map(x=>`<div class="ach ${x.claimed?'cl':x.got?'rd':''}">${achIc(x)}<div class="am"><b>${x.n}</b><small>${x.d}</small>
+      ${x.claimed?'':`<div class="bar"><i style="width:${Math.min(100,x.v/x.g*100)}%;background:${x.got?'#3fb06a':'#ff9f43'}"></i></div>`}</div>
+      <div class="ar">${x.claimed?'<span class="ok">✔</span>':x.got?`<button class="btn p" onclick="achClaim('${x.id}')">+${x.p} 🫧</button>`:`<span class="pp">${Math.min(x.v,x.g)}/${x.g}<br>${x.p} 🫧</span>`}</div></div>`).join('')}</div>`);
+}
+window.achUI=achUI;
+window.achClaim=id=>{const x=achList().find(q=>q.id===id);if(!x||!x.got||x.claimed)return;S.ach[id]=Date.now();S.pearls+=x.p;sfx('new');toast('+'+x.p+' parels');updTop();save();achCheck();achUI(x.grp);};
+setInterval(achCheck,1500);
 // meer-menu
 const MENU_SVG={"settings": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m10 3-.5 2-2 .9-1.8-.6-2 3.4 1.4 1.4v2.1L3.7 14l2 3.4 1.8-.6 2 .9.5 2.3h4l.5-2.3 2-.9 1.8.6 2-3.4-1.4-1.8v-2.1l1.4-1.4-2-3.4-1.8.6-2-.9L14 3Z\"/><circle cx=\"12\" cy=\"11.5\" r=\"3\"/></svg>", "pearl": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M8 10a4 4 0 0 1 4-3\"/></svg>", "games": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/></svg>", "help": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9 9a3 3 0 1 1 4 3c-1 .5-1 1-1 2m0 3h.01\"/></svg>", "jackpot": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4\" y=\"5\" width=\"16\" height=\"16\" rx=\"3\"/><path d=\"M8 5V3h8v2M7 16h10M20 9h2v6h-2\"/><rect x=\"7\" y=\"9\" width=\"3\" height=\"4\" rx=\".5\"/><rect x=\"14\" y=\"9\" width=\"3\" height=\"4\" rx=\".5\"/></svg>", "tasks": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><rect x=\"9\" y=\"2\" width=\"6\" height=\"4\" rx=\"1\" fill=\"white\"/><path d=\"m8 11 1 1 2-2m2 1h3m-8 5 1 1 2-2m2 1h3\"/></svg>", "trophy": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 3h8v6a4 4 0 0 1-8 0ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v6m-4 2h8m-7-2h6\"/></svg>", "sea": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 7q3-4 6 0t6 0q3-4 6 0M3 12q3-4 6 0t6 0q3-4 6 0M3 17q3-4 6 0t6 0q3-4 6 0\"/></svg>"};
-const MENU_ITEMS=[['jackpot','Jackpot','jackpotUI()'],['trophy','Trofeeën','trophies()'],['tasks','Taken','tasksUI()'],['sea','Zeeën',"shop('sea')"],
-  ['pearl','Parels','pearlsUI()'],['help','Help','helpUI()'],['settings','Instellingen','settingsUI()'],['games','Alle spellen',"location.href='../'"]];
+MENU_SVG.tree='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#17384a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="4" rx="1"/><rect x="3" y="17" width="6" height="4" rx="1"/><rect x="15" y="17" width="6" height="4" rx="1"/><path d="M12 7v5M6 17v-3h12v3"/></svg>';
+const MENU_ITEMS=[['jackpot','Jackpot','jackpotUI()'],['tree','Stamboom','stamboomUI()'],['tasks','Taken','tasksUI()'],['sea','Zeeën',"shop('sea')"],
+  ['trophy','Prestaties','achUI()'],['help','Help','helpUI()'],['settings','Instellingen','settingsUI()'],['games','Alle spellen',"location.href='../'"]];
 function moreUI(){
   open(`<div class="nmenu" role="dialog" aria-modal="true" aria-labelledby="mtitle"><div class="hd"><h2 id="mtitle">Menu</h2><button class="x" type="button" aria-label="Menu sluiten" onclick="closeM()">✕</button></div>
-    <nav class="ngrid" aria-label="Spelmenu">${MENU_ITEMS.map(([k,n,fn])=>`<button class="nitem" type="button" data-action="${k}" onclick="${fn}">${MENU_SVG[k]||''}<span>${n}</span></button>`).join('')}</nav></div>`);
+    <nav class="ngrid" aria-label="Spelmenu">${MENU_ITEMS.map(([k,n,fn])=>`<button class="nitem" type="button" data-action="${k}" onclick="${fn}" style="position:relative">${MENU_SVG[k]||''}<span>${n}</span>${k==='trophy'&&achReady()?`<i class="badge2" style="top:6px;right:6px">${achReady()}</i>`:''}</button>`).join('')}</nav></div>`);
   const first=sheet.querySelector('.nitem');if(first)first.focus({preventScroll:true});
 }
-window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
+window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3), soms als taakbeloning en met <b>prestaties</b> (Menu → Prestaties). Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
 window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
   <p><b>🍤 Voer</b> – tik in het water om voer te strooien. Vissen groeien door te eten; volwassen vissen laten munten en XP vallen.</p>
   <p><b>🧽 Poetsen</b> – er komt vanzelf vuil op het glas. Veeg eroverheen voor munten en XP. Veel vuil = minder munten.</p>
   <p><b>✋ Inrichten</b> – sleep decoraties naar een andere plek.</p>
   <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
-  <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
+  <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
+  <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='4.1 · vissen vast op hun nummer';
+const VERSION='4.2 · stamboom en prestaties';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----
@@ -616,7 +726,7 @@ window.resetGame=btn=>{
   if(!confirmReset){confirmReset=1;btn.textContent='Zeker weten? Tik nogmaals';return;}
   resetting=true;try{localStorage.removeItem('fish4u_state_'+CUR);}catch(e){}location.reload();
 };
-window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.closeM=close;
+window.jackpotUI=jackpotUI;window.trophies=()=>stamboomUI();window.tasksUI=tasksUI;window.closeM=close;
 $('bShop').onclick=()=>{ensureAudio();shop();};
 $('bEvo').onclick=()=>{ensureAudio();evoUI();};
 $('bMore').onclick=()=>{ensureAudio();moreUI();};
