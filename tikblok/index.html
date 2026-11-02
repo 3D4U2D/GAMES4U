@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a1336">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TikBlok">
+<meta name="description" content="TikBlok – tik groepen gekleurde blokjes weg. Hoe groter de groep, hoe hoger je score.">
+<title>TikBlok</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+:root{
+  --t:30px;--bw:376px;--rows:15;
+  --bg1:#0d1840;--bg2:#050a1e;--ink:#f2f5ff;--muted:#8d9ac4;--card:rgba(255,255,255,.07);--cardb:rgba(255,255,255,.10);
+  --soft:rgba(255,255,255,.08);--line:rgba(255,255,255,.08);--accent:#ff3b46;--accent2:#ffd21a;--sheet:#0f1a42;
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg2)}
+body{
+  background:radial-gradient(120% 70% at 50% 0%,#1b2d78 0%,var(--bg1) 40%,var(--bg2) 100%);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+/* geen dubbeltik-zoom: alleen tikken en scrollen toestaan */
+*{touch-action:manipulation}
+#grid,#grid *{touch-action:none}
+
+#app{position:relative;height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:calc(env(safe-area-inset-top) + 8px) 10px calc(env(safe-area-inset-bottom) + 10px)}
+.bar{width:min(100%,var(--bw))}
+
+/* header */
+.top{display:flex;align-items:center;gap:8px}
+.logo{display:grid;grid-template-columns:repeat(2,11px);gap:2px;flex:none}
+.logo span{width:11px;height:11px;border-radius:2px;box-shadow:inset 1.5px 1.5px 0 rgba(255,255,255,.4),inset -1.5px -1.5px 0 rgba(0,0,0,.35)}
+h1{font-size:22px;margin:0 0 0 4px;font-weight:900;letter-spacing:-.3px;flex:1;white-space:nowrap}
+h1 em{font-style:normal;color:var(--accent2)}
+.chip{font-size:12.5px;font-weight:800;padding:7px 11px;border-radius:999px;background:var(--card);border:1px solid var(--cardb);color:var(--ink);white-space:nowrap}
+.icon{width:38px;height:38px;border-radius:11px;border:1px solid var(--cardb);background:var(--card);display:grid;place-items:center;flex:none}
+.icon svg{width:19px;height:19px}
+#hint{height:30px;border-radius:999px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--muted);transition:background .2s,color .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 14px}
+#hint.active{background:var(--accent2);color:#1a1400}
+
+/* board */
+#stage{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+#board{position:relative;padding:6px;border-radius:14px;background:linear-gradient(180deg,#14246a,#0a1546);
+  box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(120,150,255,.18)}
+#grid{position:relative;overflow:hidden;border-radius:8px;touch-action:none;background-color:#081236;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:var(--t) var(--t)}
+#grid.rising::after{content:'';position:absolute;left:0;right:0;top:calc(var(--rows) * var(--t));height:var(--t);z-index:0;
+  background:rgba(0,0,0,.25);border-top:2px dashed rgba(255,255,255,.22);pointer-events:none}
+#grid.danger{animation:danger .9s ease-in-out infinite alternate}
+@keyframes danger{to{box-shadow:inset 0 0 0 3px rgba(255,59,70,.75),inset 0 0 30px rgba(255,59,70,.25)}}
+
+.tile{position:absolute;left:0;top:0;width:var(--t);height:var(--t);z-index:1;transition:transform .34s cubic-bezier(.34,1.3,.64,1);will-change:transform}
+#grid.noanim .tile{transition:none!important}
+#grid.intro .tile i{animation:intro .3s ease-out both}
+@keyframes intro{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.tile i,.mini i{position:absolute;inset:calc(var(--t)*.035);border-radius:calc(var(--t)*.13);display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(150deg,var(--l) 0%,var(--c) 42%,var(--d) 100%);
+  box-shadow:inset calc(var(--t)*.07) calc(var(--t)*.07) 0 rgba(255,255,255,.32),inset calc(var(--t)*-.07) calc(var(--t)*-.07) 0 rgba(0,0,0,.32),0 0 0 1px rgba(0,0,0,.4);
+  transition:transform .16s ease,opacity .2s ease,filter .2s}
+.tile i::after,.mini i::after{content:'';position:absolute;left:12%;top:9%;width:76%;height:36%;border-radius:calc(var(--t)*.09);
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0))}
+.tile b,.mini b{position:relative;z-index:1;font-size:calc(var(--t)*.5);line-height:1;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.c0{--c:#e8202a;--l:#ff7266;--d:#8c0c13}
+.c1{--c:#2fd335;--l:#8dff7e;--d:#11801b}
+.c2{--c:#2349ff;--l:#7d97ff;--d:#0c1f9e}
+.c3{--c:#ffd21a;--l:#fff07a;--d:#a87d00}
+.c4{--c:#a43df0;--l:#d79bff;--d:#561487}
+.c5{--c:#ff7a1a;--l:#ffb46e;--d:#a64200}
+.k-joker i{background:conic-gradient(from 200deg,#e8202a,#ffd21a,#2fd335,#2349ff,#a43df0,#e8202a)}
+.k-bomb i{background:linear-gradient(150deg,#8a93ad,#3c4459 50%,#1b2030)}
+.k-bomb b,.k-paint b{font-size:calc(var(--t)*.46);text-shadow:none}
+.k-star b{font-size:calc(var(--t)*.56)}
+.tile.pre i{opacity:.4;transform:scale(.78);animation:appear .25s ease-out}
+@keyframes appear{from{transform:scale(0)}to{transform:scale(.78)}}
+#grid.has-sel .tile:not(.sel) i{opacity:.38;filter:saturate(.6) brightness(.75)}
+#grid.has-sel .tile.pre:not(.sel) i{opacity:.25}
+.tile.sel{z-index:2}
+.tile.sel i{animation:pulse .9s ease-in-out infinite;filter:brightness(1.15);
+  box-shadow:inset calc(var(--t)*.07) calc(var(--t)*.07) 0 rgba(255,255,255,.4),inset calc(var(--t)*-.07) calc(var(--t)*-.07) 0 rgba(0,0,0,.3),0 0 calc(var(--t)*.35) var(--l,#fff)}
+@keyframes pulse{0%,100%{transform:scale(.9)}50%{transform:scale(1)}}
+.tile.pop i{animation:pop .22s ease-in forwards}
+@keyframes pop{0%{transform:scale(1);filter:brightness(1.4)}40%{transform:scale(1.18)}100%{transform:scale(0);opacity:0}}
+.tile.nope i{animation:nope .32s}
+@keyframes nope{0%,100%{transform:translateX(0)}25%{transform:translateX(-12%)}75%{transform:translateX(12%)}}
+.tile.splash i{animation:splash .38s}
+@keyframes splash{0%{transform:scale(.55)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
+
+.float{position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,-50%);font-weight:900;font-size:21px;color:#fff;
+  text-shadow:0 2px 0 rgba(0,0,0,.6),0 0 14px rgba(255,210,26,.7);animation:floatUp 1s ease-out forwards;white-space:nowrap;text-align:center}
+.float.big{font-size:30px}
+.float small{display:block;font-size:14px;color:var(--accent2)}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-170%) scale(1)}}
+.toast{position:absolute;left:50%;top:35%;z-index:6;background:var(--accent2);color:#1a1400;font-weight:900;padding:11px 20px;border-radius:999px;
+  box-shadow:var(--shadow);animation:toast 1.5s ease forwards;white-space:nowrap;pointer-events:none}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-30%) scale(.8)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}80%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-70%)}}
+
+/* scorebalk */
+.scorebar{display:flex;align-items:stretch;justify-content:space-around;gap:4px;padding:7px 8px;border-radius:14px;
+  background:linear-gradient(180deg,#4a6bff 0%,#2440d6 45%,#14259a 100%);
+  box-shadow:0 8px 22px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(0,0,0,.25)}
+.sb{flex:1;text-align:center;min-width:0}
+.sb small{display:block;font-size:11px;font-weight:900;letter-spacing:1.2px;color:rgba(255,255,255,.75);text-transform:uppercase}
+.sb b{display:block;font-size:24px;line-height:1.1;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.3);white-space:nowrap}
+.sb b.bump{animation:bump .35s}
+@keyframes bump{50%{transform:scale(1.15);color:var(--accent2)}}
+.sb+.sb{border-left:1px solid rgba(255,255,255,.18)}
+
+/* footer */
+footer{display:flex;gap:8px}
+.btn{flex:1;height:46px;border:1px solid var(--cardb);border-radius:13px;background:var(--card);font-weight:800;font-size:15px;
+  display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35}
+.btn.primary{flex:1.3;border:0;background:linear-gradient(180deg,#ff5a62,#e8202a 55%,#b0121b);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px rgba(232,32,42,.35)}
+.btn small{font-weight:700;opacity:.6;font-size:12px}
+.btn svg{width:18px;height:18px}
+
+/* modal */
+#modal{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(2,5,18,.6);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s}
+#modal.open{opacity:1;pointer-events:auto}
+.sheet{width:min(100%,460px);max-height:88vh;max-height:88dvh;overflow:auto;background:var(--sheet);border:1px solid var(--cardb);border-bottom:0;border-radius:22px 22px 0 0;
+  padding:20px 18px calc(env(safe-area-inset-bottom) + 18px);transform:translateY(30px);transition:transform .25s cubic-bezier(.3,1.3,.6,1)}
+#modal.open .sheet{transform:none}
+.sheet h2{margin:0 0 4px;font-size:23px;font-weight:900}
+.sheet h3{margin:16px 0 4px;font-size:15px;font-weight:900}
+.sheet p{color:var(--muted);margin:4px 0 10px;line-height:1.45;font-size:15px}
+.sheet p b{color:var(--ink)}
+.big-score{font-size:48px;font-weight:900;text-align:center;margin:6px 0;color:var(--accent2);font-variant-numeric:tabular-nums}
+.stack{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.stack .btn{flex:none}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.mode{border:0;border-radius:16px;padding:14px 12px;text-align:left;font-weight:900;font-size:16px;color:#fff;
+  background:linear-gradient(160deg,#4a6bff,#14259a);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),var(--shadow)}
+.mode.alt{background:linear-gradient(160deg,#ff5a62,#a50f18)}
+.mode small{display:block;font-weight:700;font-size:12px;opacity:.9;margin-top:3px}
+.list{display:flex;flex-direction:column;gap:8px}
+.list .btn{justify-content:flex-start;padding:0 16px;flex:none}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row>span{font-weight:800;font-size:15px}
+.row>span small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+.seg{display:flex;background:rgba(0,0,0,.25);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;font-weight:800;font-size:13px;padding:7px 10px;border-radius:9px;color:var(--muted)}
+.seg button.on{background:#2440d6;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:34px;height:34px;border-radius:10px;border:0;background:var(--soft);font-weight:900;font-size:18px}
+.step button:disabled{opacity:.3}
+.step b{min-width:28px;text-align:center;font-size:16px}
+.note{font-size:13px!important;background:rgba(255,210,26,.12);color:#ffe27a!important;border-radius:12px;padding:8px 12px}
+ol.top{list-style:none;padding:0;margin:10px 0}
+ol.top li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--card);margin-bottom:6px;font-weight:900}
+ol.top li .r{color:var(--muted);width:24px}
+ol.top li .s{flex:1;font-variant-numeric:tabular-nums}
+ol.top li .d{color:var(--muted);font-weight:700;font-size:12px;text-align:right}
+ol.top li:first-child{background:linear-gradient(135deg,rgba(255,210,26,.25),rgba(255,59,70,.18))}
+.empty{text-align:center;color:var(--muted);padding:20px 0;font-weight:700}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sg{background:var(--card);border-radius:14px;padding:10px 12px}
+.sg small{display:block;color:var(--muted);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.sg b{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
+table.pts{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+table.pts td{padding:5px 8px;border-bottom:1px solid var(--line);font-weight:800}
+table.pts td:last-child{text-align:right;color:var(--accent2)}
+.spec{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+.spec p{margin:0}
+.help h2{margin:0;font-size:22px}
+.help h3{margin:12px 0 6px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.help .dim{font-weight:700;text-transform:none;letter-spacing:0;opacity:.8}
+.hhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hhead .btn{flex:none;height:42px;padding:0 18px}
+.help p.lead{margin:10px 0 0;font-size:14.5px;line-height:1.4}
+.hmodes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.hmodes div{background:var(--card);border:1px solid var(--cardb);border-radius:12px;padding:9px 10px}
+.hmodes b{display:block;font-size:14px}
+.hmodes span{display:block;font-size:12.5px;line-height:1.35;color:var(--muted);margin-top:2px}
+.pchips{display:flex;gap:6px}
+.pchip{flex:1;text-align:center;background:var(--card);border-radius:10px;padding:6px 2px;font-size:12.5px;font-weight:800;color:var(--accent2);white-space:nowrap}
+.pchip b{display:block;color:var(--ink);font-size:13px}
+.pchip b::after{content:' st.'}
+.hspecs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hspecs div{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.3;color:var(--muted)}
+.hspecs b{color:var(--ink)}
+.help p.foot{margin:12px 0 0;font-size:12.5px;line-height:1.4}
+.mini{display:inline-block;position:relative;width:30px;height:30px;--t:30px;flex:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="bar top">
+    <div class="logo" aria-hidden="true"><span style="background:#e8202a"></span><span style="background:#ffd21a"></span><span style="background:#2349ff"></span><span style="background:#2fd335"></span></div>
+    <h1>Tik<em>Blok</em></h1>
+    <button class="chip" id="modeChip" aria-label="Modus kiezen">Vast veld</button>
+    <button class="icon" id="pause" aria-label="Pauze"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg></button>
+    <button class="icon" id="menu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <div id="hint" class="bar">Tik op een groep gelijke blokjes</div>
+
+  <main id="stage"><div id="board"><div id="grid"></div></div></main>
+
+  <section class="bar scorebar" aria-label="Score">
+    <div class="sb"><small>Score</small><b id="score">0</b></div>
+    <div class="sb"><small>Beste</small><b id="best">0</b></div>
+    <div class="sb"><small>Blokken</small><b id="blocks">0</b></div>
+    <div class="sb" id="timeBox"><small>Tijd</small><b id="time">0:00</b></div>
+  </section>
+
+  <footer class="bar">
+    <button class="btn" id="undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Terug</button>
+    <button class="btn" id="hintBtn">💡 Hint <small>−50</small></button>
+    <button class="btn primary" id="newBtn">Nieuw spel</button>
+  </footer>
+</div>
+
+<div id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+'use strict';
+/* ---------- opslag ---------- */
+const store={
+  get(k,d){try{const v=localStorage.getItem('tikblok_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('tikblok_'+k,JSON.stringify(v))}catch(e){}},
+};
+const $=s=>document.querySelector(s);
+const fmt=n=>Math.round(n).toLocaleString('nl-NL');
+const rnd=n=>Math.floor(Math.random()*n);
+
+/* ---------- instellingen ---------- */
+const DEF={cols:12,rows:15,colors:4,minVast:2,minStijg:2,tempo:'normaal',specials:true,sound:true,vibrate:true};
+let S=Object.assign({},DEF,store.get('settings',{}));
+const TEMPO={rustig:7000,normaal:5000,snel:3500};
+const SPECIAL_CHANCE=1/90, SPECIAL_MAX=2, HINT_COST=50;
+const KINDS=['joker','star','bomb','paint'];
+const GLYPH={joker:'<b>✦</b>',star:'<b>★</b>',bomb:'<b>💣</b>',paint:'<b>🎨</b>'};
+const DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
+
+/* ---------- status ---------- */
+let G=null, t=30, sel=null, paused=false, hoverTile=null, lastPointer='touch', lastScore=0, modalLock=false, modalOnClose=null;
+const gridEl=$('#grid'), boardEl=$('#board'), modalEl=$('#modal'), sheetEl=$('#sheet');
+
+/* ---------- statistieken ---------- */
+function getStats(){
+  const d={played:{vast:0,stijg:0},sum:{vast:0,stijg:0},biggest:0,cleared:0,blocks:0,hints:0};
+  const s=store.get('stats',{});
+  return Object.assign(d,s,{played:Object.assign(d.played,s.played||{}),sum:Object.assign(d.sum,s.sum||{})});
+}
+function bumpStats(fn){const s=getStats();fn(s);store.set('stats',s);}
+function bestFor(mode){const l=store.get('top_'+mode,[]);return l.length?l[0].score:0;}
+
+/* ---------- tegels ---------- */
+function paintEl(tl){
+  const k=tl.kind;
+  tl.el.className='tile '+((k==='joker'||k==='bomb')?'k-'+k:'c'+tl.color+(k!=='n'?' k-'+k:''));
+  tl.el.innerHTML='<i>'+(GLYPH[k]||'')+'</i>';
+}
+function mkTile(color,kind,c,r){
+  const el=document.createElement('div');
+  const tl={color,kind:kind||'n',el};
+  paintEl(tl);
+  if(c!=null) el.style.transform=xy(c,r);
+  gridEl.appendChild(el);
+  return tl;
+}
+function xy(c,r){return `translate3d(${c*t}px,${(G.rows-1-r)*t}px,0)`;}
+function place(tl,c,r){tl.el.style.transform=xy(c,r);}
+function layout(){
+  G.grid.forEach((col,c)=>col.forEach((tl,r)=>place(tl,c,r)));
+  G.preview.forEach((tl,c)=>place(tl,c,-1));
+}
+function cell(c,r){if(r<0)return null;const col=G.grid[c];return (col&&col[r])||null;}
+function findPos(tl){for(let c=0;c<G.grid.length;c++){const r=G.grid[c].indexOf(tl);if(r>=0)return [c,r];}return null;}
+function randColor(){return rnd(G.colors);}
+function specialsCount(){let n=0;G.grid.forEach(col=>col.forEach(x=>{if(x.kind!=='n')n++}));G.preview.forEach(x=>{if(x.kind!=='n')n++});return n;}
+function makeSpecial(tl){tl.kind=KINDS[rnd(4)];if(tl.kind==='joker'||tl.kind==='bomb')tl.color=-1;paintEl(tl);}
+
+/* ---------- maat ---------- */
+function computeSize(){
+  const st=$('#stage'); const extra=G.mode==='stijg'?1:0;
+  const w=st.clientWidth-16, h=st.clientHeight-16;
+  t=Math.floor(Math.min(w/G.cols,h/(G.rows+extra)));
+  t=Math.max(14,Math.min(t,58));
+  gridEl.style.width=G.cols*t+'px';
+  gridEl.style.height=(G.rows+extra)*t+'px';
+  const R=document.documentElement.style;
+  R.setProperty('--t',t+'px');R.setProperty('--bw',Math.max(320,G.cols*t+16)+'px');R.setProperty('--rows',G.rows);
+  gridEl.classList.toggle('rising',!!extra);
+}
+function relayout(){
+  if(!G)return;
+  gridEl.classList.add('noanim');computeSize();layout();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>gridEl.classList.remove('noanim')));
+}
+addEventListener('resize',relayout);
+addEventListener('orientationchange',()=>setTimeout(relayout,200));
+
+/* ---------- bord vullen ---------- */
+function fillBoard(rowsToFill){
+  gridEl.innerHTML='';G.grid=[];G.preview=[];
+  for(let c=0;c<G.cols;c++){const col=[];for(let r=0;r<rowsToFill;r++)col.push(mkTile(randColor(),'n',c,r));G.grid.push(col);}
+  if(S.specials){
+    let want=0;for(let i=0;i<G.cols*rowsToFill;i++)if(Math.random()<SPECIAL_CHANCE)want++;
+    want=Math.min(want,SPECIAL_MAX);let tries=0;
+    while(want>0&&tries++<300){
+      const c=rnd(G.cols),r=rnd(rowsToFill),x=G.grid[c][r];
+      if(x.kind!=='n'||DIRS.some(([dx,dy])=>{const n=cell(c+dx,r+dy);return n&&n.kind!=='n'}))continue;
+      makeSpecial(x);want--;
+    }
+  }
+}
+function dropIn(){
+  gridEl.classList.remove('intro');void gridEl.offsetWidth;
+  gridEl.classList.add('intro');
+  setTimeout(()=>gridEl.classList.remove('intro'),400);
+}
+
+/* ---------- groepen & punten ---------- */
+function groupColor(c,r,color){
+  const seen=new Set(),out=[],stack=[[c,r]];
+  while(stack.length){
+    const [x,y]=stack.pop(),k=x+','+y;
+    if(seen.has(k))continue;seen.add(k);
+    const tl=cell(x,y);if(!tl||tl.kind==='bomb')continue;
+    if(!(tl.kind==='joker'||tl.color===color))continue;
+    out.push([x,y]);DIRS.forEach(([dx,dy])=>stack.push([x+dx,y+dy]));
+  }
+  return out;
+}
+function groupAt(c,r){
+  const tl=cell(c,r);if(!tl||tl.kind==='bomb')return [];
+  if(tl.kind==='joker'){
+    let best=[];
+    for(let col=0;col<G.colors;col++){const g=groupColor(c,r,col);if(g.some(([x,y])=>cell(x,y).kind!=='joker')&&g.length>best.length)best=g;}
+    return best;
+  }
+  return groupColor(c,r,tl.color);
+}
+function points(group){
+  const n=group.length;const stars=group.filter(([c,r])=>cell(c,r).kind==='star').length;
+  return 10*Math.pow(Math.max(1,n-2),2)*Math.pow(2,stars);
+}
+function info(c,r){
+  const tl=cell(c,r);if(!tl)return null;
+  if(tl.kind==='bomb'){
+    const cells=[[c,r],...DIRS.map(([dx,dy])=>[c+dx,r+dy]).filter(([x,y])=>cell(x,y))];
+    return {type:'bomb',cells,valid:true,points:10*cells.length,label:`Bom · ${cells.length} blokjes · +${fmt(10*cells.length)}`};
+  }
+  if(tl.kind==='paint'){
+    const cells=[[c,r],...DIRS.map(([dx,dy])=>[c+dx,r+dy]).filter(([x,y])=>{const n=cell(x,y);return n&&(n.kind==='n'||n.kind==='star')})];
+    return {type:'paint',cells,valid:true,points:0,label:`Verfpot · kleurt ${cells.length-1} buren`};
+  }
+  const g=groupAt(c,r),valid=g.length>=G.min&&g.some(([x,y])=>cell(x,y).kind!=='joker'),p=valid?points(g):0;
+  const star=valid&&g.some(([x,y])=>cell(x,y).kind==='star');
+  return {type:'group',cells:g,valid,points:p,label:valid?`${g.length} blokjes · +${fmt(p)}${star?' ★×2':''}`:`Minimaal ${G.min} gelijke blokjes`};
+}
+function hasMove(){
+  for(let c=0;c<G.grid.length;c++)for(let r=0;r<G.grid[c].length;r++){
+    const tl=G.grid[c][r];
+    if(tl.kind==='bomb'||tl.kind==='paint')return true;
+    if(info(c,r).valid)return true;
+  }
+  return false;
+}
+
+/* ---------- selectie ---------- */
+function defaultHint(){return G.over?'Spel voorbij':`Tik op ${G.min}+ gelijke blokjes`;}
+function setHint(txt,active){const h=$('#hint');h.textContent=txt;h.classList.toggle('active',!!active);}
+function clearSel(){
+  if(sel)sel.info.cells.forEach(([x,y])=>{const tl=cell(x,y);if(tl)tl.el.classList.remove('sel');});
+  gridEl.querySelectorAll('.tile.sel').forEach(e=>e.classList.remove('sel'));
+  gridEl.classList.remove('has-sel');sel=null;
+  if(G)setHint(defaultHint());
+}
+function select(c,r,silent,extra){
+  clearSel();const inf=info(c,r);if(!inf)return;
+  if(!inf.valid){if(!silent)nope(c,r);else setHint(inf.label);return;}
+  sel={anchor:cell(c,r),info:inf};
+  inf.cells.forEach(([x,y])=>cell(x,y).el.classList.add('sel'));
+  gridEl.classList.add('has-sel');
+  setHint(inf.label+(extra||'')+'',true);
+  if(!silent)sound('select');
+}
+function nope(c,r){
+  const tl=cell(c,r);if(!tl)return;
+  tl.el.classList.remove('nope');void tl.el.offsetWidth;tl.el.classList.add('nope');
+  setTimeout(()=>tl.el.classList.remove('nope'),340);
+  setHint(`Minimaal ${G.min} gelijke blokjes`);sound('nope');
+}
+
+/* ---------- invoer ---------- */
+function cellFromEvent(e){
+  const rc=gridEl.getBoundingClientRect(),x=e.clientX-rc.left,y=e.clientY-rc.top;
+  if(x<0||y<0||x>=G.cols*t||y>=G.rows*t)return null;
+  return [Math.floor(x/t),G.rows-1-Math.floor(y/t)];
+}
+gridEl.addEventListener('pointerdown',e=>{
+  e.preventDefault();lastPointer=e.pointerType||'touch';
+  if(!G||G.over||paused)return;
+  ensureAudio();
+  const p=cellFromEvent(e);if(!p){clearSel();return;}
+  const [c,r]=p,tl=cell(c,r);if(!tl){clearSel();return;}
+  activate(c,r);hoverTile=null;
+});
+gridEl.addEventListener('pointermove',e=>{
+  if(e.pointerType!=='mouse'||!G||G.over||paused)return;
+  lastPointer='mouse';
+  const p=cellFromEvent(e),tl=p&&cell(p[0],p[1]);
+  if(!tl){if(hoverTile){hoverTile=null;clearSel();}return;}
+  if(tl===hoverTile)return;hoverTile=tl;select(p[0],p[1],true);
+});
+gridEl.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){hoverTile=null;clearSel();}});
+
+/* ---------- zetten ---------- */
+function activate(c,r){
+  const inf=info(c,r);if(!inf)return;
+  if(!inf.valid){nope(c,r);return;}
+  clearSel();
+  if(G.mode==='vast')pushHistory();
+  if(inf.type==='paint')doPaint(c,r,inf);
+  else removeCells(inf.cells,inf.points,inf.type);
+  afterMove();
+}
+function removeCells(cells,pts,type){
+  const n=cells.length;let sx=0,sy=0;cells.forEach(([c,r])=>{sx+=c;sy+=r;});
+  const cx=sx/n,cy=sy/n,tiles=cells.map(([c,r])=>cell(c,r)),dead=new Set(tiles);
+  tiles.forEach(tl=>{tl.el.classList.add('pop');setTimeout(()=>tl.el.remove(),230);});
+  G.grid=G.grid.map(col=>col.filter(x=>!dead.has(x)));
+  if(G.mode==='vast')G.grid=G.grid.filter(col=>col.length);
+  G.score+=pts;
+  bumpStats(s=>{s.blocks+=n;if(type==='group'&&n>s.biggest)s.biggest=n;});
+  const lbl=type==='bomb'?'Boem!':n>=15?'Enorm!':n>=10?'Super!':n>=7?'Mooi!':'';
+  floatText(cx,cy,'+'+fmt(pts),lbl,n>=8||type==='bomb');
+  sound(type==='bomb'?'bomb':'pop',n);
+  if(S.vibrate&&(n>=8||type==='bomb'))try{navigator.vibrate&&navigator.vibrate(type==='bomb'?30:15)}catch(e){}
+  layout();
+}
+function doPaint(c,r,inf){
+  const pot=cell(c,r),color=pot.color;
+  inf.cells.slice(1).forEach(([x,y])=>{const n=cell(x,y);n.color=color;paintEl(n);n.el.classList.add('splash');});
+  pot.kind='n';paintEl(pot);pot.el.classList.add('splash');
+  floatText(c,r,'Verf!','',false);sound('paint');
+}
+function afterMove(){
+  updateUI();
+  if(G.mode==='vast'){
+    if(G.grid.length===0){
+      G.board++;G.history=[];bumpStats(s=>s.cleared++);
+      toast('Bord leeg! 🎉');sound('clear');save();
+      setTimeout(()=>{fillBoard(G.rows);dropIn();updateUI();save();},800);
+      return;
+    }
+    if(!hasMove()){save();setTimeout(()=>gameOver('Er zijn geen groepen meer om weg te tikken.'),450);return;}
+  }
+  save();
+}
+
+/* ---------- ongedaan maken ---------- */
+function snapshot(){return {grid:G.grid.map(col=>col.map(x=>[x.color,x.kind])),score:G.score};}
+function pushHistory(){G.history.push(snapshot());if(G.history.length>20)G.history.shift();}
+function restoreGrid(cols,preview){
+  gridEl.innerHTML='';
+  G.grid=cols.map((col,c)=>col.map(([color,kind],r)=>mkTile(color,kind,c,r)));
+  G.preview=(preview||[]).map(([color,kind],c)=>{const tl=mkTile(color,kind,c,-1);tl.el.classList.add('pre');return tl;});
+}
+function undo(){
+  if(!G||G.mode!=='vast'||!G.history.length)return;
+  if(G.over){unrecord();G.over=false;closeModal();}
+  clearSel();const s=G.history.pop();
+  gridEl.classList.add('noanim');restoreGrid(s.grid,[]);G.score=s.score;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>gridEl.classList.remove('noanim')));
+  sound('undo');updateUI();save();
+}
+
+/* ---------- tijd ---------- */
+function updateTime(){if(!G)return;const sec=Math.floor((G.time||0)/1000);$('#time').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');}
+
+/* ---------- stijgende modus ---------- */
+let lastTick=performance.now();
+setInterval(()=>{
+  const now=performance.now(),dt=now-lastTick;lastTick=now;
+  if(!G||G.mode!=='stijg'||G.over||paused)return;
+  G.elapsed+=Math.min(dt,500);G.time=(G.time||0)+Math.min(dt,500);updateTime();
+  const step=TEMPO[S.tempo]/G.cols;
+  while(G.elapsed>=step&&!G.over){G.elapsed-=step;addPreview();}
+},100);
+function addPreview(){
+  const c=G.preview.length;
+  const tl=mkTile(randColor(),'n',c,-1);tl.el.classList.add('pre');
+  if(S.specials&&Math.random()<SPECIAL_CHANCE&&specialsCount()<SPECIAL_MAX){
+    const left=G.preview[c-1],above=cell(c,0);
+    if(!(left&&left.kind!=='n')&&!(above&&above.kind!=='n')){makeSpecial(tl);tl.el.classList.add('pre');}
+  }
+  G.preview.push(tl);
+  if(G.preview.length>=G.cols)pushRow();
+}
+function pushRow(){
+  G.preview.forEach((tl,c)=>{tl.el.classList.remove('pre');G.grid[c].unshift(tl);});
+  G.preview=[];G.rowsAdded++;
+  layout();sound('row');
+  if(G.grid.some(col=>col.length>G.rows)){gameOver('Een kolom raakte de bovenrand.');return;}
+  if(sel){const p=findPos(sel.anchor);if(p)select(p[0],p[1],true);else clearSel();}
+  updateUI();save();
+}
+
+/* ---------- hint ---------- */
+function hint(){
+  if(!G||G.over||paused)return;
+  ensureAudio();
+  let best=null;
+  for(let c=0;c<G.grid.length;c++)for(let r=0;r<G.grid[c].length;r++){
+    const tl=G.grid[c][r];if(tl.kind==='bomb'||tl.kind==='paint')continue;
+    const inf=info(c,r);if(inf.valid&&(!best||inf.cells.length>best.n))best={c,r,n:inf.cells.length};
+  }
+  if(!best){
+    for(let c=0;c<G.grid.length&&!best;c++)for(let r=0;r<G.grid[c].length;r++){const k=G.grid[c][r].kind;if(k==='bomb'||k==='paint'){best={c,r};break;}}
+  }
+  if(!best){toast('Geen zet gevonden');return;}
+  G.score=Math.max(0,G.score-HINT_COST);bumpStats(s=>s.hints++);
+  updateUI();select(best.c,best.r,false,` (hint −${HINT_COST})`);save();
+}
+
+/* ---------- spelverloop ---------- */
+function newGame(mode){
+  if(G&&!G.over&&G.score>0)record();
+  closeModal(true);hoverTile=null;
+  G={mode,cols:S.cols,rows:S.rows,colors:S.colors,min:mode==='vast'?S.minVast:S.minStijg,
+     grid:[],preview:[],score:0,board:1,rowsAdded:0,elapsed:0,time:0,over:false,history:[],recordId:null};
+  sel=null;gridEl.classList.remove('has-sel');
+  computeSize();fillBoard(mode==='vast'?G.rows:Math.min(5,G.rows-3));dropIn();
+  paused=false;lastScore=0;updateUI();save();
+}
+function confirmNew(mode){
+  if(G&&!G.over&&G.score>0){
+    openModal(`<h2>Nieuw spel?</h2><p>Je huidige spel (${fmt(G.score)} punten) wordt afgesloten en telt mee in je top 10.</p>
+      <div class="stack"><button class="btn primary" data-act="newmode" data-m="${mode}">Ja, nieuw spel</button><button class="btn" data-act="close">Annuleren</button></div>`);
+  } else newGame(mode);
+}
+function gameOver(reason){
+  if(!G||G.over)return;
+  G.over=true;clearSel();
+  const rank=record();sound('over');save();
+  const canUndo=G.mode==='vast'&&G.history.length;
+  openModal(`<h2>${G.mode==='vast'?'Geen zetten meer':'Vol!'}</h2><p>${reason}</p>
+    <div class="big-score">${fmt(G.score)}</div>
+    <p style="text-align:center;font-weight:800">${rank===1?'🎉 Nieuwe topscore!':rank?`Plek ${rank} in je top 10`:''}</p>
+    <div class="stack"><button class="btn primary" data-act="new">Nieuw spel</button>
+    ${canUndo?'<button class="btn" data-act="undo">Laatste zet terug</button>':''}
+    <button class="btn" data-act="menu">Menu</button></div>`,{lock:true});
+  updateUI();
+}
+function record(){
+  if(!G||G.score<=0||G.recordId)return 0;
+  const id=Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  const list=store.get('top_'+G.mode,[]);
+  list.push({id,score:G.score,date:new Date().toISOString(),extra:G.mode==='vast'?G.board:G.rowsAdded});
+  list.sort((a,b)=>b.score-a.score);
+  const top=list.slice(0,10);store.set('top_'+G.mode,top);
+  bumpStats(s=>{s.played[G.mode]++;s.sum[G.mode]+=G.score;});
+  G.recordId=id;
+  const i=top.findIndex(x=>x.id===id);return i+1;
+}
+function unrecord(){
+  if(!G.recordId)return;
+  store.set('top_'+G.mode,store.get('top_'+G.mode,[]).filter(x=>x.id!==G.recordId));
+  bumpStats(s=>{s.played[G.mode]=Math.max(0,s.played[G.mode]-1);s.sum[G.mode]=Math.max(0,s.sum[G.mode]-G.score);});
+  G.recordId=null;
+}
+
+/* ---------- autosave ---------- */
+function save(){
+  if(!G)return;
+  store.set('save',{mode:G.mode,cols:G.cols,rows:G.rows,colors:G.colors,min:G.min,score:G.score,board:G.board,rowsAdded:G.rowsAdded,
+    elapsed:G.elapsed,time:G.time||0,over:G.over,recordId:G.recordId,history:G.history,
+    grid:G.grid.map(col=>col.map(x=>[x.color,x.kind])),preview:G.preview.map(x=>[x.color,x.kind])});
+}
+function load(){
+  const s=store.get('save',null);
+  if(!s||s.over||!Array.isArray(s.grid))return false;
+  G=Object.assign({},s,{grid:[],preview:[],history:s.history||[]});
+  computeSize();restoreGrid(s.grid,s.preview);lastScore=G.score;updateUI();
+  if(G.mode==='vast'&&!hasMove()){gameOver('Er zijn geen groepen meer om weg te tikken.');}
+  return true;
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&G){save();if(G.mode==='stijg'&&!G.over&&!modalEl.classList.contains('open'))openPause();}
+});
+addEventListener('pagehide',save);
+
+/* ---------- UI ---------- */
+function updateUI(){
+  if(!G)return;
+  const sc=$('#score');sc.textContent=fmt(G.score);
+  if(G.score>lastScore){sc.classList.remove('bump');void sc.offsetWidth;sc.classList.add('bump');}
+  lastScore=G.score;
+  $('#best').textContent=fmt(Math.max(bestFor(G.mode),G.score));
+  $('#blocks').textContent=G.grid.reduce((a,col)=>a+col.length,0);
+  $('#timeBox').style.display=G.mode==='stijg'?'':'none';
+  updateTime();
+  $('#modeChip').textContent=G.mode==='vast'?'Vast · bord '+G.board:'Stijgend · '+G.rowsAdded+(G.rowsAdded===1?' rij':' rijen');
+  const u=$('#undo');u.style.display=G.mode==='vast'?'':'none';u.disabled=!G.history.length||G.over;
+  $('#pause').style.display=G.mode==='stijg'?'':'none';
+  $('#hintBtn').disabled=G.over;
+  if(!sel)setHint(defaultHint());
+  gridEl.classList.toggle('danger',G.mode==='stijg'&&!G.over&&G.grid.some(col=>col.length>=G.rows-2));
+}
+function floatText(cx,cy,txt,lbl,big){
+  const el=document.createElement('div');el.className='float'+(big?' big':'');
+  el.innerHTML=txt+(lbl?`<small>${lbl}</small>`:'');
+  el.style.left=(8+(cx+.5)*t)+'px';el.style.top=(8+(G.rows-1-cy+.5)*t)+'px';
+  boardEl.appendChild(el);setTimeout(()=>el.remove(),1050);
+}
+function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;boardEl.appendChild(el);setTimeout(()=>el.remove(),1550);}
+
+/* ---------- modals ---------- */
+function openModal(html,opt){
+  opt=opt||{};modalLock=!!opt.lock;modalOnClose=opt.onClose||null;
+  sheetEl.innerHTML=html;sheetEl.scrollTop=0;modalEl.classList.add('open');
+  if(G&&G.mode==='stijg')paused=true;
+}
+function closeModal(silent){
+  modalEl.classList.remove('open');modalLock=false;
+  const cb=modalOnClose;modalOnClose=null;
+  if(G&&!G.over)paused=false;
+  if(cb&&!silent)cb();
+}
+function openPause(){
+  openModal(`<h2>Gepauzeerd</h2><p>Score ${fmt(G.score)} · ${G.rowsAdded} rijen</p><div class="stack"><button class="btn primary" data-act="close">Verder spelen</button><button class="btn" data-act="menu">Menu</button></div>`);
+}
+function openMenu(){
+  const cur=G&&!G.over;
+  openModal(`<h2>Menu</h2><p>Kies een modus om een nieuw spel te starten.</p>
+    <div class="modes">
+      <button class="mode" data-act="pick" data-m="vast">Vast veld<small>Speel het bord leeg</small></button>
+      <button class="mode alt" data-act="pick" data-m="stijg">Stijgend<small>Houd de stapel laag</small></button>
+    </div>
+    <div class="list">
+      ${cur?'<button class="btn" data-act="close">▶︎&nbsp; Verder spelen</button>':''}
+      <button class="btn" data-act="settings">⚙️&nbsp; Instellingen</button>
+      <button class="btn" data-act="top" data-m="${G?G.mode:'vast'}">🏆&nbsp; Top 10</button>
+      <button class="btn" data-act="stats">📊&nbsp; Statistieken</button>
+      <button class="btn" data-act="help">❓&nbsp; Hoe speel je?</button>
+      <button class="btn" data-act="home">🏠&nbsp; Alle spellen</button>
+    </div>`);
+}
+let D=null;
+function seg(key,opts){return `<div class="seg">${opts.map(([v,l])=>`<button data-act="set" data-k="${key}" data-v='${JSON.stringify(v)}' class="${D[key]===v?'on':''}">${l}</button>`).join('')}</div>`;}
+function stepper(key,min,max){return `<div class="step"><button data-act="step" data-k="${key}" data-d="-1" ${D[key]<=min?'disabled':''}>−</button><b>${D[key]}</b><button data-act="step" data-k="${key}" data-d="1" ${D[key]>=max?'disabled':''}>+</button></div>`;}
+function openSettings(keep){
+  if(!keep)D=Object.assign({},S);
+  const structural=['cols','rows','colors','minVast','minStijg'].some(k=>D[k]!==S[k]);
+  const onoff=k=>seg(k,[[true,'Aan'],[false,'Uit']]);
+  openModal(`<h2>Instellingen</h2>
+    <div class="row"><span>Kolommen</span>${stepper('cols',6,16)}</div>
+    <div class="row"><span>Rijen</span>${stepper('rows',8,20)}</div>
+    <div class="row"><span>Kleuren</span>${seg('colors',[[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div>
+    <div class="row"><span>Minimale groep<small>Vast veld</small></span>${seg('minVast',[[2,'2'],[3,'3']])}</div>
+    <div class="row"><span>Minimale groep<small>Stijgend</small></span>${seg('minStijg',[[2,'2'],[3,'3']])}</div>
+    <div class="row"><span>Tempo<small>Stijgend</small></span>${seg('tempo',[['rustig','Rustig'],['normaal','Normaal'],['snel','Snel']])}</div>
+    <div class="row"><span>Specials<small>Joker, ster, bom, verfpot</small></span>${onoff('specials')}</div>
+    <div class="row"><span>Geluid</span>${onoff('sound')}</div>
+    <div class="row"><span>Trillen<small>Alleen Android</small></span>${onoff('vibrate')}</div>
+    ${structural?'<p class="note" style="margin-top:12px">Veld- en regelwijzigingen starten een nieuw spel.</p>':''}
+    <div class="stack">
+      <button class="btn primary" data-act="savesettings">${structural?'Opslaan &amp; nieuw spel':'Opslaan'}</button>
+      <button class="btn" data-act="classic">Standaard herstellen (12×15, 4 kleuren)</button>
+      <button class="btn" data-act="close">Annuleren</button>
+    </div>`);
+}
+function openTop(mode){
+  const list=store.get('top_'+mode,[]);
+  const rows=list.map((x,i)=>`<li><span class="r">${i+1}</span><span class="s">${fmt(x.score)}</span><span class="d">${new Date(x.date).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}<br>${mode==='vast'?'bord '+x.extra:x.extra+' rijen'}</span></li>`).join('');
+  openModal(`<h2>Top 10</h2>
+    <div class="seg" style="margin-top:10px"><button data-act="top" data-m="vast" class="${mode==='vast'?'on':''}" style="flex:1">Vast veld</button><button data-act="top" data-m="stijg" class="${mode==='stijg'?'on':''}" style="flex:1">Stijgend</button></div>
+    ${rows?`<ol class="top">${rows}</ol>`:'<div class="empty">Nog geen scores in deze modus.</div>'}
+    <div class="stack"><button class="btn" data-act="menu">Terug</button></div>`);
+}
+function openStats(confirmReset){
+  const s=getStats(),avg=m=>s.played[m]?fmt(s.sum[m]/s.played[m]):'–';
+  openModal(`<h2>Statistieken</h2>
+    <div class="sgrid">
+      <div class="sg"><small>Potjes vast</small><b>${s.played.vast}</b></div>
+      <div class="sg"><small>Potjes stijgend</small><b>${s.played.stijg}</b></div>
+      <div class="sg"><small>Gem. vast</small><b>${avg('vast')}</b></div>
+      <div class="sg"><small>Gem. stijgend</small><b>${avg('stijg')}</b></div>
+      <div class="sg"><small>Beste vast</small><b>${fmt(bestFor('vast'))}</b></div>
+      <div class="sg"><small>Beste stijgend</small><b>${fmt(bestFor('stijg'))}</b></div>
+      <div class="sg"><small>Grootste groep</small><b>${s.biggest}</b></div>
+      <div class="sg"><small>Borden leeg</small><b>${s.cleared}</b></div>
+      <div class="sg"><small>Blokjes weg</small><b>${fmt(s.blocks)}</b></div>
+      <div class="sg"><small>Hints gebruikt</small><b>${s.hints}</b></div>
+    </div>
+    <div class="stack"><button class="btn" data-act="menu">Terug</button>
+    <button class="btn" data-act="resetstats" style="color:#ff6b73">${confirmReset?'Zeker weten? Tik nogmaals':'Statistieken en top 10 wissen'}</button></div>`);
+}
+function openHelp(){
+  const mini=(cls,g)=>`<span class="mini ${cls}"><i>${g||''}</i></span>`;
+  const pts=[[2,10],[5,90],[8,360],[10,640],[15,1690]].map(([n,p])=>`<span class="pchip"><b>${n}</b>+${fmt(p)}</span>`).join('');
+  openModal(`<div class="help">
+    <div class="hhead"><h2>Hoe speel je?</h2><button class="btn primary" data-act="close">Spelen ▶︎</button></div>
+    <p class="lead">Tik op een groep aaneengesloten blokjes van dezelfde kleur om hem weg te spelen. <b>Hoe groter de groep, hoe meer punten.</b></p>
+    <div class="hmodes">
+      <div><b>Vast veld</b><span>Speel het bord leeg voor een nieuw bord. Geen zetten meer = einde.</span></div>
+      <div><b>Stijgend</b><span>Onderaan komen steeds nieuwe rijen bij. Raakt een kolom de top = einde.</span></div>
+    </div>
+    <h3>Punten per groepsgrootte</h3>
+    <div class="pchips">${pts}</div>
+    <h3>Specials <span class="dim">(zeldzaam)</span></h3>
+    <div class="hspecs">
+      <div>${mini('k-joker',GLYPH.joker)}<span><b>Joker</b> telt als elke kleur</span></div>
+      <div>${mini('c3 k-star',GLYPH.star)}<span><b>Ster</b> dubbele punten</span></div>
+      <div>${mini('k-bomb',GLYPH.bomb)}<span><b>Bom</b> tik: weg + 4 buren</span></div>
+      <div>${mini('c2 k-paint',GLYPH.paint)}<span><b>Verf</b> tik: buren krijgen zijn kleur</span></div>
+    </div>
+    <p class="foot">💡 <b>Hint</b> toont de grootste groep (−${HINT_COST}) · ↶ <b>Terug</b> herstelt je laatste zet (vast veld)</p>
+  </div>`);
+}
+modalEl.addEventListener('click',e=>{
+  if(e.target===modalEl){if(!modalLock)closeModal();return;}
+  const b=e.target.closest('[data-act]');if(!b)return;
+  ensureAudio();
+  const a=b.dataset.act,m=b.dataset.m;
+  switch(a){
+    case 'close':closeModal();break;
+    case 'new':newGame(G.mode);break;
+    case 'newmode':newGame(m);break;
+    case 'pick':closeModal(true);confirmNew(m);break;
+    case 'undo':undo();break;
+    case 'menu':openMenu();break;
+    case 'settings':openSettings();break;
+    case 'top':openTop(m);break;
+    case 'stats':openStats();break;
+    case 'help':openHelp();break;
+    case 'home':save();location.href='../';break;
+    case 'set':D[b.dataset.k]=JSON.parse(b.dataset.v);openSettings(true);break;
+    case 'step':D[b.dataset.k]+=+b.dataset.d;openSettings(true);break;
+    case 'classic':D.cols=DEF.cols;D.rows=DEF.rows;D.colors=DEF.colors;openSettings(true);break;
+    case 'savesettings':{
+      const structural=['cols','rows','colors','minVast','minStijg'].some(k=>D[k]!==S[k]);
+      S=Object.assign({},D);store.set('settings',S);
+      if(structural)newGame(G?G.mode:'vast');else{closeModal();updateUI();}
+      break;}
+    case 'resetstats':
+      if(b.textContent.startsWith('Zeker')){['stats','top_vast','top_stijg'].forEach(k=>store.set(k,k==='stats'?{}:[]));if(G)G.recordId=null;openStats();updateUI();}
+      else openStats(true);
+      break;
+  }
+});
+
+/* ---------- knoppen ---------- */
+$('#menu').onclick=()=>{ensureAudio();openMenu();};
+$('#modeChip').onclick=()=>{ensureAudio();openMenu();};
+$('#pause').onclick=()=>{if(G&&!G.over)openPause();};
+$('#undo').onclick=()=>undo();
+$('#hintBtn').onclick=()=>hint();
+$('#newBtn').onclick=()=>{ensureAudio();if(G)confirmNew(G.mode);};
+
+/* ---------- geluid ---------- */
+let AC=null;
+function ensureAudio(){
+  if(!S.sound)return;
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}
+  if(AC.state==='suspended')AC.resume();
+}
+function tone(f,dur,type,vol,slide,delay){
+  if(!S.sound||!AC)return;
+  const t0=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t0);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f*slide),t0+dur);
+  g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol||.12,t0+.012);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g);g.connect(AC.destination);o.start(t0);o.stop(t0+dur+.03);
+}
+function sound(k,n){
+  n=n||0;
+  switch(k){
+    case 'select':tone(700,.05,'triangle',.06);break;
+    case 'pop':{const f=380+Math.min(n,20)*28;tone(f,.12,'sine',.16,1.8);if(n>=6)tone(f*1.5,.14,'sine',.09,1.6,.05);if(n>=12)tone(f*2,.2,'triangle',.07,1.4,.1);break;}
+    case 'bomb':tone(170,.32,'sawtooth',.08,.3);tone(95,.38,'sine',.18,.5);break;
+    case 'paint':tone(520,.08,'sine',.1,1.3);tone(780,.1,'sine',.08,1.2,.06);break;
+    case 'row':tone(240,.04,'triangle',.03);break;
+    case 'nope':tone(170,.08,'square',.035,.8);break;
+    case 'clear':[523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.1,1,i*.09));break;
+    case 'over':[392,330,262].forEach((f,i)=>tone(f,.28,'triangle',.1,1,i*.16));break;
+    case 'undo':tone(520,.08,'sine',.07,.7);break;
+  }
+}
+
+/* ---------- zoom blokkeren (iOS negeert user-scalable=no) ---------- */
+['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+let lastTouchEnd=0;
+document.addEventListener('touchend',e=>{
+  const now=Date.now();
+  if(now-lastTouchEnd<350&&!e.target.closest('#grid'))e.preventDefault();
+  lastTouchEnd=now;
+},{passive:false});
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
+
+/* ---------- start ---------- */
+requestAnimationFrame(()=>{
+  if(!load()){newGame('vast');if(!store.get('seenHelp',false)){store.set('seenHelp',true);openHelp();}}
+  else if(G.mode==='stijg'&&!G.over)openPause();
+});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+  addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

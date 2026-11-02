@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#141830">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GAMES4U">
+<meta name="description" content="Retro spelletjes: TikBlok, FlappyMe, Bergloop en Hoogvlieger.">
+<title>GAMES4U</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--bg:#141830;--bg2:#0b0e1f;--ink:#fff;--muted:#9aa3c7;--dark:#0b0d18;--orange:#ff8a1f}
+*{box-sizing:border-box;touch-action:manipulation}
+html,body{margin:0;min-height:100%;background:var(--bg2)}
+body{background:radial-gradient(120% 60% at 50% 0%,#26306a 0%,var(--bg) 45%,var(--bg2) 100%);background-attachment:fixed;color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+  padding:calc(env(safe-area-inset-top) + 22px) 16px calc(env(safe-area-inset-bottom) + 24px);min-height:100vh;min-height:100dvh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.5) 1px,transparent 1.5px);background-size:46px 46px;opacity:.12}
+main{position:relative;max-width:460px;margin:0 auto}
+header{text-align:center;margin-bottom:22px}
+h1{margin:0;font-size:44px;font-weight:900;letter-spacing:1px;line-height:1;
+  text-shadow:0 4px 0 var(--dark),3px 0 0 var(--dark),-3px 0 0 var(--dark),0 -3px 0 var(--dark),3px 4px 0 var(--dark),-3px 4px 0 var(--dark)}
+h1 span{color:var(--orange)}
+header p{margin:10px 0 0;color:var(--muted);font-weight:700;font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.game{display:block;text-decoration:none;color:inherit;background:rgba(255,255,255,.06);border:3px solid rgba(255,255,255,.1);border-radius:18px;padding:12px;
+  transition:transform .12s;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.game:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.game img{display:block;width:100%;aspect-ratio:1;border-radius:13px;image-rendering:pixelated;border:3px solid var(--dark)}
+.game b{display:block;margin-top:10px;font-size:18px;font-weight:900}
+.game small{display:block;color:var(--muted);font-weight:700;font-size:12.5px;margin-top:2px;line-height:1.3}
+.game .best{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:900;color:#ffd84a;background:rgba(0,0,0,.3);padding:3px 8px;border-radius:999px}
+.game .best:empty{display:none}
+footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12.5px;font-weight:700;line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>GAMES<span>4U</span></h1>
+    <p>Retro spelletjes, gewoon in je broekzak</p>
+  </header>
+  <div class="grid">
+    <a class="game" href="tikblok/"><img src="tikblok/icon-192.png" alt=""><b>TikBlok</b><small>Tik groepen gekleurde blokjes weg</small><span class="best" data-g="tikblok"></span></a>
+    <a class="game" href="flappyme/"><img src="flappyme/icon-192.png" alt=""><b>FlappyMe</b><small>Fladder door de printwerkplaats</small><span class="best" data-g="flappyme"></span></a>
+    <a class="game" href="bergloop/"><img src="bergloop/icon-192.png" alt=""><b>Bergloop</b><small>Samen rennen door Alpen en jungle</small><span class="best" data-g="bergloop"></span></a>
+    <a class="game" href="hoogvlieger/"><img src="hoogvlieger/icon-192.png" alt=""><b>Hoogvlieger</b><small>Samen omhoog springen</small><span class="best" data-g="hoogvlieger"></span></a>
+  </div>
+  <footer>Zet GAMES4U op je beginscherm voor schermvullend spelen – werkt ook offline.</footer>
+</main>
+<script>
+// beste scores tonen (lokaal per toestel)
+const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+document.querySelectorAll('.best').forEach(el=>{
+  const g=el.dataset.g;let best=0;
+  if(g==='tikblok'){for(const m of['vast','stijg']){const l=get('tikblok_top_'+m);if(l&&l[0])best=Math.max(best,l[0].score);}}
+  else{const l=get(g+'_top');if(l&&l[0])best=l[0].score;}
+  if(best)el.textContent='🏆 '+best.toLocaleString('nl-NL');
+});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
