@@ -1,0 +1,758 @@
+[
+  {
+    "bestand": "vis_01.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      143,
+      54,
+      1345,
+      926
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "1e1c4270653fde501b2714fa8d6ea72a53c4c2ca4bc443b5b7fa73563527ba32"
+  },
+  {
+    "bestand": "vis_01a.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      129,
+      54,
+      1332,
+      963
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "9be784f8a929a4c8f671d6ef5f5ea4d0cc2f8cc221f0bc59224faf432f3ea2b5"
+  },
+  {
+    "bestand": "vis_01b.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      72,
+      48,
+      1381,
+      991
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "a42761e302e7f2b2df752dda204be374f1d940d09c3736a7f1836cb62ed8a74e"
+  },
+  {
+    "bestand": "vis_01aa.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      47,
+      47,
+      1471,
+      980
+    ],
+    "originele_eindvorm_behouden": true,
+    "sha256": "8180ed7b240e5b234b1bc17a351da3b2fa0dd8a92b63e928eb4d4b9c46b154a7"
+  },
+  {
+    "bestand": "vis_01ab.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      65,
+      10,
+      1471,
+      1013
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "dadcc3c6b4663e82f30974df537bee3e1f0f9a927d1c03c26131c048a00c22eb"
+  },
+  {
+    "bestand": "vis_01ba.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      19,
+      5,
+      1518,
+      1020
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "9d7766a3294e72922e23613bc288975a7167f44fed79834a694d381ad76c02e0"
+  },
+  {
+    "bestand": "vis_01bb.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      8,
+      4,
+      1499,
+      1020
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "6543e292a458c3ff83fdf6ab6d434a6f46075d3854dbdb55eff5cf721c0ffbb7"
+  },
+  {
+    "bestand": "vis_02.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      207,
+      77,
+      1496,
+      737
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "0360347fe2b28442eb6abd1615024efc6fde7edfae9d26799a62f71315b033bb"
+  },
+  {
+    "bestand": "vis_02a.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      145,
+      117,
+      1561,
+      749
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "c2579c11139406a5dd5fe08b79d61065cab6d0135ebf3adb784d34dcb62b7969"
+  },
+  {
+    "bestand": "vis_02b.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      112,
+      99,
+      1575,
+      752
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "3cf8e08e7c1492ba151b1ef871ce9316a35c278a69bb07e1e438006e523bb877"
+  },
+  {
+    "bestand": "vis_02aa.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      77,
+      83,
+      1450,
+      963
+    ],
+    "originele_eindvorm_behouden": true,
+    "sha256": "697a6fb77c3b1710f41fd8596f3ca67422b7889d16efe98f61909b4b8574a4bf"
+  },
+  {
+    "bestand": "vis_02ab.png",
+    "formaat": [
+      1920,
+      819
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      22,
+      14,
+      1893,
+      804
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "e241a1ea2efdfd5512a649b81e2fae6ffa043f5e94f393cff0c65998a8b7f6e4"
+  },
+  {
+    "bestand": "vis_02ba.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      33,
+      16,
+      1719,
+      881
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "c7277488bb93cb4221e37f8fcee8d4134c178dc1dd9d96c4bcdd3e1996e0af5f"
+  },
+  {
+    "bestand": "vis_02bb.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      12,
+      8,
+      1391,
+      1015
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "01ca70818a50c646d202d0702013525835aa006671ecc59097f6cb3fd199cfe2"
+  },
+  {
+    "bestand": "vis_03.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      219,
+      161,
+      1458,
+      676
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "e6b307c90adbf23d24a8eb5333ac7d70c0f3b51fa8d69d58cac5eacd962a0b42"
+  },
+  {
+    "bestand": "vis_03a.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      164,
+      113,
+      1569,
+      770
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "430cf05fb534a06a826a015b0d60ea040befeb54ad9cfaecf7d5af9c5a712178"
+  },
+  {
+    "bestand": "vis_03b.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      127,
+      118,
+      1635,
+      814
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "0288e5dc05dbbad34bd475d2b54b2a2439bbf2b1bc6de6f2f7e29e6c485442c1"
+  },
+  {
+    "bestand": "vis_03aa.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      48,
+      1,
+      1738,
+      886
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "ed7523a6c8f3dc09843d1cbc6c767e0b1de586a3d33eefa84c17fe1e368fba09"
+  },
+  {
+    "bestand": "vis_03ab.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      32,
+      139,
+      1491,
+      909
+    ],
+    "originele_eindvorm_behouden": true,
+    "sha256": "95d89b6ad4b15924ef056c85ef4ae7b08e3d7b014aaf0e533a13d78d471072c5"
+  },
+  {
+    "bestand": "vis_03ba.png",
+    "formaat": [
+      1961,
+      802
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      10,
+      25,
+      1952,
+      793
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "fe5737a97c750ecd4a8cd548351a8b3d4843e909558c7fdf474b75eadb516275"
+  },
+  {
+    "bestand": "vis_03bb.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      5,
+      7,
+      1769,
+      877
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "34e924e1c18205d521c25f07c2237cb37d755f63941a8b6f39316de988c68613"
+  },
+  {
+    "bestand": "vis_04.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      160,
+      84,
+      1407,
+      929
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "2aad81bfde7d1fa37948dfc0390d0e90769575759b46ad953fb56ba8f1735890"
+  },
+  {
+    "bestand": "vis_04a.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      184,
+      85,
+      1383,
+      932
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "6b8ec447b3028f92a3c5cda2f3654024daf1192683d9dc81570c69177a38ebc4"
+  },
+  {
+    "bestand": "vis_04b.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      69,
+      134,
+      1468,
+      888
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "f16b056ad9565d7cd7ab29d90a61d338217f792693324cc4f215a2625b577992"
+  },
+  {
+    "bestand": "vis_04aa.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      31,
+      21,
+      1487,
+      968
+    ],
+    "originele_eindvorm_behouden": true,
+    "sha256": "11898f0e35caebc3b379241a8b02ec7771c4edfd8bbea202ff15f14aef279da0"
+  },
+  {
+    "bestand": "vis_04ab.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      7,
+      14,
+      1529,
+      1009
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "57217a7608a62f1f43a027998789e77a907930615484e0a7f687b2255167380e"
+  },
+  {
+    "bestand": "vis_04ba.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      12,
+      11,
+      1762,
+      873
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "e91a1bbfb5d363bf4f57f208a4995f49048cd6e146c483de839e64c8acae819a"
+  },
+  {
+    "bestand": "vis_04bb.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      12,
+      10,
+      1765,
+      879
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "78b51bb90ef0f6f282b797667ba6b42481d36d8d6c76b2eb325bb65fd41e618f"
+  },
+  {
+    "bestand": "vis_05.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      189,
+      121,
+      1287,
+      879
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "1a154bbee20cfa0953534a5209fdc466948e1329767fd393011ebd2754a48b3f"
+  },
+  {
+    "bestand": "vis_05a.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      240,
+      113,
+      1267,
+      898
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "8d9ca1a1d04b5c5369ab3499c54a0237315b7cf1a7b165933323ee91077df222"
+  },
+  {
+    "bestand": "vis_05b.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      140,
+      95,
+      1311,
+      913
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "beba8f55cb17f35bebe90fb3529fe6b499430beaa79e1ee0e784dfb0917f7f93"
+  },
+  {
+    "bestand": "vis_05aa.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      258,
+      24,
+      1332,
+      984
+    ],
+    "originele_eindvorm_behouden": true,
+    "sha256": "8a9f150a52d74eb5d25afcd39705548d15895ffc9dccfaf9822adf588cc33248"
+  },
+  {
+    "bestand": "vis_05ab.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      12,
+      12,
+      1734,
+      869
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "e03840bbeb7498fe1c1ffe5dbcc5fcb1315566178e7eefdecc0a939bafc6b568"
+  },
+  {
+    "bestand": "vis_05ba.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      7,
+      7,
+      1766,
+      877
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "1760d2c764d8234ac2c02eb1b7b6723115f51b01662349d6c25629514c8b74c4"
+  },
+  {
+    "bestand": "vis_05bb.png",
+    "formaat": [
+      1536,
+      1024
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "lichaamskader_alpha220": [
+      12,
+      7,
+      1496,
+      1011
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "4a77a40a8a25c7aac1a23d0771a97c3ab15da68c84b3eb3172fdd4b32345e247"
+  },
+  {
+    "bestand": "vis_06.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      261,
+      123,
+      1438,
+      743
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "11689bd0cd3904faf25447671aea3e3b0af26b9375ca6558f661972777900e82"
+  },
+  {
+    "bestand": "vis_06a.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      186,
+      115,
+      1499,
+      786
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "9a2da00df547d587da7511da9ebd1b7ff51be3fde39721981bc2518d62ac8a8d"
+  },
+  {
+    "bestand": "vis_06b.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      147,
+      178,
+      1597,
+      712
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "9bf024fbd0bc31ad45a4472b657f20e261ed2f5166ddba4c1bf0d62aa04c10b5"
+  },
+  {
+    "bestand": "vis_06aa.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      166,
+      36,
+      1606,
+      818
+    ],
+    "originele_eindvorm_behouden": true,
+    "sha256": "29d628d8ef978857352d44d61a64cac70bd482f64db96f15d76848836bd7d0ec"
+  },
+  {
+    "bestand": "vis_06ab.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      99,
+      8,
+      1648,
+      879
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "775af03d26d30c28d9b1342a0280659af5880cbb3f2aa5cdff0a419950d033f0"
+  },
+  {
+    "bestand": "vis_06ba.png",
+    "formaat": [
+      2172,
+      724
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      20,
+      19,
+      2154,
+      689
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "71e19d748f673bf035c6fdd69c44e7163dce7a2f894913d472a51f7c3f13bdfa"
+  },
+  {
+    "bestand": "vis_06bb.png",
+    "formaat": [
+      1774,
+      887
+    ],
+    "modus": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "lichaamskader_alpha220": [
+      28,
+      8,
+      1748,
+      873
+    ],
+    "originele_eindvorm_behouden": false,
+    "sha256": "6726de0ea32619aefbb2563b8649a4e51fc6b976f95c87373f1d7242cfc95611"
+  }
+]

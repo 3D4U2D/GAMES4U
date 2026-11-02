@@ -1,0 +1,8 @@
+{
+  "versie": "1.0",
+  "families": 6,
+  "afbeeldingen": 42,
+  "schema": "vissen.json is een array; relaties gebruiken id",
+  "nieuwe_familie_vanaf": "vis_07",
+  "achtergronden_inbegrepen": false
+}

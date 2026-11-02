@@ -1,0 +1,218 @@
+[
+  {
+    "id": 1,
+    "familie": "Mopperbek",
+    "dna": "stocky russet-red fish, enormous jutting ivory lower lip, ONE crooked blunt lower tooth, thick downturned dark aubergine eyebrows, small amber eye with a permanently unimpressed expression, three dark freckles below eye, stubby squared tail",
+    "forms": [
+      [
+        "Roodknop",
+        "Keep the same simple small red juvenile fish. Add ONLY one tiny blunt cream tooth protruding from the lower lip, and give its near eye a very subtle unimpressed expression. No armor or costume. All other anatomy stays simple."
+      ],
+      [
+        "Brompantser",
+        "bigger russet fish with a slightly jutting cream lower lip, a tiny emerging tooth, mild frowning brows, ONE small plain back armor plate. Short round fins, no straps yet, smaller simpler head features than the adult reference"
+      ],
+      [
+        "Hangwang",
+        "broader russet pear-shaped fish, mildly drooping soft cheeks and two wider rounded pectorals, a developing lower lip, little frown. No armor. Features noticeably emerging but not yet exaggerated"
+      ],
+      [
+        "Mopperbaas",
+        "massive muscular front-heavy body, tall blunt rock-like dorsal armor ramparts, broad jaw and powerful tail"
+      ],
+      [
+        "Kristalknor",
+        "larger diamond-shaped body with broad chunky angular mineral dorsal plates, crystal-tipped pectoral fins, russet face remains exposed"
+      ],
+      [
+        "Wangwals",
+        "huge low pear-shaped body with pendulous cheek rolls, broad ruffled horizontal fan fins, forked little moustache-like lower lip folds"
+      ],
+      [
+        "Buikbaron",
+        "very tall pot-bellied fish with sculpted belly folds, huge layered fans under cheeks and broad rounded tail, imperious scowl"
+      ]
+    ],
+    "mini_kenmerk": "één klein uitstekend tandje"
+  },
+  {
+    "id": 2,
+    "familie": "Pronkpruik",
+    "dna": "haughty slender lavender fish with long pointed upturned nose, pursed coral lips, huge half-lidded emerald eye with two sweeping eyelashes, a distinctive beauty spot behind lip, violet and rose colored curl-shaped fins, vain expression",
+    "forms": [
+      [
+        "Lilavin",
+        "Keep same simple lavender juvenile fish. Add ONLY subtle pink lip makeup, one tiny eyelash, and one tiny dark beauty dot near mouth. It is a baby princess hint, no clothing, no hair curls, no jewelry."
+      ],
+      [
+        "Kuifkrul",
+        "lavender medium slender fish, emerald eye now mildly half-lidded, small pink pursed mouth, ONE medium curled pink dorsal forelock, small rose pectorals. No jewelry, collar, ribbons or pearls"
+      ],
+      [
+        "Sleepstaart",
+        "lavender medium elongated fish, emerald eye, small upturned snout, one modest pink forelock and a lengthening broad violet pleated tail. No jewelry, collar or elaborate hair"
+      ],
+      [
+        "Pruikgravin",
+        "tall elegant oval body, towering stack of five sculpted thick bouffant fin curls, dramatic curled side fins, tiny fin cheeks"
+      ],
+      [
+        "Kamdiva",
+        "long slender angular body, huge asymmetric arched sail crest with one dramatic rolled forelock, sharp pleated train"
+      ],
+      [
+        "Krulgravin",
+        "sinuous body, enormous broad tail curling into two bold open spirals, small swept-back forehead curls, curved petal pectorals"
+      ],
+      [
+        "Waaierwaan",
+        "tall slender discus body, vast multilayered scalloped peacock-like tail fan in violet and rose, high posture and dismissive face"
+      ]
+    ],
+    "mini_kenmerk": "roze lipjes, een klein wimpertje en een schoonheidsstipje"
+  },
+  {
+    "id": 3,
+    "familie": "Sukkelklus",
+    "dna": "awkward mustard-yellow fish with very long crooked orange nose, thick unequal eyebrows, large slightly cross-eyed teal eye, a sideways teal work cap with a short crooked brim, two unequal thick gripping pectoral fins, three broad dark brown stripes on tail, sincere clumsy expression",
+    "forms": [
+      [
+        "Kluski",
+        "Keep same simple yellow juvenile fish. Make ONLY the short nose slightly crooked and the two small brows slightly unequal. No cap, costume, tools or full grown long nose."
+      ],
+      [
+        "Bouwbink",
+        "mustard medium stocky fish, slightly longer crooked orange snout, uneven brows just emerging, small teal work cap with short brim, modest mitten-like orange pectoral fins, no tools or armor"
+      ],
+      [
+        "Prutsprof",
+        "mustard medium thin fish with a crooked orange snout, large curious teal eye, small sideways work cap, longer unequal gripping pectorals, three brown tail stripes. No tools or goggles yet"
+      ],
+      [
+        "Betonbonk",
+        "massive blocky muscular fish body, broad brick-like chest plates, enormous mitten-shaped pectoral fins, thick compressed triangular tail, cap retains crooked brim"
+      ],
+      [
+        "Prutsmeester",
+        "taller elongated rigid torso, folded ladder-shaped dorsal fin structure made of natural broad fin struts, broad stabilizing tail, reinforced breastplate"
+      ],
+      [
+        "Kronkelknut",
+        "very long curved narrow body, huge curled sensory whisker fins like springs, two oversized mismatched lens plates on original crooked cap, wide spiral-ended tail"
+      ],
+      [
+        "Vindingvin",
+        "deep teardrop torso, broad mechanical-looking but biological folding accordion dorsal fin, oversized fan tail, cap with one tiny simple rotating fin-shaped vane, original crooked nose unchanged"
+      ]
+    ],
+    "mini_kenmerk": "een licht scheef neusje en ongelijke wenkbrauwtjes"
+  },
+  {
+    "id": 4,
+    "familie": "Snottebel",
+    "dna": "squishy semi-translucent mint jelly fish, absurd wide-set bulging plum eyes with one dominant near eye, short blunt snout, a SINGLE thick pendulous mint nose bubble attached to snout, dark teal crescent spot on cheek, gelatinous body with lilac internal belly shading, friendly vacant expression",
+    "forms": [
+      [
+        "Muntje",
+        "Keep same simple mint juvenile fish. Add ONLY a tiny attached pendulous translucent mint nose bubble and a small crescent cheek spot. No sailor outfit or cap, no swollen cheeks."
+      ],
+      [
+        "Blubberwang",
+        "mint jelly fish with plum eye, small hanging nose bubble, crescent cheek spot emerging, mildly bulbous cheeks, a SIMPLE small navy sailor collar ONLY, NO hat yet, short soft fins. Friendly vacant expression"
+      ],
+      [
+        "Wiebelrek",
+        "mint medium long wavy fish, plum eye, modest attached nose bubble, crescent cheek spot, broad simple wavy jelly dorsal and belly fins, no costume"
+      ],
+      [
+        "Snotmatroos",
+        "enormous low wide body with huge sculpted cheek sacs, three rounded dorsal bubbles attached to body, thick lobed tail and bold inflated pectorals"
+      ],
+      [
+        "Puddingkapitein",
+        "mint jelly fish with very big soft cheek sacs, large dangling nose bubble, crescent cheek spot, broad scalloped jelly tail, luxurious navy sailor collar and a slightly tilted white captain hat. Body taller and more blubbery than intermediate; same innocent plum eye. No human limbs"
+      ],
+      [
+        "Slijmslinger",
+        "very long S-curved fish body, three broad flowing accordion folds running along back and belly, curled blunt tail, squishy identifiable face"
+      ],
+      [
+        "Flubberfranje",
+        "elongated broad flattened fish body with enormous wavy ruffled side and dorsal fins like thick soft fabric, single attached nose bubble, no detached slime droplets"
+      ]
+    ],
+    "mini_kenmerk": "een klein snotbelletje en een maantje op de wang"
+  },
+  {
+    "id": 5,
+    "familie": "Admiraalhap",
+    "dna": "overconfident sapphire-blue fish with dramatically protruding chin, long upper lip curled into a moustache-shaped fleshy ridge, one huge gold iris eye, pale blue cheek with a single orange chevron marking, a comically oversized navy officer peaked cap with plain gold band NO symbols, upright proud chest",
+    "forms": [
+      [
+        "Blauwhap",
+        "Keep same simple blue juvenile fish. Add ONLY three tiny short dark navy pubescent moustache hairs just above its little mouth, and a small orange cheek chevron. No cap, jacket or adult moustache curl."
+      ],
+      [
+        "Dekdrift",
+        "sapphire medium round fish with gold iris, mildly protruding chin and subtle fleshy upper lip curl, small navy officer cap with plain gold band, small golden-rimmed pectorals, orange cheek chevron emerging, no uniform jacket"
+      ],
+      [
+        "Zoutsnuit",
+        "sapphire medium lean fish, gold eye, short slightly crooked snout, small tilted navy officer cap with gold band, navy fin margins slightly notched, orange cheek chevron, no jacket"
+      ],
+      [
+        "Admiraalhap",
+        "towering dignified heavy fish body with three huge broad sail dorsal fins, long majestic gold-edged pectorals, broad rudder tail, prominent chin"
+      ],
+      [
+        "Zeilmajoor",
+        "long sleek muscular body, magnificent single tall triangular navy sail fin and enormous bifurcated sail tail, golden natural trim, upright chin"
+      ],
+      [
+        "Stormschuim",
+        "massive long rugged fish with arching back, bold notched but fully intact fins, crest swept backward, large triangular tail, officer cap visibly weathered but original shape"
+      ],
+      [
+        "Rifridder",
+        "deep compact battle-scarred but friendly fish torso with broad rounded natural navy armor plates, powerful paired rudder pectorals, large notched fan tail, original chin and lip ridge"
+      ]
+    ],
+    "mini_kenmerk": "een paar pubersnorhaartjes en een klein wangteken"
+  },
+  {
+    "id": 6,
+    "familie": "Sprietpaniek",
+    "dna": "nervous extremely thin coral-orange fish with long narrow pointed muzzle, a huge round white eye with tiny dark blue iris looking alarmed, zigzag dark blue eyebrow, a SINGLE long upright springy forehead antenna with a large round yellow tip, two dark blue horizontal flank stripes, turquoise fins",
+    "forms": [
+      [
+        "Sprietje",
+        "Keep same simple coral juvenile fish with two navy flank bands. Add ONLY a short thin forehead antenna with a tiny yellow round tip. Very slight nervous eye expression, no huge fins or long adult antenna."
+      ],
+      [
+        "Schrikstek",
+        "coral medium slender fish with blue eye becoming more wide and nervous, short pointed muzzle, TWO navy flank bands same as base, small upright antenna with yellow tip just emerging, turquoise pectorals slightly enlarged"
+      ],
+      [
+        "Zoefspriet",
+        "coral medium lengthening fish with tiny worried blue iris, two navy bands, small yellow-tipped antenna swept backwards, broader angular turquoise pectorals, fast fork tail"
+      ],
+      [
+        "Sprietpaniek",
+        "very tall narrow body, giant branched antler-like forehead antenna with five broad yellow-tipped branches, layered upright turquoise dorsal spikes, lanky pectoral fins"
+      ],
+      [
+        "Stekelstress",
+        "heavy angular diamond torso, oversized starburst dorsal and belly fins made of seven thick soft spikes, three-pronged original forehead antenna, alarmed tiny pupil"
+      ],
+      [
+        "Schichtschicht",
+        "ultra-long curved streamlined fish with pointed muzzle, broad swept-back crescent fins, twin long fork tail, single antenna arched back but yellow tip visible"
+      ],
+      [
+        "Flitsfladder",
+        "shorter barrel-shaped powerful torso, enormous four broad folded wing-like fin panels ready to spring open, giant zigzag tail, long spring antenna remains upright"
+      ]
+    ],
+    "mini_kenmerk": "een kort sprietje met geel knopje"
+  }
+]

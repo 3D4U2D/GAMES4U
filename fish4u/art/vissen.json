@@ -1,0 +1,476 @@
+[
+ {
+  "id": "vis_01",
+  "bestand": "vis_01.png",
+  "naam": "Roodknop",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_01a",
+   "vis_01b"
+  ]
+ },
+ {
+  "id": "vis_01a",
+  "bestand": "vis_01a.png",
+  "naam": "Brompantser",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 2,
+  "ouder": "vis_01",
+  "evoluties": [
+   "vis_01aa",
+   "vis_01ab"
+  ]
+ },
+ {
+  "id": "vis_01b",
+  "bestand": "vis_01b.png",
+  "naam": "Hangwang",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 2,
+  "ouder": "vis_01",
+  "evoluties": [
+   "vis_01ba",
+   "vis_01bb"
+  ]
+ },
+ {
+  "id": "vis_01aa",
+  "bestand": "vis_01aa.png",
+  "naam": "Mopperbaas",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 3,
+  "ouder": "vis_01a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_01ab",
+  "bestand": "vis_01ab.png",
+  "naam": "Kristalknor",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 3,
+  "ouder": "vis_01a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_01ba",
+  "bestand": "vis_01ba.png",
+  "naam": "Wangwals",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 3,
+  "ouder": "vis_01b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_01bb",
+  "bestand": "vis_01bb.png",
+  "naam": "Buikbaron",
+  "familie": "familie_01",
+  "familienaam": "Mopperbek",
+  "fase": 3,
+  "ouder": "vis_01b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_02",
+  "bestand": "vis_02.png",
+  "naam": "Lilavin",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_02a",
+   "vis_02b"
+  ]
+ },
+ {
+  "id": "vis_02a",
+  "bestand": "vis_02a.png",
+  "naam": "Kuifkrul",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 2,
+  "ouder": "vis_02",
+  "evoluties": [
+   "vis_02aa",
+   "vis_02ab"
+  ]
+ },
+ {
+  "id": "vis_02b",
+  "bestand": "vis_02b.png",
+  "naam": "Sleepstaart",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 2,
+  "ouder": "vis_02",
+  "evoluties": [
+   "vis_02ba",
+   "vis_02bb"
+  ]
+ },
+ {
+  "id": "vis_02aa",
+  "bestand": "vis_02aa.png",
+  "naam": "Pruikgravin",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 3,
+  "ouder": "vis_02a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_02ab",
+  "bestand": "vis_02ab.png",
+  "naam": "Kamdiva",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 3,
+  "ouder": "vis_02a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_02ba",
+  "bestand": "vis_02ba.png",
+  "naam": "Krulgravin",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 3,
+  "ouder": "vis_02b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_02bb",
+  "bestand": "vis_02bb.png",
+  "naam": "Waaierwaan",
+  "familie": "familie_02",
+  "familienaam": "Pronkpruik",
+  "fase": 3,
+  "ouder": "vis_02b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_03",
+  "bestand": "vis_03.png",
+  "naam": "Kluski",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_03a",
+   "vis_03b"
+  ]
+ },
+ {
+  "id": "vis_03a",
+  "bestand": "vis_03a.png",
+  "naam": "Bouwbink",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 2,
+  "ouder": "vis_03",
+  "evoluties": [
+   "vis_03aa",
+   "vis_03ab"
+  ]
+ },
+ {
+  "id": "vis_03b",
+  "bestand": "vis_03b.png",
+  "naam": "Prutsprof",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 2,
+  "ouder": "vis_03",
+  "evoluties": [
+   "vis_03ba",
+   "vis_03bb"
+  ]
+ },
+ {
+  "id": "vis_03aa",
+  "bestand": "vis_03aa.png",
+  "naam": "Betonbonk",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 3,
+  "ouder": "vis_03a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_03ab",
+  "bestand": "vis_03ab.png",
+  "naam": "Prutsmeester",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 3,
+  "ouder": "vis_03a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_03ba",
+  "bestand": "vis_03ba.png",
+  "naam": "Kronkelknut",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 3,
+  "ouder": "vis_03b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_03bb",
+  "bestand": "vis_03bb.png",
+  "naam": "Vindingvin",
+  "familie": "familie_03",
+  "familienaam": "Sukkelklus",
+  "fase": 3,
+  "ouder": "vis_03b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_04",
+  "bestand": "vis_04.png",
+  "naam": "Muntje",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_04a",
+   "vis_04b"
+  ]
+ },
+ {
+  "id": "vis_04a",
+  "bestand": "vis_04a.png",
+  "naam": "Blubberwang",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 2,
+  "ouder": "vis_04",
+  "evoluties": [
+   "vis_04aa",
+   "vis_04ab"
+  ]
+ },
+ {
+  "id": "vis_04b",
+  "bestand": "vis_04b.png",
+  "naam": "Wiebelrek",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 2,
+  "ouder": "vis_04",
+  "evoluties": [
+   "vis_04ba",
+   "vis_04bb"
+  ]
+ },
+ {
+  "id": "vis_04aa",
+  "bestand": "vis_04aa.png",
+  "naam": "Snotmatroos",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 3,
+  "ouder": "vis_04a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_04ab",
+  "bestand": "vis_04ab.png",
+  "naam": "Puddingkapitein",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 3,
+  "ouder": "vis_04a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_04ba",
+  "bestand": "vis_04ba.png",
+  "naam": "Slijmslinger",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 3,
+  "ouder": "vis_04b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_04bb",
+  "bestand": "vis_04bb.png",
+  "naam": "Flubberfranje",
+  "familie": "familie_04",
+  "familienaam": "Snottebel",
+  "fase": 3,
+  "ouder": "vis_04b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_05",
+  "bestand": "vis_05.png",
+  "naam": "Blauwhap",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_05a",
+   "vis_05b"
+  ]
+ },
+ {
+  "id": "vis_05a",
+  "bestand": "vis_05a.png",
+  "naam": "Dekdrift",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 2,
+  "ouder": "vis_05",
+  "evoluties": [
+   "vis_05aa",
+   "vis_05ab"
+  ]
+ },
+ {
+  "id": "vis_05b",
+  "bestand": "vis_05b.png",
+  "naam": "Zoutsnuit",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 2,
+  "ouder": "vis_05",
+  "evoluties": [
+   "vis_05ba",
+   "vis_05bb"
+  ]
+ },
+ {
+  "id": "vis_05aa",
+  "bestand": "vis_05aa.png",
+  "naam": "Admiraalhap",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 3,
+  "ouder": "vis_05a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_05ab",
+  "bestand": "vis_05ab.png",
+  "naam": "Zeilmajoor",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 3,
+  "ouder": "vis_05a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_05ba",
+  "bestand": "vis_05ba.png",
+  "naam": "Stormschuim",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 3,
+  "ouder": "vis_05b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_05bb",
+  "bestand": "vis_05bb.png",
+  "naam": "Rifridder",
+  "familie": "familie_05",
+  "familienaam": "Admiraalhap",
+  "fase": 3,
+  "ouder": "vis_05b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_06",
+  "bestand": "vis_06.png",
+  "naam": "Sprietje",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_06a",
+   "vis_06b"
+  ]
+ },
+ {
+  "id": "vis_06a",
+  "bestand": "vis_06a.png",
+  "naam": "Schrikstek",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 2,
+  "ouder": "vis_06",
+  "evoluties": [
+   "vis_06aa",
+   "vis_06ab"
+  ]
+ },
+ {
+  "id": "vis_06b",
+  "bestand": "vis_06b.png",
+  "naam": "Zoefspriet",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 2,
+  "ouder": "vis_06",
+  "evoluties": [
+   "vis_06ba",
+   "vis_06bb"
+  ]
+ },
+ {
+  "id": "vis_06aa",
+  "bestand": "vis_06aa.png",
+  "naam": "Sprietpaniek",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 3,
+  "ouder": "vis_06a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_06ab",
+  "bestand": "vis_06ab.png",
+  "naam": "Stekelstress",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 3,
+  "ouder": "vis_06a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_06ba",
+  "bestand": "vis_06ba.png",
+  "naam": "Schichtschicht",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 3,
+  "ouder": "vis_06b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_06bb",
+  "bestand": "vis_06bb.png",
+  "naam": "Flitsfladder",
+  "familie": "familie_06",
+  "familienaam": "Sprietpaniek",
+  "fase": 3,
+  "ouder": "vis_06b",
+  "evoluties": []
+ }
+]
