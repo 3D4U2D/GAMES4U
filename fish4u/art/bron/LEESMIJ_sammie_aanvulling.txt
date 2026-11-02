@@ -1,0 +1,15 @@
+Fish4U - Sammie aanvulling v1
+
+Dit pakket bevat de zes nieuwe evoluties. De bestaande vis_10.png (Sammie baby) blijft uit het eerste pakket behouden.
+
+vis_10.png - Sammie - ouder: None
+vis_10a.png - Kwispelvin - ouder: vis_10.png
+vis_10b.png - Snuffelvin - ouder: vis_10.png
+vis_10aa.png - Spekstaart - ouder: vis_10a.png
+vis_10ab.png - Kapiteinkwispel - ouder: vis_10a.png
+vis_10ba.png - Nusavinder - ouder: vis_10b.png
+vis_10bb.png - Sammievorst - ouder: vis_10b.png
+
+Claude: voeg de zes PNGs aan de bestaande vissenmap toe. Voeg de zeven records uit vissen.json samen op bestand; vervang nooit de catalogus van andere families. Baby staat alleen als catalogusrecord in dit pakket. Geen andere assets vervangen.
+Alle PNGs echt transparant, maximaal 1024px. Overzicht toont de familie; afmetingen daarin zijn ter illustratie. Houd de afgesproken compacte aquariumgrootte aan: baby circa 3%, tussen circa 5-6%, eindvorm circa 9-10% van de breedte. Geen spelwaarden aangepast.
+Gemaakt met ingebouwde beeldgeneratie; prompts meegeleverd.

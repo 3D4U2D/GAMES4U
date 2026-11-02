@@ -709,5 +709,84 @@
   "fase": 3,
   "ouder": "vis_09b",
   "evoluties": []
+ },
+ {
+  "id": "vis_10",
+  "bestand": "vis_10.png",
+  "naam": "Sammie",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_10a",
+   "vis_10b"
+  ]
+ },
+ {
+  "id": "vis_10a",
+  "bestand": "vis_10a.png",
+  "naam": "Kwispelvin",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 2,
+  "ouder": "vis_10",
+  "evoluties": [
+   "vis_10aa",
+   "vis_10ab"
+  ]
+ },
+ {
+  "id": "vis_10b",
+  "bestand": "vis_10b.png",
+  "naam": "Snuffelvin",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 2,
+  "ouder": "vis_10",
+  "evoluties": [
+   "vis_10ba",
+   "vis_10bb"
+  ]
+ },
+ {
+  "id": "vis_10aa",
+  "bestand": "vis_10aa.png",
+  "naam": "Spekstaart",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 3,
+  "ouder": "vis_10a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_10ab",
+  "bestand": "vis_10ab.png",
+  "naam": "Kapiteinkwispel",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 3,
+  "ouder": "vis_10a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_10ba",
+  "bestand": "vis_10ba.png",
+  "naam": "Nusavinder",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 3,
+  "ouder": "vis_10b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_10bb",
+  "bestand": "vis_10bb.png",
+  "naam": "Sammievorst",
+  "familie": "familie_10",
+  "familienaam": "Sammie",
+  "fase": 3,
+  "ouder": "vis_10b",
+  "evoluties": []
  }
 ]
