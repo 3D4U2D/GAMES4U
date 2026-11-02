@@ -16,22 +16,27 @@ Na 1–2 minuten staat het live.
 
 ---
 
-## Fish4U – `fish4u/art/`
+## Fish4U – `fish4u/art/`  (liggend spel)
 
 | Bestand | Wat | Tip |
 |---|---|---|
-| `vis_01.png`, `vis_02.png`, … `vis_99.png` | Elke vis wordt een **basissoort**. Het spel maakt er zelf 6 kleurvarianten × 4 magie-varianten van (gloed, sterren, regenboog). | Doorlopend nummeren; na 3 ontbrekende nummers stopt het zoeken. |
-| `vissen.json` (optioneel) | Namen en zeldzaamheid per vis | Zie voorbeeld hieronder |
+| `vis_01.png`, `vis_02.png`, … | **Basisvorm** van elke vis (een "familie") | Doorlopend nummeren; na 3 ontbrekende nummers stopt het zoeken |
+| `vis_01a.png`, `vis_01b.png` | **Evolutie stap 1**: de twee mogelijke vormen | Zelfde familie, groter en mooier |
+| `vis_01aa.png`, `vis_01ab.png`, `vis_01ba.png`, `vis_01bb.png` | **Evolutie stap 2** (vanuit a resp. b) | Meest spectaculaire vormen |
+| `vissen.json` | Namen + zeldzaamheid per bestand | Zie voorbeeld hieronder |
 | `decor_kelp.png` `decor_coral.png` `decor_rock.png` `decor_star.png` `decor_shell.png` `decor_moss.png` `decor_anemone.png` `decor_flower.png` `decor_crystal.png` `decor_bubbler.png` `decor_chest.png` `decor_castle.png` | Decoratie op de bodem | Vooraanzicht, staat op de bodem |
-| `bg_reef.png` `bg_lagoon.png` `bg_wreck.png` `bg_cave.png` | Achtergronden (staand, ca. 1080×1920) | Leeg water met bodem, **zonder vissen** |
+| `bg_reef.png` `bg_lagoon.png` `bg_wreck.png` `bg_cave.png` | Thema's / achtergronden, **liggend ca. 1920×1080** | Leeg water met bodem, **zonder vissen** |
 
-`vissen.json` – volgorde = vis_01, vis_02, …; zeldzaamheid 0 = gewoon, 1 = bijzonder, 2 = zeldzaam, 3 = episch:
+Ontbreken de evolutieplaatjes van een vis, dan maakt het spel zelf kleurvarianten als evolutie.
+
+`vissen.json` (zeldzaamheid 0 = gewoon, 1 = bijzonder, 2 = zeldzaam, 3 = episch):
 ```json
-[
-  {"naam": "Prikkelbol", "zeldzaamheid": 0},
-  {"naam": "Bladvinner", "zeldzaamheid": 1},
-  {"naam": "Vlindervis", "zeldzaamheid": 2}
-]
+{
+  "vis_01":   {"naam": "Prikkelbol", "zeldzaamheid": 0},
+  "vis_01a":  {"naam": "Stekelkoning", "zeldzaamheid": 1},
+  "vis_01b":  {"naam": "Bolbloesem", "zeldzaamheid": 1},
+  "vis_01aa": {"naam": "Kroonstekel", "zeldzaamheid": 3}
+}
 ```
 
 ## Bergloop – `bergloop/art/`
@@ -76,11 +81,14 @@ Na 1–2 minuten staat het live.
 **Vissen (Fish4U):**
 > [stijlzin] Create one original cute fish, side view facing right, full body. Fish idea: *a round coral-red fish with tiny spikes and a happy grin.*
 
+**Evolutie (Fish4U):**
+> [stijlzin] Same fish family as the attached base fish, evolved form A: bigger, more ornate fins, same colors but richer. Side view facing right.
+
 Ideeën om af te wisselen: een slanke blauwe vis met blad-vormige vinnen · een platte gele vis met lange sluiervinnen · een bolle groene vis met mosachtige vlekken · een paarse vis met vlindervinnen · een kleine zilveren vis met een kroontje van vinnen · een oranje vis met tijgerstrepen · een doorzichtige kwalachtige vis die zacht gloeit.
 
 **Decor:** > [stijlzin] Aquarium decoration, front view, standing on the floor: *a pink sea anemone with waving tentacles.*
 
-**Achtergrond:** > Same style, portrait 9:16 underwater background for an aquarium game: *a green sunlit lagoon with a mossy stone arch*, empty water area in the middle, sandy floor at the bottom, no fish, no text.
+**Achtergrond:** > Same style, landscape 16:9 underwater background for an aquarium game: *a green sunlit lagoon with a mossy stone arch*, empty water area in the middle, sandy floor at the bottom, no fish, no text.
 
 **Achtervolger (Bergloop):** > [stijlzin] Front view of an angry mountain goat running toward the viewer, pose A (left legs forward). Then same goat, pose B (right legs forward).
 
