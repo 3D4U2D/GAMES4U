@@ -243,12 +243,13 @@ function thumb(g,w,h,silhouette){
 
 /* ================= decor ================= */
 const DECOR_IDS=['kelp','coral','rock','star','shell','moss','anemone','flower','crystal','bubbler','chest','castle'];
+const DECOR_H={castle:118,chest:66,rock:46,star:40,shell:54,moss:50,anemone:68,flower:74,crystal:80,coral:80,kelp:104,bubbler:96};
 const DECOR=[
   {id:'kelp',n:'Zeewier',p:15},{id:'coral',n:'Koraal',p:30},{id:'rock',n:'Rotsen',p:20},{id:'star',n:'Zeester',p:25},
   {id:'shell',n:'Schelp',p:40},{id:'moss',n:'Mosbal',p:35},{id:'anemone',n:'Anemoon',p:70},{id:'flower',n:'Zeebloem',p:80},{id:'crystal',n:'Kristallen',p:150},{id:'bubbler',n:'Bubbelsteen',p:60},{id:'chest',n:'Schatkist',p:120},{id:'castle',n:'Kasteel',p:200},
 ];
 function drawDecor(x,d,t,X,Y,s){
-  const im=DECOR_ART[d];if(im){s=s||1;const h=90*s,w=h*im.width/im.height;x.drawImage(im,X-w/2,Y-h,w,h);return;}
+  const im=DECOR_ART[d];if(im){s=s||1;const h=(DECOR_H[d]||80)*s*(x===cx?Math.min(1.25,Math.max(.8,H/420)):1),w=h*im.width/im.height;x.drawImage(im,X-w/2,Y-h,w,h);return;}
   s=s||1;x.save();x.translate(X,Y);x.scale(s,s);
   switch(d){
   case 'kelp':for(let k=0;k<3;k++){x.strokeStyle=['#2f9e5a','#3fbf6a','#257a46'][k];x.lineWidth=7-k;x.lineCap='round';x.beginPath();x.moveTo(-10+k*10,0);
@@ -699,7 +700,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='2.7 · achtergronden v1';
+const VERSION='2.8 · decoratie v1';
 window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 let confirmReset=0,resetting=false;

@@ -1,0 +1,122 @@
+[
+  {
+    "bestand": "decor_kelp.png",
+    "breedte": 800,
+    "hoogte": 1039,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_rock.png",
+    "breedte": 800,
+    "hoogte": 449,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_coral.png",
+    "breedte": 800,
+    "hoogte": 727,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_star.png",
+    "breedte": 800,
+    "hoogte": 763,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_anemone.png",
+    "breedte": 800,
+    "hoogte": 745,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_shell.png",
+    "breedte": 800,
+    "hoogte": 732,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_flower.png",
+    "breedte": 800,
+    "hoogte": 781,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_moss.png",
+    "breedte": 800,
+    "hoogte": 609,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_crystal.png",
+    "breedte": 800,
+    "hoogte": 751,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_castle.png",
+    "breedte": 800,
+    "hoogte": 738,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_bubbler.png",
+    "breedte": 644,
+    "hoogte": 1274,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  },
+  {
+    "bestand": "decor_chest.png",
+    "breedte": 800,
+    "hoogte": 727,
+    "anker": [
+      0.5,
+      1
+    ],
+    "transparant": true
+  }
+]
