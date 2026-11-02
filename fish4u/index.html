@@ -501,12 +501,13 @@ function tasksUI(){
 window.claim=i=>{const t=S.tasks[i];if(!t||t.n<t.goal)return;S.coins+=t.rc;S.pearls+=t.rp;addXP(t.rx);S.tasks[i]=newTask();sfx('coin');updTop();save();tasksUI();};
 
 // jackpot
-const SYM=['🐟','🐚','🪙','⭐','🦀','💎'];
+const SYM=['🐟','🐚','🪙','⭐','🦀','💎'],JPK=['fish','shell','coin','star','crab','gem'];
+const symHTML=i=>UIA['jp_'+JPK[i]]?`<img src="art/jp_${JPK[i]}.png" style="width:58px;height:58px;object-fit:contain" alt="">`:SYM[i];
 function jackpotUI(){
   const free=S.jackDay!==today();
-  open(hd('Jackpot')+`<p>Drie dezelfde? Prijs! Drie 💎 is de <b>jackpot</b> (500 munten).</p>
+  open(hd('Jackpot')+`<p>Drie dezelfde? Prijs! Drie diamanten is de <b>jackpot</b> (500 munten).</p>
     <div id="reels" style="display:flex;gap:8px;justify-content:center;margin:8px 0">${[0,1,2].map(()=>`<div style="width:72px;height:76px;border-radius:14px;background:#123247;display:grid;place-items:center;font-size:40px">❔</div>`).join('')}</div>
-    <div class="kv" style="justify-content:center;gap:12px"><span>3× 💎 = 500</span><span>3× ⭐ = 150</span><span>3× = 60</span><span>2× = 12</span></div>
+    <div class="kv" style="justify-content:center;gap:14px;align-items:center"><span style="display:flex;align-items:center;gap:3px">3× ${symHTML(5).replace(/58px/g,'22px')} = 500</span><span style="display:flex;align-items:center;gap:3px">3× ${symHTML(3).replace(/58px/g,'22px')} = 150</span><span>3× = 60</span><span>2× = 12</span></div>
     <button class="btn p" id="spin" onclick="spin()">${free?'Gratis draaien (vandaag)':'Draaien ('+CFG.jackpotCost+' munten)'}</button>`);
 }
 const today=()=>new Date().toISOString().slice(0,10);
@@ -516,7 +517,7 @@ window.spin=()=>{if(spinning)return;const free=S.jackDay!==today();if(!free){if(
   const w=[30,24,22,12,10,4],pickW=()=>{let r=Math.random()*100;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;};
   let res=[pickW(),pickW(),pickW()];if(Math.random()<.18)res[1]=res[0];if(Math.random()<.08)res[2]=res[0];
   const cells=[...$('reels').children];let n=0;
-  const iv=setInterval(()=>{n++;cells.forEach((c,i)=>{if(n<8+i*5)c.textContent=SYM[rnd(SYM.length)];else c.textContent=SYM[res[i]];});tone(400+n*20,.03,'square',.03);
+  const iv=setInterval(()=>{n++;cells.forEach((c,i)=>{c.innerHTML=symHTML(n<8+i*5?rnd(SYM.length):res[i]);});tone(400+n*20,.03,'square',.03);
     if(n>=18){clearInterval(iv);spinning=false;
       let win=0;const [a,b,c]=res;if(a===b&&b===c)win=a===5?500:a===3?150:60;else if(a===b||b===c||a===c)win=12;
       if(win){S.coins+=win;sfx(win>=150?'new':'coin');toast(win>=500?'💎 JACKPOT! +500':'+'+win+' munten');}else toast('Helaas, nog eens?');
@@ -545,7 +546,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='3.1 · opgeschoond';
+const VERSION='3.2 · afwerking v1';
 window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 let confirmReset=0,resetting=false;
@@ -602,7 +603,7 @@ function cleanup(){
 G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
 // UI-pakket
 const UIA={};
-G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
+G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','jp_fish','jp_shell','jp_coin','jp_star','jp_crab','jp_gem','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
   const k=n.replace(/^ui_|^obj_/,'');
   document.querySelectorAll('[data-ic="'+k+'"] span').forEach(sp=>{sp.innerHTML='';sp.appendChild(im.cloneNode());});
   document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';el.appendChild(im.cloneNode());if(b)el.appendChild(b);});

@@ -1,0 +1,13 @@
+Fish4U – afwerkpakket v1
+
+app_icon.png: 1024x1024, volledig gevuld RGB, Plumerietje in aquarium, geschikt voor ronde uitsnede.
+Jackpotsymbolen: 256x256, echte transparantie, gecentreerd:
+jp_fish.png
+jp_shell.png
+jp_coin.png
+jp_star.png
+jp_crab.png
+jp_gem.png
+
+Originele glossy cartoonbeelden, gemaakt met ingebouwde beeldgeneratie. Geen tekst of spelwaarden.
+Dit pakket vervangt de menupictogrammen niet.
