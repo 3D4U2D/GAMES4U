@@ -364,7 +364,7 @@ function levelUp(){
   Object.entries(BG_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push('Thema: '+BGS.find(b=>b.id===k).n);});
   CFG.seas.forEach(z=>{if(z.lvl===S.lvl&&z.lvl>1)un.push(z.n+' te koop');});
   open(`<div style="text-align:center"><div style="font-size:54px" class="reveal">⭐</div><h2>Niveau ${S.lvl}!</h2><p>+3 parels</p>
-    ${un.length?'<p><b>Nieuw in de winkel:</b><br>'+un.join(' · ')+'</p>':''}</div><button class="btn p" onclick="close()">Top!</button>`);
+    ${un.length?'<p><b>Nieuw in de winkel:</b><br>'+un.join(' · ')+'</p>':''}</div><button class="btn p" onclick="closeM()">Top!</button>`);
 }
 
 /* ================= wereld (scherm) ================= */
@@ -531,7 +531,7 @@ const modalOpen=()=>modal.classList.contains('open');
 function open(html){sheet.innerHTML=html;modal.classList.add('open');sheet.scrollTop=0;}
 function close(){modal.classList.remove('open');}
 modal.addEventListener('pointerdown',e=>{if(e.target===modal)close();});
-const hd=t=>`<div class="hd"><h2>${t}</h2><button class="x" onclick="close()">✕</button></div>`;
+const hd=t=>`<div class="hd"><h2>${t}</h2><button class="x" onclick="closeM()">✕</button></div>`;
 const rt=r=>`<span class="rt r${r}">${RANK[r]}</span>`;
 function mount(sel,canvases){sheet.querySelectorAll(sel).forEach((el,i)=>{if(canvases[i])el.prepend(canvases[i]);});}
 function liveFish(id,g,w,h,sz){const c=$(id),d=2;c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.scale(d,d);
@@ -551,7 +551,7 @@ function fishInfo(f){
     <div class="kv"><span>${adult(f)?'Volwassen':'Groeit nog'}</span><span>${Math.min(6,f.grow)}/6</span></div><div class="bar"><i style="width:${Math.min(1,f.grow/6)*100}%;background:#3fb06a"></i></div>
     <div class="kv"><span>Honger</span><span>${Math.round(f.hunger)}%</span></div><div class="bar"><i style="width:${f.hunger}%;background:${f.hunger>70?'#e8202a':'#ff9f43'}"></i></div>
     <p>${adult(f)?((f.tier||0)<2?'Deze vis kan evolueren via 🧬 Evolutie.':'Deze vis is volledig geëvolueerd.'):'Voer hem om te laten groeien. Volwassen vissen laten munten en XP vallen en kunnen evolueren.'}</p>
-    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button>${adult(f)&&(f.tier||0)<2?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="close()">Oké</button>'}</div>`);
+    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button>${adult(f)&&(f.tier||0)<2?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="closeM()">Oké</button>'}</div>`);
   liveFish('bigc',f.g,280,200,150);
 }
 window.sellFish=id=>{const t=T();if(t.fish.length<=1){toast('Je hebt minstens één vis nodig');return;}
@@ -596,14 +596,14 @@ function evoUI(fid){
     open(hd('Evolutie')+`<p style="text-align:center">${fname(f.g)} wordt…</p><canvas class="big" id="evoT"></canvas>
       <div style="text-align:center;font-weight:900;font-size:18px">${fname(e.g)}</div>
       <p style="text-align:center">${ready?'Klaar!':'Nog '+fmtT(left/1000)}</p>
-      ${ready?'<button class="btn p" onclick="finishEvo()">Bekijk je nieuwe vis</button>':`<button class="btn p" ${S.pearls<CFG.skipPearls?'disabled':''} onclick="skipEvo()">Direct klaar (${CFG.skipPearls} parels)</button><button class="btn" onclick="close()">Wachten</button>`}`);
+      ${ready?'<button class="btn p" onclick="finishEvo()">Bekijk je nieuwe vis</button>':`<button class="btn p" ${S.pearls<CFG.skipPearls?'disabled':''} onclick="skipEvo()">Direct klaar (${CFG.skipPearls} parels)</button><button class="btn" onclick="closeM()">Wachten</button>`}`);
     liveSil('evoT',e.g,!ready);
     if(!ready)setTimeout(()=>{if(modalOpen()&&$('evoT'))evoUI();},1000);
     return;
   }
   const t=T(),cands=t.fish.filter(f=>adult(f)&&(f.tier||0)<2);
   if(!fid){
-    if(!cands.length){open(hd('Evolutie')+'<p>Je hebt een volwassen vis nodig die nog niet volledig geëvolueerd is. Voer je vissen tot ze volwassen zijn.</p><button class="btn p" onclick="close()">Oké</button>');return;}
+    if(!cands.length){open(hd('Evolutie')+'<p>Je hebt een volwassen vis nodig die nog niet volledig geëvolueerd is. Voer je vissen tot ze volwassen zijn.</p><button class="btn p" onclick="closeM()">Oké</button>');return;}
     open(hd('Evolutie')+`<p>Kies een vis. Elke vis kan naar één van twee nieuwe vormen evolueren – en daarna nog één keer.</p>
       <div class="grid">${cands.map(f=>`<div class="item" onclick="evoUI('${f.id}')"><span class="tag r${rarity(f.g)}">Vorm ${(f.tier||0)+1}</span><div style="font-size:11px">${fname(f.g)}</div></div>`).join('')}</div>`);
     mount('.item',cands.map(f=>thumb(f.g,90,66)));return;
@@ -634,7 +634,7 @@ window.finishEvo=()=>{const e=S.evo;if(!e)return;const tk=S.tanks[e.tank],f=tk&&
   updTop();save();sfx(isNew?'new':'hatch');
   open(`<div style="text-align:center"><h2>${isNew?'Nieuwe soort ontdekt!':'Geëvolueerd!'}</h2><canvas class="big reveal" id="bigc"></canvas>
     <div style="font-weight:900;font-size:18px;margin:6px 0">${fname(f.g)}</div>${rt(rarity(f.g))}${isNew?'<span class="new">NIEUW</span>':''}
-    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p></div><button class="btn p" onclick="close()">Prachtig!</button>`);
+    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p></div><button class="btn p" onclick="closeM()">Prachtig!</button>`);
   liveFish('bigc',f.g,280,200,150);};
 
 // taken
@@ -683,7 +683,7 @@ function moreUI(){
   const it=(ic,n,fn)=>`<div class="item" style="padding:14px 4px" onclick="${fn}"><div style="font-size:30px">${ic}</div>${n}</div>`;
   open(hd('Menu')+`<div class="grid">${it('🎰','Jackpot','jackpotUI()')}${it('🏆','Trofeeën','trophies()')}${it('📋','Taken','tasksUI()')}${it('🌊','Zeeën',"shop('sea')")}${it('🫧','Parels','pearlsUI()')}${it('❓','Help','helpUI()')}${it('⚙️','Instellingen','settingsUI()')}${it('🏠','Alle spellen',"location.href='../'")}</div>`);
 }
-window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="close()">Oké</button>`);
+window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
 window.helpUI=()=>open(hd('Help')+`<p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
   <p><b>🍤 Voer</b> – tik in het water om voer te strooien. Vissen groeien door te eten; volwassen vissen laten munten en XP vallen.</p>
   <p><b>🧽 Poetsen</b> – er komt vanzelf vuil op het glas. Veeg eroverheen voor munten en XP. Veel vuil = minder munten.</p>
@@ -691,11 +691,11 @@ window.helpUI=()=>open(hd('Help')+`<p><b>👆 Wijzer</b> – tik op een vis voor
   <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
-  <p style="font-size:12px">Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p><button class="btn p" onclick="close()">Begrepen</button>`);
+  <p style="font-size:12px">Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p><button class="btn p" onclick="closeM()">Begrepen</button>`);
 window.settingsUI=()=>open(hd('Instellingen')+`<div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="if(confirmReset){localStorage.removeItem('fish4u_state');location.reload();}else{confirmReset=1;this.textContent='Zeker weten? Tik nogmaals'}">Opnieuw beginnen</button>`);
 let confirmReset=0;
-window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.close=close;
+window.jackpotUI=jackpotUI;window.trophies=trophies;window.tasksUI=tasksUI;window.closeM=close;
 $('bShop').onclick=()=>{ensureAudio();shop();};
 $('bEvo').onclick=()=>{ensureAudio();evoUI();};
 $('bMore').onclick=()=>{ensureAudio();moreUI();};
