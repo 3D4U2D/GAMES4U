@@ -1,0 +1,12 @@
+Fish4U – neutraal menu v1
+
+Open menu-preview.html voor een zelfstandig werkend ontwerpvoorbeeld.
+8 originele SVG-iconen en transparante PNG-versies van 256x256.
+SVG: 24x24 viewBox, lijndikte 1.7, kleur #17384a. Toon op 28x28 CSS-pixels.
+menu-fragment.html en menu.css zijn overdraagbare bouwstenen.
+
+Voor Claude:
+Vervang uitsluitend de pictogrammen en opmaak van het menu. Behoud bestaande spelacties, routering en logica. Koppel data-action jackpot/trophy/tasks/sea/pearl/help/settings/games aan de bestaande handlers.
+De voorbeeldpagina bevat alleen selectie-feedback, geen spelpagina’s. Bouw het echte dialoog met focus-trap, Escape sluiten en focusherstel naar de menuknop.
+Witte compacte knoppen, icoon links naast tekst, 4 kolommen liggend, 2 op smalle schermen. Geen glossy effecten of decoraties. Behoud glossy stijl in het aquarium.
+Dit is een los ontwerppakket; de live app is niet aangepast.
