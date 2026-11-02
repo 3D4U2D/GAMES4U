@@ -96,6 +96,7 @@ ol.top li:first-child{background:#ffe7a3}
   <div class="ov hidden" id="pauseOv"><div class="card" style="text-align:center"><h2>Pauze</h2><div class="btns"><button class="btn primary" id="resumeBtn">Verder</button></div></div></div>
 </div>
 <script src="../shared/chars.js"></script>
+<script src="../shared/art.js"></script>
 <script>
 'use strict';
 const store={get(k,d){try{const v=localStorage.getItem('bergloop_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('bergloop_'+k,JSON.stringify(v))}catch(e){}}};
@@ -200,6 +201,10 @@ function buildBackdrops(){
 
 /* ===== spelers ===== */
 let CHARS=null;G4U_CHARS('../img/').then(c=>{CHARS=c;});
+// eigen plaatjes uit art/ (zie ART.md)
+G4U_ART('art/',['fence','beam','rock','vine','pine','chalet','palm','gate','goat0','goat1','monkey0','monkey1','coin','magnet','boost'],SP);
+G4U_ART('art/',['backdrop_0','backdrop_1'],{},(n,i)=>{ART_BD[+n.slice(-1)]=i;});
+const ART_BD=[null,null];
 
 /* ===== baan: rechte stukken met haakse bochten ===== */
 const DV={N:[0,1],E:[1,0],W:[-1,0]},YAW={N:0,E:Math.PI/2,W:-Math.PI/2};
@@ -397,11 +402,12 @@ function tileDraws(sg,from,list){
   for(const d of sg.decor){if(d.s<from-4)continue;const P=wpos(sg,d.s,d.lat),c=toCam(P[0],d.y,P[1]);if(c[2]<0.5||c[2]>FAR)continue;
     list.push({z:c[2]+0.5,f:()=>drawDecor(d,c,W)});}
 }
-function bill(img,c,w,h,lift){const [x,y]=scr([c[0],c[1]+(lift||0),c[2]]),ww=w*F/c[2],hh=h*F/c[2];
+function bill(img,c,w,h,lift){b.imageSmoothingEnabled=!!img.__art;try{bill0(img,c,w,h,lift);}finally{b.imageSmoothingEnabled=false;}}
+function bill0(img,c,w,h,lift){const [x,y]=scr([c[0],c[1]+(lift||0),c[2]]),ww=w*F/c[2],hh=h*F/c[2];
   if(x+ww<0||x-ww>LW)return;b.globalAlpha=Math.min(1,(FAR-c[2])/8);b.drawImage(img,Math.round(x-ww/2),Math.round(y-hh),Math.max(1,Math.round(ww)),Math.max(1,Math.round(hh)));b.globalAlpha=1;}
 function drawItem(it,c){
   if(it.t==='coin'){const sp=Math.abs(Math.cos(performance.now()/180+it.s));const [x,y]=scr([c[0],0.32,c[2]]),s=0.24*F/c[2];
-    b.globalAlpha=Math.min(1,(FAR-c[2])/8);b.drawImage(SP.coin,Math.round(x-s*sp/2),Math.round(y-s),Math.max(1,Math.round(s*sp)),Math.max(1,Math.round(s)));b.globalAlpha=1;return;}
+    b.imageSmoothingEnabled=!!SP.coin.__art;b.globalAlpha=Math.min(1,(FAR-c[2])/8);b.drawImage(SP.coin,Math.round(x-s*sp/2),Math.round(y-s),Math.max(1,Math.round(s*sp)),Math.max(1,Math.round(s)));b.globalAlpha=1;return;}
   if(it.t==='magnet'||it.t==='boost'){bill(SP[it.t],c,0.4,0.4,0.35+Math.sin(performance.now()/250)*0.05);return;}
   if(it.t==='low')bill(SP[it.k],c,2.0,it.k==='fence'?0.4:0.34);
   if(it.t==='high')bill(SP[it.k],c,2.15,1.25);
@@ -433,7 +439,7 @@ function draw(){
   const g=b.createLinearGradient(0,0,0,HZ);g.addColorStop(0,rgb(mix(A.sky[0],B.sky[0],t)));g.addColorStop(1,rgb(mix(A.sky[1],B.sky[1],t)));
   b.fillStyle=g;b.fillRect(0,0,LW,HZ+1);
   const BW=LW*3,BH=120,off=(((yaw*LW*1.2)%BW)+BW)%BW;
-  const back=(i,a)=>{if(a<=0.01)return;b.globalAlpha=a;b.drawImage(backs[i],-off,HZ-BH+4,BW,BH);b.drawImage(backs[i],-off+BW,HZ-BH+4,BW,BH);b.globalAlpha=1;};
+  const back=(i,a)=>{if(a<=0.01)return;b.globalAlpha=a;const im=ART_BD[i]||backs[i];b.imageSmoothingEnabled=!!ART_BD[i];b.drawImage(im,-off,HZ-BH+4,BW,BH);b.drawImage(im,-off+BW,HZ-BH+4,BW,BH);b.imageSmoothingEnabled=false;b.globalAlpha=1;};
   back(0,1-t);back(1,t);
   // afgrond
   const ga=b.createLinearGradient(0,HZ,0,LH);ga.addColorStop(0,rgb(curFog));ga.addColorStop(1,rgb(mix(A.abyss[1],B.abyss[1],t)));

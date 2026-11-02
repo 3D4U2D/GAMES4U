@@ -96,6 +96,7 @@ ol.top li:first-child{background:#ffe7a3}
   <div class="ov hidden" id="pauseOv"><div class="card" style="text-align:center"><h2>Pauze</h2><div class="btns"><button class="btn primary" id="resumeBtn">Verder</button></div></div></div>
 </div>
 <script src="../shared/chars.js"></script>
+<script src="../shared/art.js"></script>
 <script src="../shared/chars.js"></script>
 <script>
 'use strict';
@@ -161,6 +162,10 @@ const SPR={
 
 /* ===== spelers ===== */
 let CHARS=null;G4U_CHARS('../img/').then(c=>{CHARS=c;});
+// eigen plaatjes uit art/ (zie ART.md)
+G4U_ART('art/',['coin','spring','bird0','bird1','hornbill0','hornbill1'],SPR);
+const ARTP={};G4U_ART('art/',['plank_0','plank_1','plank_move','plank_break','plank_cloud','scene_0','scene_1','start'],ARTP);
+function di(img,...a){b.imageSmoothingEnabled=!!img.__art;b.drawImage(img,...a);b.imageSmoothingEnabled=false;}
 
 /* ===== staat ===== */
 let state='ready',paused=false,overAt=0;
@@ -272,9 +277,9 @@ function draw(){
   b.fillStyle=g;b.fillRect(0,0,LW,LH);
   if(space>0){b.fillStyle=`rgba(255,255,255,${space})`;for(let i=0;i<40;i++){const sx=(i*53)%LW,sy=((i*97-camY*0.05)%LH+LH)%LH;b.fillRect(sx,sy,1,1);}}
   const off=((-camY*0.25)%400+400)%400;
-  b.globalAlpha=(1-t)*(1-space);for(let y=off-400;y<LH;y+=400)b.drawImage(scenes[wi],0,y);
-  b.globalAlpha=t*(1-space);for(let y=off-400;y<LH;y+=400)b.drawImage(scenes[1-wi],0,y);b.globalAlpha=1;
-  const sy=Math.round(-camY-160);if(sy<LH)b.drawImage(startScene,0,sy);
+  b.globalAlpha=(1-t)*(1-space);for(let y=off-400;y<LH;y+=400)di(ARTP['scene_'+wi]||scenes[wi],0,y,LW,400);
+  b.globalAlpha=t*(1-space);for(let y=off-400;y<LH;y+=400)di(ARTP['scene_'+(1-wi)]||scenes[1-wi],0,y,LW,400);b.globalAlpha=1;
+  const sy=Math.round(-camY-160);if(sy<LH)di(ARTP.start||startScene,0,sy,LW,160);
   // platformen
   for(const p of plats){
     if(p.gone)continue;const y=Math.round(p.y-camY);if(y<-10||y>LH+10)continue;
@@ -285,15 +290,17 @@ function draw(){
     if(p.t==='move'){c0='#4aa8ff';c1='#2a6fc0';c2='#bfe3ff';}
     if(p.t==='break'){c0='#9c7a5a';c1='#6a5038';c2='#b89c7c';}
     if(p.t==='cloud'){c0='#ffffff';c1='#cfe0ee';c2='#ffffff';}
+    const pk=p.t==='move'?'plank_move':p.t==='break'?'plank_break':p.t==='cloud'?'plank_cloud':'plank_'+wIdx(-p.y);
+    if(ARTP[pk]){di(ARTP[pk],x-2,y-4,p.w+4,PH+8);if(p.spring)di(SPR.spring,x+p.w/2-5,y-7);continue;}
     b.fillStyle=OUT;b.fillRect(x-1,y-1,p.w+2,PH+2);
     b.fillStyle=c0;b.fillRect(x,y,p.w,PH);b.fillStyle=c1;b.fillRect(x,y+PH-2,p.w,2);b.fillStyle=c2;b.fillRect(x,y,p.w,2);
     if(p.t==='n'||p.t==='move'){b.fillStyle=p.t==='move'?'#2a6fc0':pw.node;for(let k=7;k<p.w;k+=9)b.fillRect(x+k,y+1,1,PH-2);}
     if(p.t==='break'){b.fillStyle=OUT;b.fillRect(x+10,y+1,1,3);b.fillRect(x+11,y+3,1,3);b.fillRect(x+22,y+2,1,4);}
-    if(p.spring)b.drawImage(SPR.spring,x+p.w/2-5,y-7);
+    if(p.spring)di(SPR.spring,x+p.w/2-5,y-7);
   }
-  for(const c of coinsArr){const y=c.y-camY,sp=Math.abs(Math.cos(performance.now()/200+c.x));b.drawImage(SPR.coin,Math.round(c.x-4*sp),Math.round(y-4),Math.max(1,Math.round(8*sp)),8);}
+  for(const c of coinsArr){const y=c.y-camY,sp=Math.abs(Math.cos(performance.now()/200+c.x));di(SPR.coin,Math.round(c.x-4*sp),Math.round(y-4),Math.max(1,Math.round(8*sp)),8);}
   for(const m of mobs){const y=Math.round(m.y-camY),ind=wIdx(-m.y)===0,fr=Math.floor(performance.now()/160)%2;
-    const img=SPR[(ind?'hornbill':'bird')+fr];b.save();b.translate(Math.round(m.x+10),y);if(m.dir<0)b.scale(-1,1);if(m.dead)b.rotate(Math.PI);b.drawImage(img,-10,-6);b.restore();}
+    const img=SPR[(ind?'hornbill':'bird')+fr];b.save();b.translate(Math.round(m.x+10),y);if(m.dir<0)b.scale(-1,1);if(m.dead)b.rotate(Math.PI);di(img,-10,-6,img.__art?20:img.width,img.__art?12:img.height);b.restore();}
   if(CHARS){
     drawGuy(CHARS.p2.front,partner.x,partner.y,false);
     drawGuy(CHARS.p1.front,pl.x,pl.y,true);

@@ -89,6 +89,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   </div>
   <div id="modal"><div class="sheet" id="sheet"></div></div>
 </div>
+<script src="../shared/art.js"></script>
 <script>
 'use strict';
 /* ================= opslag ================= */
@@ -106,17 +107,26 @@ const MAGIC=['','Gloei','Sterren','Regenboog'];
 const FINS=3,EYES=3;
 const RANK=['Gewoon','Bijzonder','Zeldzaam','Episch','Magisch'];
 const VALUE=[1,2,4,8,20];
-const TOTAL=SHAPES.length*COLORS.length*PATS.length*MAGIC.length;
-function key(g){return g.s+'-'+g.c1+'-'+g.p+'-'+g.m;}
+const TOTAL_PROC=SHAPES.length*COLORS.length*PATS.length*MAGIC.length;
+// eigen plaatjes: art/vis_01.png, vis_02.png ... (+ optioneel art/vissen.json met namen en zeldzaamheid)
+const ART_FISH=[],ART_INFO=[],DECOR_ART={},BG_ART={};
+const VAR=['','Zonne-','Bos-','Oceaan-','Nacht-','Roos-'];
+const total=()=>TOTAL_PROC+ART_FISH.length*VAR.length*MAGIC.length;
+function key(g){return g.a!=null?'A'+g.a+'-'+(g.h||0)+'-'+g.m:g.s+'-'+g.c1+'-'+g.p+'-'+g.m;}
 function rarity(g){
   if(g.m>0)return g.m===3?4:3;
+  if(g.a!=null){const inf=ART_INFO[g.a]||{};let r=inf.zeldzaamheid!=null?+inf.zeldzaamheid:(g.a%3===2?1:0);if(g.h)r++;return Math.min(3,r);}
   let r=0;if(g.s>=3)r++;if(g.s===4)r++;if(g.p>=3)r++;if(g.c1>=10)r++;
   return Math.min(3,r);
 }
-function fname(g){const pre=PATS[g.p]?PATS[g.p]+' ':'',mg=MAGIC[g.m]?MAGIC[g.m]+'-':'';
+function fname(g){if(g.a!=null){const inf=ART_INFO[g.a]||{};return (MAGIC[g.m]?MAGIC[g.m]+'-':'')+VAR[g.h||0]+(inf.naam?(VAR[g.h||0]?inf.naam.toLowerCase():inf.naam):'Vis '+(g.a+1));}const pre=PATS[g.p]?PATS[g.p]+' ':'',mg=MAGIC[g.m]?MAGIC[g.m]+'-':'';
   return pre+mg+COLORS[g.c1][0]+SHAPES[g.s].n.toLowerCase();}
 function weighted(arr){const t=arr.reduce((a,x)=>a+x.w,0);let r=Math.random()*t;for(let i=0;i<arr.length;i++){r-=arr[i].w;if(r<=0)return i;}return 0;}
 function randGenes(lux){
+  if(ART_FISH.length&&Math.random()<.6){const g=randGenes0(lux);g.a=rnd(ART_FISH.length);g.h=Math.random()<(lux?.5:.8)?0:1+rnd(5);return g;}
+  return randGenes0(lux);
+}
+function randGenes0(lux){
   return {s:weighted(SHAPES.map((x,i)=>({w:i<3?x.w:x.w*(lux?2.5:1)}))),c1:lux?rnd(12):rnd(10),c2:rnd(12),
     p:Math.random()<(lux?.7:.45)?1+rnd(lux?4:2):0,f:rnd(FINS),e:rnd(EYES),m:Math.random()<(lux?.08:0)?1+rnd(2):0};
 }
@@ -128,6 +138,10 @@ function breed(a,b){
   else if(a.m||b.m)g.m=Math.random()<.3?(a.m||b.m):0;
   else g.m=Math.random()<.04?1+rnd(2):0;
   if(g.m===2&&a.m&&b.m&&Math.random()<.15)g.m=3;
+  const arts=[a,b].filter(p=>p.a!=null);
+  if(arts.length&&ART_FISH.length&&Math.random()<(arts.length===2?1:.6)){const src=pick(arts);g.a=src.a;g.h=Math.random()<.5?(a.h||0):(b.h||0);
+    if(Math.random()<.18)g.a=rnd(ART_FISH.length);if(Math.random()<.22)g.h=rnd(VAR.length);}
+  else if(!arts.length&&ART_FISH.length&&Math.random()<.08){g.a=rnd(ART_FISH.length);g.h=0;}
   return g;
 }
 
@@ -135,7 +149,19 @@ function breed(a,b){
 function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;
   r=clamp(Math.round(r+(amt>0?(255-r)*amt:r*amt)),0,255);g=clamp(Math.round(g+(amt>0?(255-g)*amt:g*amt)),0,255);b=clamp(Math.round(b+(amt>0?(255-b)*amt:b*amt)),0,255);
   return `rgb(${r},${g},${b})`;}
+function stars(x,cx,cy,rx,ry,size){const t=performance.now()/300;x.fillStyle='#fff7b0';for(let i=0;i<4;i++){const a=t+i*1.6,sx=cx+Math.cos(a)*rx*1.3,sy=cy+Math.sin(a*1.3)*ry*1.4,s=size*.04*(1+Math.sin(t*3+i));
+    x.beginPath();x.moveTo(sx,sy-s*2);x.lineTo(sx+s*.6,sy-s*.6);x.lineTo(sx+s*2,sy);x.lineTo(sx+s*.6,sy+s*.6);x.lineTo(sx,sy+s*2);x.lineTo(sx-s*.6,sy+s*.6);x.lineTo(sx-s*2,sy);x.lineTo(sx-s*.6,sy-s*.6);x.fill();}}
+function drawArtFish(x,g,cx,cy,size,phase,dir){
+  const img=ART_FISH[g.a],w=size*1.25,h=w*img.height/img.width;
+  x.save();x.translate(cx,cy);x.scale(dir,1);x.rotate(Math.sin(phase*.5)*.06);x.scale(1+Math.sin(phase)*.025,1-Math.sin(phase)*.025);
+  const f=[];if(g.h)f.push(`hue-rotate(${g.h*60}deg)`);if(g.m===3)f.push(`hue-rotate(${(performance.now()/8)%360}deg) saturate(1.3)`);
+  x.filter=f.length?f.join(' '):'none';
+  if(g.m===1){x.shadowColor='#bff';x.shadowBlur=size*.5;}
+  x.drawImage(img,-w/2,-h/2,w,h);x.restore();
+  if(g.m===2)stars(x,cx,cy,w/2,h/2,size);
+}
 function drawFish(x,g,cx,cy,size,phase,dir,opts){
+  if(g.a!=null&&ART_FISH[g.a])return drawArtFish(x,g,cx,cy,size,phase,dir);
   opts=opts||{};const S=SHAPES[g.s],rx=size*S.rx*.5,ry=size*S.ry*.5;
   let c1=COLORS[g.c1][1],c2=COLORS[g.c2===g.c1?(g.c2+3)%12:g.c2][1];
   if(g.m===3){const h=(performance.now()/20+cx)%360;c1=`hsl(${h},85%,62%)`;c2=`hsl(${(h+120)%360},85%,62%)`;}
@@ -186,8 +212,7 @@ function drawFish(x,g,cx,cy,size,phase,dir,opts){
   if(opts.blush){x.fillStyle='rgba(255,120,140,.35)';x.beginPath();x.arc(rx*.5,ry*.25,size*.05,0,7);x.fill();}
   x.restore();
   // sterren-magie
-  if(g.m===2){const t=performance.now()/300;x.fillStyle='#fff7b0';for(let i=0;i<4;i++){const a=t+i*1.6,sx=cx+Math.cos(a)*rx*1.3,sy=cy+Math.sin(a*1.3)*ry*1.4,s=size*.04*(1+Math.sin(t*3+i));
-    x.beginPath();x.moveTo(sx,sy-s*2);x.lineTo(sx+s*.6,sy-s*.6);x.lineTo(sx+s*2,sy);x.lineTo(sx+s*.6,sy+s*.6);x.lineTo(sx,sy+s*2);x.lineTo(sx-s*.6,sy+s*.6);x.lineTo(sx-s*2,sy);x.lineTo(sx-s*.6,sy-s*.6);x.fill();}}
+  if(g.m===2)stars(x,cx,cy,rx,ry,size);
 }
 function thumb(g,w,h,silhouette){
   const c=document.createElement('canvas'),d=Math.min(2,devicePixelRatio||1);c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.scale(d,d);
@@ -196,11 +221,13 @@ function thumb(g,w,h,silhouette){
 }
 
 /* ================= decor ================= */
+const DECOR_IDS=['kelp','coral','rock','star','shell','moss','anemone','flower','crystal','bubbler','chest','castle'];
 const DECOR=[
   {id:'kelp',n:'Zeewier',p:15},{id:'coral',n:'Koraal',p:30},{id:'rock',n:'Rotsen',p:20},{id:'star',n:'Zeester',p:25},
   {id:'shell',n:'Schelp',p:40},{id:'moss',n:'Mosbal',p:35},{id:'anemone',n:'Anemoon',p:70},{id:'flower',n:'Zeebloem',p:80},{id:'crystal',n:'Kristallen',p:150},{id:'bubbler',n:'Bubbelsteen',p:60},{id:'chest',n:'Schatkist',p:120},{id:'castle',n:'Kasteel',p:200},
 ];
 function drawDecor(x,d,t,X,Y,s){
+  const im=DECOR_ART[d];if(im){s=s||1;const h=90*s,w=h*im.width/im.height;x.drawImage(im,X-w/2,Y-h,w,h);return;}
   s=s||1;x.save();x.translate(X,Y);x.scale(s,s);
   switch(d){
   case 'kelp':for(let k=0;k<3;k++){x.strokeStyle=['#2f9e5a','#3fbf6a','#257a46'][k];x.lineWidth=7-k;x.lineCap='round';x.beginPath();x.moveTo(-10+k*10,0);
@@ -339,7 +366,8 @@ function render(){
   const t=performance.now(),x=cx,B=bg();
   // water
   const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,B.w[0]);g.addColorStop(.45,B.w[1]);g.addColorStop(1,B.w[2]);x.fillStyle=g;x.fillRect(0,0,W,H);
-  if(B.id==='lagoon'){x.fillStyle='rgba(40,110,70,.35)';x.beginPath();x.moveTo(W*.1,SAND);x.lineTo(W*.12,H*.32);x.quadraticCurveTo(W*.5,H*.12,W*.88,H*.32);x.lineTo(W*.9,SAND);x.lineTo(W*.76,SAND);x.lineTo(W*.76,H*.4);x.quadraticCurveTo(W*.5,H*.26,W*.24,H*.4);x.lineTo(W*.24,SAND);x.fill();
+  if(BG_ART[B.id]){const im=BG_ART[B.id],sc=Math.max(W/im.width,H/im.height);x.drawImage(im,(W-im.width*sc)/2,(H-im.height*sc)/2,im.width*sc,im.height*sc);}
+  else if(B.id==='lagoon'){x.fillStyle='rgba(40,110,70,.35)';x.beginPath();x.moveTo(W*.1,SAND);x.lineTo(W*.12,H*.32);x.quadraticCurveTo(W*.5,H*.12,W*.88,H*.32);x.lineTo(W*.9,SAND);x.lineTo(W*.76,SAND);x.lineTo(W*.76,H*.4);x.quadraticCurveTo(W*.5,H*.26,W*.24,H*.4);x.lineTo(W*.24,SAND);x.fill();
     x.strokeStyle='rgba(30,90,50,.35)';x.lineWidth=3;for(let i=0;i<6;i++){x.beginPath();x.moveTo(W*(.15+i*.14),H*.2);x.quadraticCurveTo(W*(.18+i*.14)+Math.sin(t/1500+i)*8,H*.35,W*(.16+i*.14),H*.48);x.stroke();}}
   if(B.id==='wreck'){x.fillStyle='rgba(15,50,85,.45)';x.save();x.translate(W*.62,SAND-30);x.rotate(-.12);x.beginPath();x.moveTo(-120,0);x.lineTo(110,0);x.lineTo(140,-50);x.lineTo(-130,-40);x.fill();
     x.fillRect(-40,-170,6,130);x.fillRect(40,-150,5,110);x.beginPath();x.moveTo(-34,-160);x.lineTo(30,-140);x.lineTo(-30,-90);x.fill();x.restore();}
@@ -459,7 +487,7 @@ function tapEgg(eg){
   updTop();save();sfx(isNew?'new':'hatch');
   open(`<div style="text-align:center"><h2>${isNew?'Nieuwe soort ontdekt!':'Uitgekomen!'}</h2>
     <canvas class="big reveal" id="bigc"></canvas><div style="font-weight:900;font-size:18px;margin:6px 0">${fname(eg.g)}</div>${rt(rarity(eg.g))}${isNew?'<span class="new">NIEUW</span>':''}
-    <p>${Object.keys(S.disc).length} van ${TOTAL} soorten ontdekt</p></div><button class="btn p" onclick="close()">Hoera!</button>`);
+    <p>${Object.keys(S.disc).length} van ${total()} soorten ontdekt</p></div><button class="btn p" onclick="close()">Hoera!</button>`);
   const c=$('bigc'),d=2;c.width=280*d;c.height=200*d;const x=c.getContext('2d');x.scale(d,d);
   const loop=()=>{if(!modalOpen()||!$('bigc'))return;x.clearRect(0,0,280,200);drawFish(x,eg.g,140,104,150,performance.now()/160,1);requestAnimationFrame(loop);};loop();
 }
@@ -477,9 +505,9 @@ window.decorEdit=i=>{const d=S.decor[i],n=DECOR.find(q=>q.id===d.id).n;
 
 // verzamelboek
 function book(){
-  const ks=Object.keys(S.disc),list=ks.map(k=>{const [s,c1,p,m]=k.split('-').map(Number);return {s,c1,c2:(c1+3)%12,p,f:0,e:0,m};}).sort((a,b)=>rarity(b)-rarity(a));
+  const ks=Object.keys(S.disc),list=ks.map(k=>{if(k[0]==='A'){const [a,h,m]=k.slice(1).split('-').map(Number);return {s:0,c1:0,c2:3,p:0,f:0,e:0,m,a,h};}const [s,c1,p,m]=k.split('-').map(Number);return {s,c1,c2:(c1+3)%12,p,f:0,e:0,m};}).sort((a,b)=>rarity(b)-rarity(a));
   const byR=[0,0,0,0,0];list.forEach(g=>byR[rarity(g)]++);
-  open(hd('Verzamelboek')+`<p><b>${ks.length}</b> van <b>${TOTAL}</b> soorten ontdekt · ${S.stats.bred} keer gekweekt</p>
+  open(hd('Verzamelboek')+`<p><b>${ks.length}</b> van <b>${total()}</b> soorten ontdekt · ${S.stats.bred} keer gekweekt</p>
     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">${byR.map((n,i)=>`<span class="rt r${i}">${RANK[i]}: ${n}</span>`).join('')}</div>
     <div class="grid">${list.map(g=>`<div class="item"><span class="tag r${rarity(g)}">${RANK[rarity(g)]}</span><div style="font-size:11px">${fname(g)}</div></div>`).join('')}</div>`);
   mount('.item',list.map(g=>thumb(g,90,66)));
@@ -534,6 +562,10 @@ function sfx(k){switch(k){
 
 /* ================= start ================= */
 resize();syncSwimmers();updTop();
+G4U_ART_SERIES('art/','vis_',99,(i,img)=>{ART_FISH[i]=img;updTop();});
+G4U_JSON('art/vissen.json').then(j=>{if(Array.isArray(j))j.forEach((v,i)=>ART_INFO[i]=v||{});});
+G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
+G4U_ART('art/',['bg_reef','bg_lagoon','bg_wreck','bg_cave'],{},(n,i)=>{BG_ART[n.slice(3)]=i;});
 function loop(now){let dt=(now-lastT)/1000;lastT=now;if(dt>.25)dt=.25;update(dt);render();requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
