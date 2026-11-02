@@ -1,0 +1,6 @@
+Plumeriafamilie: 1 baby, 2 tussenvormen, 4 eindvormen.
+Volgorde: vis_07, vis_07a, vis_07b, vis_07aa, vis_07ab, vis_07ba, vis_07bb.
+Zeekoningin is vis_07bb.png. Bestaande batikvis is vis_07ba.png.
+Voeg vissen.json toe aan de bestaande catalogus; vervang die niet volledig.
+Schaal in aquarium: baby circa 3%, tussenvorm 5-6%, eindvorm 9-10% van aquarium-breedte inclusief staart. Dit zijn visuele richtlijnen.
+Geen nieuwe kansen, prijzen of tijden.

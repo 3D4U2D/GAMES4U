@@ -472,5 +472,84 @@
   "fase": 3,
   "ouder": "vis_06b",
   "evoluties": []
+ },
+ {
+  "id": "vis_07",
+  "bestand": "vis_07.png",
+  "naam": "Plumerietje",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_07a",
+   "vis_07b"
+  ]
+ },
+ {
+  "id": "vis_07a",
+  "bestand": "vis_07a.png",
+  "naam": "Bloesemvin",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 2,
+  "ouder": "vis_07",
+  "evoluties": [
+   "vis_07aa",
+   "vis_07ab"
+  ]
+ },
+ {
+  "id": "vis_07b",
+  "bestand": "vis_07b.png",
+  "naam": "Batikparel",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 2,
+  "ouder": "vis_07",
+  "evoluties": [
+   "vis_07ba",
+   "vis_07bb"
+  ]
+ },
+ {
+  "id": "vis_07aa",
+  "bestand": "vis_07aa.png",
+  "naam": "Bloesempracht",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 3,
+  "ouder": "vis_07a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_07ab",
+  "bestand": "vis_07ab.png",
+  "naam": "Parelvorstin",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 3,
+  "ouder": "vis_07a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_07ba",
+  "bestand": "vis_07ba.png",
+  "naam": "Batikpracht",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 3,
+  "ouder": "vis_07b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_07bb",
+  "bestand": "vis_07bb.png",
+  "naam": "Zeekoningin",
+  "familie": "familie_07",
+  "familienaam": "Plumeria",
+  "fase": 3,
+  "ouder": "vis_07b",
+  "evoluties": []
  }
 ]

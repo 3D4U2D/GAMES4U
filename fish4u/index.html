@@ -314,7 +314,7 @@ function catalogFish(){
   for(let i=0;i<24;i++){const r=mulberry(1000+i*37);
     const g={s:i<6?Math.floor(r()*3):Math.floor(r()*5),c1:Math.floor(r()*(i<8?10:12)),c2:Math.floor(r()*12),p:i<4?0:Math.floor(r()*5),f:Math.floor(r()*3),e:Math.floor(r()*3),m:0};
     out.push({g,lvl:1+Math.floor(i/2),p:15+i*10+Math.floor(i*i*1.5)});}
-  const art=ART_FISH.map((_,k)=>({g:{s:0,c1:0,c2:3,p:0,f:0,e:0,m:0,a:k,h:0},lvl:[1,1,2,3,4,5][k]||(5+k),p:[20,30,45,60,80,100][k]||(100+k*25)}));
+  const art=ART_FISH.map((_,k)=>({g:{s:0,c1:0,c2:3,p:0,f:0,e:0,m:0,a:k,h:0},lvl:[1,1,2,3,4,5,6][k]||(k),p:[20,30,45,60,80,100,130][k]||(100+k*25)}));
   return art.concat(out.map(c=>Object.assign(c,{lvl:c.lvl+(art.length?3:0)})));
 }
 const DECOR_LVL={kelp:1,rock:1,star:2,coral:2,shell:3,moss:3,anemone:4,flower:5,bubbler:6,crystal:7,chest:8,castle:10};
@@ -393,7 +393,7 @@ function syncSwimmers(rebuild){
   for(let i=SW.length-1;i>=0;i--)if(!T().fish.includes(SW[i].f))SW.splice(i,1);
 }
 const food=[],drops=[],bubbles=[],fx=[];
-const sizeOf=f=>{const t=Math.min(1,f.grow/6);return (26+t*30)*(1+(f.tier||0)*.12);};
+const sizeOf=f=>{const t=Math.min(1,f.grow/6);if(f.g.a!=null&&ART_FISH[f.g.a]){const tier=(f.g.path||'').length;return W*[.04,.06,.095][tier]/1.55*(.7+.3*t);}return (26+t*30)*(1+(f.tier||0)*.12);};
 const adult=f=>f.grow>=6;
 let tool='pointer';
 
@@ -696,7 +696,7 @@ function trophies(){
 // meer-menu
 function moreUI(){
   const it=(k,emo,n,fn)=>`<div class="item" style="padding:10px 4px" onclick="${fn}">${uiIc(k,emo)}${n}</div>`;
-  open(hd('Menu')+`<div class="grid" style="grid-template-columns:repeat(4,1fr)">${it('jackpot','🎰','Jackpot','jackpotUI()')}${it('trophy','🏆','Trofeeën','trophies()')}${it('tasks','📋','Taken','tasksUI()')}${it('sea','🌊','Zeeën',"shop('sea')")}${it('pearl','🫧','Parels','pearlsUI()')}${it('-','❓','Help','helpUI()')}${it('-','⚙️','Instellingen','settingsUI()')}${it('home','🏠','Alle spellen',"location.href='../'")}</div>`);
+  open(hd('Menu')+`<div class="grid" style="grid-template-columns:repeat(4,1fr)">${it('jackpot','🎰','Jackpot','jackpotUI()')}${it('trophy','🏆','Trofeeën','trophies()')}${it('tasks','📋','Taken','tasksUI()')}${it('sea','🌊','Zeeën',"shop('sea')")}${it('pearl','🫧','Parels','pearlsUI()')}${it('help','❓','Help','helpUI()')}${it('settings','⚙️','Instellingen','settingsUI()')}${it('home','🏠','Alle spellen',"location.href='../'")}</div>`);
 }
 window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3) en soms als taakbeloning. Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
 window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
@@ -707,7 +707,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🏆 Trofeeën · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='2.9 · UI-pakket v1';
+const VERSION='3.0 · Plumeria + UI-aanvulling';
 window.settingsUI=()=>open(hd('Instellingen')+`<p>Versie <b>${VERSION}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 let confirmReset=0,resetting=false;
@@ -753,7 +753,7 @@ G4U_JSON('art/vissen.json').then(j=>{if(Array.isArray(j))j.forEach((v,i)=>{v=v||
 G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
 // UI-pakket
 const UIA={};
-G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
+G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3'],UIA,(n,im)=>{
   const k=n.replace(/^ui_|^obj_/,'');
   document.querySelectorAll('[data-ic="'+k+'"] span').forEach(sp=>{sp.innerHTML='';sp.appendChild(im.cloneNode());});
   document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';el.appendChild(im.cloneNode());if(b)el.appendChild(b);});
