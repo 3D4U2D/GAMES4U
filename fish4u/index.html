@@ -83,7 +83,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .nmenu .hd{margin-bottom:12px}
 .ngrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .nitem{appearance:none;display:flex;align-items:center;gap:12px;min-height:58px;border:1px solid #dbe5ea;border-radius:12px;background:#fff;padding:12px;color:#17384a;font:600 14px system-ui,-apple-system,sans-serif;text-align:left;cursor:pointer}
-.nitem svg{width:32px;height:32px;flex:none}
+.nitem svg{width:32px;height:32px;flex:none}.nitem .nimg{width:38px;height:38px;flex:none;object-fit:contain;display:block}
 .nitem:active{background:#e6f0f5}
 .nitem:focus-visible,.x:focus-visible{outline:3px solid #2682a9;outline-offset:3px}
 @media (max-width:650px) and (orientation:landscape){.ngrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -680,7 +680,7 @@ const MENU_ITEMS=[['jackpot','Jackpot','jackpotUI()'],['tree','Stamboom','stambo
   ['trophy','Prestaties','achUI()'],['help','Help','helpUI()'],['settings','Instellingen','settingsUI()'],['games','Alle spellen',"location.href='../'"]];
 function moreUI(){
   open(`<div class="nmenu" role="dialog" aria-modal="true" aria-labelledby="mtitle"><div class="hd"><h2 id="mtitle">Menu</h2><button class="x" type="button" aria-label="Menu sluiten" onclick="closeM()">✕</button></div>
-    <nav class="ngrid" aria-label="Spelmenu">${MENU_ITEMS.map(([k,n,fn])=>`<button class="nitem" type="button" data-action="${k}" onclick="${fn}" style="position:relative">${MENU_SVG[k]||''}<span>${n}</span>${k==='trophy'&&achReady()?`<i class="badge2" style="top:6px;right:6px">${achReady()}</i>`:''}</button>`).join('')}</nav></div>`);
+    <nav class="ngrid" aria-label="Spelmenu">${MENU_ITEMS.map(([k,n,fn])=>`<button class="nitem" type="button" data-action="${k}" onclick="${fn}" style="position:relative">${UIA['ui_'+k]?`<img class="nimg" src="art/ui_${k}.png" alt="">`:(MENU_SVG[k]||'')}<span>${n}</span>${k==='trophy'&&achReady()?`<i class="badge2" style="top:6px;right:6px">${achReady()}</i>`:''}</button>`).join('')}</nav></div>`);
   const first=sheet.querySelector('.nitem');if(first)first.focus({preventScroll:true});
 }
 window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3), soms als taakbeloning en met <b>prestaties</b> (Menu → Prestaties). Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
@@ -693,7 +693,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='4.4 · prestatie-iconen';
+const VERSION='4.5 · glossy menu-iconen';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----
@@ -775,11 +775,10 @@ function cleanup(){
 G4U_ART('art/',DECOR_IDS.map(i=>'decor_'+i),{},(n,i)=>{DECOR_ART[n.slice(6)]=i;});
 // UI-pakket
 const UIA={};
-G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','jp_fish','jp_shell','jp_coin','jp_star','jp_crab','jp_gem','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3','ach_ontdekken','ach_evolutie','ach_stamboom','ach_verzorging','ach_inrichten','ach_groei','ach_jackpot'],UIA,(n,im)=>{
+G4U_ART('art/',['ui_pointer','ui_food','ui_clean','ui_decor','ui_shop','ui_evolution','ui_menu','ui_tasks','ui_jackpot','ui_trophy','ui_sea','ui_home','ui_help','ui_settings','ui_tree','ui_games','ui_pearl','jp_fish','jp_shell','jp_coin','jp_star','jp_crab','jp_gem','obj_coin','obj_pearl','obj_xp','obj_food','obj_dirt_1','obj_dirt_2','obj_dirt_3','ach_ontdekken','ach_evolutie','ach_stamboom','ach_verzorging','ach_inrichten','ach_groei','ach_jackpot'],UIA,(n,im)=>{
   const k=n.replace(/^ui_|^obj_/,'');
   document.querySelectorAll('[data-ic="'+k+'"] span').forEach(sp=>{sp.innerHTML='';sp.appendChild(im.cloneNode());});
   document.querySelectorAll('[data-ic2="'+k+'"]').forEach(el=>{const b=el.querySelector('.badge2');el.textContent='';const c=im.cloneNode();c.alt='';
-    if(k==='home'||k==='tasks'){const png=c.src;c.onerror=()=>{c.onerror=null;c.src=png;};c.src='art/menu/ui_'+k+'.svg';} // SVG scherp, PNG als terugval
     el.appendChild(c);if(b)el.appendChild(b);});
   if(k==='coin')document.querySelectorAll('.pill:not(.b) i').forEach(i=>{const c=im.cloneNode();c.className='pi';i.replaceWith(c);});
   if(k==='pearl')document.querySelectorAll('.pill.b i').forEach(i=>{const c=im.cloneNode();c.className='pi';i.replaceWith(c);});

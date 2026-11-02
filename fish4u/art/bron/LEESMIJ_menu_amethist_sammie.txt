@@ -1,0 +1,8 @@
+Fish4U – menu, amethist en Sammie
+
+10 eenvoudige glossy menu-iconen256x256 transparant. Gebruik PNG in plaats van de eerdere neutrale SVG; behoud acties en tekstlabels. ui_home Home, ui_tasks Taken, ui_jackpot Jackpot, ui_trophy Prestaties/Trofeeën, ui_sea Zeeën, ui_pearl Parels, ui_help Help, ui_settings Instellingen, ui_games Alle spellen, ui_tree Stamboom.
+
+decor_amethyst.png: paarse amethistgeode, maximaal800px breed, anker[0.5,1], originele kleuren behouden.
+vis_10.png: Sammie, basisvis geïnspireerd op de lieve zwarte hond van Nusa Penida. Familie10 bevat voorlopig alleen deze basisvorm. Geen ontbrekende evolutie-assets aanroepen en niet automatisch evolutie inschakelen. Neem dit op als ontwerpvoorstel tot de familie compleet is.
+Behoud zwart/bruine ogen/blauwe lichtrand en klein baconkleurig staartpuntje.
+Geen nieuwe spelwaarden toegevoegd.
