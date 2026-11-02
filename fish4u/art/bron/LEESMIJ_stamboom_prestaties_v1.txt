@@ -1,0 +1,15 @@
+Fish4U – stamboom en prestaties v1
+
+7 tabiconen, PNG256x256 met echte transparantie:
+ach_ontdekken.png
+ach_evolutie.png
+ach_stamboom.png
+ach_verzorging.png
+ach_inrichten.png
+ach_groei.png
+ach_jackpot.png
+
+Neutrale menu-iconen: ui_tree.svg en ui_trophy.svg.
+ViewBox24x24, stroke #17384a, stroke-width1.7, fill none. De bestaande beker is behouden.
+Gebruik SVG in menu en glossy PNG voor prestatietabs. Geen tekst in de beelden. Geen spelwaarden in dit pakket; review en eventuele aanpassingen apart met Rowan afstemmen.
+Gemaakt met ingebouwde beeldgeneratie; promptset bijgevoegd.
