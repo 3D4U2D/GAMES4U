@@ -98,11 +98,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 /* telefoon rechtop (spel gedraaid): links van het spel = statusbalk, rechts = thuisbalk */
 @media (orientation:portrait){.top{top:6px;padding-left:calc(env(safe-area-inset-top) + 14px);padding-right:calc(env(safe-area-inset-bottom) + 12px + var(--xr,0px))}.dock{bottom:6px;padding-right:calc(10px + var(--xr,0px))}}
 @media (orientation:landscape){.dock{bottom:calc(max(6px,env(safe-area-inset-bottom)) + var(--xb,0px))}}
-.tchips{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:4px;margin-bottom:4px}
-.tchip{appearance:none;border:1px solid #dbe5ea;background:#fff;border-radius:10px;padding:2px 4px;justify-content:center;display:flex;align-items:center;gap:3px;font:800 11px system-ui;color:#17384a;cursor:pointer}
-.tchip.on{border-color:#ff8a3d;background:#fff4ea}.tchip.done b{color:#2f9a5a}.tchip canvas{width:34px;height:22px;display:block}
+.tchips{display:flex;gap:3px;margin-bottom:4px}
+.tchip{appearance:none;flex:1 1 0;min-width:0;flex-direction:column;gap:0;border:1px solid #dbe5ea;background:#fff;border-radius:10px;padding:2px 1px;justify-content:center;display:flex;align-items:center;gap:3px;font:800 11px system-ui;color:#17384a;cursor:pointer}
+.tchip.on{border-color:#ff8a3d;background:#fff4ea}.tchip.done b{color:#2f9a5a}.tchip canvas{width:34px;height:22px;max-width:100%;object-fit:contain;display:block}.tchip b{font-size:10.5px;line-height:1}
 .thead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:2px 0 4px}.thead b{font-size:16px}.thead span{font-size:12px;color:var(--muted);font-weight:700}.thead .tall{margin-left:auto}.thead a{color:#2f9a5a;font-weight:900}
-.tree{position:relative;display:grid;grid-template-columns:1fr 1fr 1.25fr;height:min(250px,calc(var(--ah,390px) - 150px))}
+.tree{position:relative;display:grid;grid-template-columns:1fr 1fr 1.25fr;height:min(250px,calc(var(--ah,390px) - 162px))}
 .tlines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.tlines path{fill:none;stroke:#b9d3df;stroke-width:2;vector-effect:non-scaling-stroke}
 .tcol{position:relative;display:flex;flex-direction:column;justify-content:space-around;align-items:center}
 .tnode{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.92);border:1px solid #dbe5ea;border-radius:12px;padding:2px 8px 3px;min-width:96px;text-align:center}
@@ -693,7 +693,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='4.7 · familie Sammie';
+const VERSION='4.8 · familie Fritzie';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----

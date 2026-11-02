@@ -1,0 +1,14 @@
+Fish4U - Fritzie familie 11, compleet
+
+7 PNGs, transparant, maximaal 1024px breed.
+vis_11.png - Fritzie - ouder: None
+vis_11a.png - Bumpervin - ouder: vis_11.png
+vis_11b.png - Flitsvin - ouder: vis_11.png
+vis_11aa.png - Fritziemobiel - ouder: vis_11a.png
+vis_11ab.png - Toervin - ouder: vis_11a.png
+vis_11ba.png - Rallyvin - ouder: vis_11b.png
+vis_11bb.png - Vlamfritzie - ouder: vis_11b.png
+
+Baby en gewone volwassen autovis zijn de goedgekeurde ontwerpen. vis_11aa = normale 207, vis_11bb = vlamstickers en spoiler.
+Claude: voeg PNGs aan vissenmap toe en voeg catalogusrecords samen op bestand. Behoud alle bestaande families en spelwaarden. Geen prijzen, kansen of tijden meegeleverd. Houd compacte weergave aan: baby circa 3%, tussen 5-6%, eindvorm 9-10% van aquarium breedte incl staart. Het overzicht toont ontwerpen, geen exacte spelverhouding.
+Originele glossy cartoon uitwerking van de aangeleverde auto. Gegenereerd met ingebouwde beeldgeneratie; prompts voor nieuwe vormen bijgevoegd.

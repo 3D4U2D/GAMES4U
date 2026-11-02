@@ -788,5 +788,84 @@
   "fase": 3,
   "ouder": "vis_10b",
   "evoluties": []
+ },
+ {
+  "id": "vis_11",
+  "bestand": "vis_11.png",
+  "naam": "Fritzie",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_11a",
+   "vis_11b"
+  ]
+ },
+ {
+  "id": "vis_11a",
+  "bestand": "vis_11a.png",
+  "naam": "Bumpervin",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 2,
+  "ouder": "vis_11",
+  "evoluties": [
+   "vis_11aa",
+   "vis_11ab"
+  ]
+ },
+ {
+  "id": "vis_11b",
+  "bestand": "vis_11b.png",
+  "naam": "Flitsvin",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 2,
+  "ouder": "vis_11",
+  "evoluties": [
+   "vis_11ba",
+   "vis_11bb"
+  ]
+ },
+ {
+  "id": "vis_11aa",
+  "bestand": "vis_11aa.png",
+  "naam": "Fritziemobiel",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 3,
+  "ouder": "vis_11a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_11ab",
+  "bestand": "vis_11ab.png",
+  "naam": "Toervin",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 3,
+  "ouder": "vis_11a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_11ba",
+  "bestand": "vis_11ba.png",
+  "naam": "Rallyvin",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 3,
+  "ouder": "vis_11b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_11bb",
+  "bestand": "vis_11bb.png",
+  "naam": "Vlamfritzie",
+  "familie": "familie_11",
+  "familienaam": "Fritzie",
+  "fase": 3,
+  "ouder": "vis_11b",
+  "evoluties": []
  }
 ]
