@@ -340,8 +340,10 @@ function wipe(x,y){
   const t=T();for(let i=t.dirt.length-1;i>=0;i--){const d=t.dirt[i];if(Math.hypot(d.x*W-x,d.y*H-y)<d.r+22){
     d.hp=(d.hp||3)-1;if(d.hp<=0){t.dirt.splice(i,1);S.coins+=1;S.stats.cleaned++;track('clean');addXP(2,x,y);fx.push({x,y,t:0,txt:'+1'});sfx('clean');}}}
 }
-function collectDrop(i){const c=drops[i];drops.splice(i,1);
-  if(c.xp){addXP(c.v,c.x,c.y);sfx('xp');}else{S.coins+=c.v;track('coins',c.v);fx.push({x:c.x,y:c.y,t:0,txt:'+'+c.v});sfx('coin');}
+// munten/XP blijven boven de knoppen liggen zodat ze makkelijk te tikken zijn
+function dropFloor(){const d=document.querySelector('.dock');const top=d?d.offsetTop:H;return Math.min(SAND-6,top-34);}
+function collectDrop(i,auto){const c=drops[i];drops.splice(i,1);
+  if(c.xp){addXP(c.v,c.x,c.y);if(!auto)sfx('xp');}else{S.coins+=c.v;track('coins',c.v);fx.push({x:c.x,y:c.y,t:0,txt:'+'+c.v});if(!auto)sfx('coin');}
   updTop();save();}
 
 /* ================= update ================= */
@@ -372,7 +374,7 @@ function update(dt){
     if(adult(f)&&f.hunger<70&&!evoing){s.coinT=(s.coinT||Math.random()*20)+dt;if(s.coinT>CFG.coinEvery*dirtSlow){s.coinT=0;
       if(drops.length<30){const xp=Math.random()<.2;drops.push({x:s.x,y:s.y,v:xp?2+(f.tier||0)*2:VALUE[rarity(f.g)],xp,vy:0,t:0});}}}
   }
-  for(let i=drops.length-1;i>=0;i--){const c=drops[i];c.t+=dt;c.vy=Math.min(60,c.vy+80*dt);c.y=Math.min(SAND-6,c.y+c.vy*dt);if(c.t>45)drops.splice(i,1);}
+  for(let i=drops.length-1;i>=0;i--){const c=drops[i];c.t+=dt;c.vy=Math.min(60,c.vy+80*dt);c.y=Math.min(dropFloor(),c.y+c.vy*dt);if(c.t>10)collectDrop(i,true);}
   if(Math.random()<dt*2.5)bubbles.push({x:Math.random()*W,y:SAND,r:2+Math.random()*4,v:30+Math.random()*30});
   for(const d of tank.decor)if(d.id==='bubbler'&&Math.random()<dt*6)bubbles.push({x:d.x*W+(Math.random()-.5)*8,y:SAND-10,r:2+Math.random()*3,v:50+Math.random()*30});
   for(let i=bubbles.length-1;i>=0;i--){const b=bubbles[i];b.y-=b.v*dt;b.x+=Math.sin(b.y/20)*.3;if(b.y<70)bubbles.splice(i,1);}
@@ -684,7 +686,7 @@ function moreUI(){
   const first=sheet.querySelector('.nitem');if(first)first.focus({preventScroll:true});
 }
 window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3), soms als taakbeloning en met <b>prestaties</b> (Menu → Prestaties). Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
-window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen.</p>
+window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen; na 10 seconden worden ze vanzelf geïnd.</p>
   <p><b>🍤 Voer</b> – tik in het water om voer te strooien. Vissen groeien door te eten; volwassen vissen laten munten en XP vallen.</p>
   <p><b>🧽 Poetsen</b> – er komt vanzelf vuil op het glas. Veeg eroverheen voor munten en XP. Veel vuil = minder munten.</p>
   <p><b>✋ Inrichten</b> – sleep decoraties naar een andere plek.</p>
@@ -693,7 +695,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='4.8 · familie Fritzie';
+const VERSION='4.9 · munten automatisch innen';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----
