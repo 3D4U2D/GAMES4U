@@ -721,7 +721,7 @@ function dailyCheck(){
   sfx('coin');
 }
 // ================= bezoekers: zwemmen af en toe langs; tikken = beloning; Gastenboek =================
-const GCFG={every:[90,180],legendChance:1/40,swim:16,coins:[15,30],xp:5,legendPearls:5,legendCoins:100,firstPearl:1};
+const GCFG={every:[90,180],legendChance:1/40,swim:16,coins:[15,30],xp:5,legendPearls:5,legendCoins:100,pearls:1,firstPearl:1};
 let GUESTS=[{id:'schildpad',n:'Zandflipper'},{id:'kwal',n:'Krulkwalletje'},{id:'zeepaard',n:'Kroonkruller'},{id:'rog',n:'Vleugelwip'},{id:'octopus',n:'Krulknuffel'},{id:'krab',n:'Schaarkabouter'},
   {id:'parelwalvis',n:'Parelplons',leg:true},{id:'kristalkwal',n:'Amethientje',leg:true},{id:'komeetrog',n:'Sterrenzwier',leg:true}];
 const GART={};let guest=null,guestT=40+Math.random()*60; // eerste bezoek na 40-100 s
@@ -759,7 +759,7 @@ function tapGuest(x,y){
   q.caught=true;S.guests=S.guests||{};const first=!S.guests[q.g.id];S.guests[q.g.id]=(S.guests[q.g.id]||0)+1;
   let txt;
   if(q.g.leg){S.pearls+=GCFG.legendPearls;S.coins+=GCFG.legendCoins;txt=`✨ ${q.g.n}! +${GCFG.legendPearls} parels, +${GCFG.legendCoins} munten`;sfx('new');}
-  else{const c=GCFG.coins[0]+rnd(GCFG.coins[1]-GCFG.coins[0]+1);S.coins+=c;track('coins',c);addXP(GCFG.xp,q.x,q.y);if(first)S.pearls+=GCFG.firstPearl;txt=`${q.g.n}: +${c} munten${first?' · nieuw in je Gastenboek (+1 parel)':''}`;sfx('coin');}
+  else{const c=GCFG.coins[0]+rnd(GCFG.coins[1]-GCFG.coins[0]+1);S.coins+=c;track('coins',c);addXP(GCFG.xp,q.x,q.y);const pp=GCFG.pearls+(first?GCFG.firstPearl:0);S.pearls+=pp;txt=`${q.g.n}: +${pp} parel${pp>1?'s':''}, +${c} munten${first?' · nieuw in je Gastenboek':''}`;sfx('coin');}
   if(q.g.leg&&first)txt+=' · nieuw in je Gastenboek';
   fx.push({x:q.x,y:q.y-q.h*.5,t:0,txt:q.g.leg?'✨':'+'});toast(txt);updTop();save();return true;
 }
@@ -767,7 +767,7 @@ function guestbookUI(){
   S.guests=S.guests||{};const seen=GUESTS.filter(g=>S.guests[g.id]).length;
   open(hd(`Gastenboek <small class="asum">${seen}/${GUESTS.length} gasten gezien</small>`)+`<div class="tchips"><button class="tchip" style="flex:none;padding:4px 12px" onclick="stamboomUI()"><b>← Stamboom</b></button></div>
     <div class="gbook">${GUESTS.map(g=>{const n=S.guests[g.id]||0;return `<div class="gitem ${g.leg?'leg':''} ${n?'':'unk'}" data-g="${g.id}"><div class="gn">${n?g.n:'???'}</div><small>${g.leg?'Legendarisch':'Gewoon'}${n?' · '+n+'×':''}</small></div>`;}).join('')}</div>
-    <p style="font-size:11.5px;color:var(--muted);margin:6px 0 0">Bezoekers zwemmen af en toe langs. Tik erop voor een beloning. Legendarische gasten komen zelden.</p>`);
+    <p style="font-size:11.5px;color:var(--muted);margin:6px 0 0">Bezoekers zwemmen af en toe langs. Tik erop voor een parel en munten. Legendarische gasten komen zelden en geven 5 parels.</p>`);
   sheet.querySelectorAll('.gitem').forEach(el=>{const g=GUESTS.find(q=>q.id===el.dataset.g),im=GART[g.id];if(!im)return;const c=document.createElement('canvas'),w=86,h=54,d=Math.min(2,devicePixelRatio||1);c.width=w*d;c.height=h*d;c.style.width=w+'px';c.style.height=h+'px';
     const x=c.getContext('2d');x.scale(d,d);const s=Math.min(w/im.width,h/im.height)*.95;x.drawImage(im,(w-im.width*s)/2,(h-im.height*s)/2,im.width*s,im.height*s);
     if(!S.guests[g.id]){x.globalCompositeOperation='source-atop';x.fillStyle='rgba(23,56,74,.82)';x.fillRect(0,0,w,h);}el.prepend(c);});
@@ -782,7 +782,7 @@ function moreUI(){
     <nav class="ngrid" aria-label="Spelmenu">${MENU_ITEMS.map(([k,n,fn])=>`<button class="nitem" type="button" data-action="${k}" onclick="${fn}" style="position:relative">${UIA['ui_'+k]?`<img class="nimg" src="art/ui_${k}.png" alt="">`:(MENU_SVG[k]||'')}<span>${n}</span>${k==='trophy'&&achReady()?`<i class="badge2" style="top:6px;right:6px">${achReady()}</i>`:''}</button>`).join('')}</nav></div>`);
   const first=sheet.querySelector('.nitem');if(first)first.focus({preventScroll:true});
 }
-window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3), soms als taakbeloning en met <b>prestaties</b> (Menu → Prestaties). Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
+window.pearlsUI=()=>open(hd('Parels')+`<p>Je hebt <b>${S.pearls}</b> parels. Parels krijg je bij elk nieuw niveau (+3), van <b>bezoekers</b> die je aantikt, soms als taakbeloning en met <b>prestaties</b> (Menu → Prestaties). Gebruik ze om een evolutie direct af te ronden (${CFG.skipPearls} parels).</p><button class="btn p" onclick="closeM()">Oké</button>`);
 window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – tik op een vis voor info; tik munten ⭕ en XP-sterren ✴️ aan om ze op te rapen; na 10 seconden worden ze vanzelf geïnd.</p>
   <p><b>🍤 Voer</b> – tik in het water om voer te strooien. Vissen groeien door te eten; volwassen vissen laten munten en XP vallen.</p>
   <p><b>🧽 Poetsen</b> – er komt vanzelf vuil op het glas. Veeg eroverheen voor munten en XP. Veel vuil = minder munten.</p>
@@ -790,11 +790,11 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
   <p><b>✏️ Namen</b> – tik op een vis voor een eigen naam of ⭐ favoriet. <b>🎁 Dagbonus</b> – elke dag spelen = grotere beloning.</p>
-  <p><b>📖 Gasten</b> – tik op bezoekers voor munten; legendarische gasten zijn zeldzaam en geven parels. Zie het Gastenboek (via Stamboom).</p>
+  <p><b>📖 Gasten</b> – tik op bezoekers voor parels en munten; legendarische gasten zijn zeldzaam en geven parels. Zie het Gastenboek (via Stamboom).</p>
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   </div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='5.2 · bezoekers en Gastenboek';
+const VERSION='5.3 · parels van bezoekers';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <div class="row2" style="margin-top:8px;align-items:center"><span style="font-size:12.5px;font-weight:700">${CFG.seas[S.cur].n}: ${T().free?'geen beperkingen (max. '+CFG.freeFish+' vissen, '+CFG.freeDecor+' decoraties)':'normaal ('+fishCap()+' vissen, '+CFG.decorMax+' decoraties)'}</span><button class="btn ${T().free?'p':''}" onclick="T().free=!T().free;save();settingsUI()">Beperkingen: ${T().free?'uit':'aan'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
