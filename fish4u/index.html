@@ -87,7 +87,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .nitem:active{background:#e6f0f5}
 .nitem:focus-visible,.x:focus-visible{outline:3px solid #2682a9;outline-offset:3px}
 @media (max-width:650px) and (orientation:landscape){.ngrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.help2{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}.help2 p{font-size:12.5px!important;margin:2px 0!important}
+.help2{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}.help2 p{font-size:11.5px!important;margin:1px 0!important;line-height:1.3}@media (max-height:380px){.help2 p{font-size:10.8px!important;line-height:1.22}}
 .r0{background:#8aa4b4}.r1{background:#3fb06a}.r2{background:#2f8be0}.r3{background:#a24ae0}.r4{background:linear-gradient(90deg,#ff5f6d,#ffc371,#3fd0a0,#4a9cff,#b25cff)}
 .rt{display:inline-block;color:#fff;font-weight:900;font-size:12px;padding:3px 10px;border-radius:99px}
 .new{display:inline-block;background:#e8202a;color:#fff;font-weight:900;font-size:12px;padding:3px 10px;border-radius:99px;margin-left:6px}
@@ -119,6 +119,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .am{flex:1;min-width:0}.am b{display:block;font-size:12px;line-height:1.15}.am small{display:block;font-size:10px;color:var(--muted);font-weight:700;line-height:1.2}.am .bar{margin:3px 0 0;height:6px}
 .ar{flex:none;text-align:right}.ar .btn{width:auto;height:30px;margin:0;padding:0 8px;font-size:13px}.ar .pp{font-size:10.5px;font-weight:800;color:var(--muted)}.ar .ok{color:#2f9a5a;font-weight:900;font-size:18px}
 @media (max-width:620px){.alist{grid-template-columns:1fr 1fr}}
+.gbook{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.gitem{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #dbe5ea;border-radius:12px;padding:4px 2px;text-align:center}
+.gitem.unk{background:#eef3f6}.gitem.leg{border:2px solid #f2b63a;background:#fff8e6}.gitem.leg.unk{background:#f4efe2}
+.gitem .gn{font-size:11.5px;font-weight:900;line-height:1.1}.gitem small{font-size:9.5px;color:var(--muted);font-weight:700}
+.gchip{background:#fff8e6!important;border-color:#f2b63a!important}
 </style>
 </head>
 <body>
@@ -332,6 +337,7 @@ app.addEventListener('pointerdown',e=>{
   const {x,y}=pt(e);
   if(tool==='clean'){dragging=true;wipe(x,y);return;}
   // munten / XP aantikken (in elke modus)
+  if(tapGuest(x,y))return;
   for(let i=drops.length-1;i>=0;i--){const c=drops[i];if(Math.hypot(c.x-x,c.y-y)<28){collectDrop(i);return;}}
   if(tool==='food'){if(y<SAND-10){for(let i=0;i<3;i++)food.push({x:x+(Math.random()-.5)*26,y:Math.max(y,90)+(Math.random()-.5)*10,vy:18+Math.random()*10,t:0});sfx('plop');}return;}
   if(tool==='decor'){let bi=-1,bd=60;T().decor.forEach((d,i)=>{const dd=Math.abs(d.x*W-x);if(dd<bd&&y>SAND-100){bd=dd;bi=i;}});if(bi>=0){moving=bi;}return;}
@@ -359,6 +365,7 @@ function collectDrop(i,auto){const c=drops[i];drops.splice(i,1);
 /* ================= update ================= */
 let lastT=performance.now(),saveT=0,dirtT=0;
 function update(dt){
+  updGuest(dt);
   const t=performance.now(),tank=T();
   for(let i=food.length-1;i>=0;i--){const p=food[i];p.t+=dt;p.y=Math.min(SAND-4,p.y+p.vy*dt);p.x+=Math.sin(p.t*3+i)*.2;if(p.t>14)food.splice(i,1);}
   // honger in alle zeeën, vuil in alle zeeën
@@ -407,6 +414,7 @@ function render(){
   for(const d of tank.decor)drawDecor(x,d.id,t,d.x*W,SAND+10,1.15);
   if(tool==='decor'){x.fillStyle='rgba(255,255,255,.85)';x.font='800 13px system-ui';x.textAlign='center';x.fillText('Sleep een decoratie naar links of rechts',W/2,SAND-120);}
   if(UIA.obj_food)for(const p of food)x.drawImage(UIA.obj_food,p.x-5,p.y-5,10,10);else{x.fillStyle='#c46a2a';for(const p of food)x.fillRect(p.x-2,p.y-2,4,3);}
+  drawGuest(x,t);
   for(const c of drops){const sp=Math.abs(Math.cos(t/250+c.x));x.save();x.translate(c.x,c.y);
     if(c.xp&&UIA.obj_xp){x.rotate(Math.sin(t/300)*.3);x.drawImage(UIA.obj_xp,-11,-11,22,22);}
     else if(!c.xp&&UIA.obj_coin){x.scale(sp*.9+.1,1);x.drawImage(UIA.obj_coin,-11,-11,22,22);}
@@ -621,7 +629,7 @@ function stamboomUI(a){
   const tot=fams.reduce((n,k)=>n+famHave(k),0),max=fams.reduce((n,k)=>n+famSize(k),0),full=fams.filter(famDone).length;
   const node=p=>{const g=fishG(a,p),has=!!S.disc[key(g)];
     return `<div class="tnode ${has?'':'unk'}" data-p="${p}"><div class="tn">${has?fname(g):'???'}</div>${has?rt(rarity(g)):`<span class="tq">${p.length===0?'Koop in de winkel':'Evolueer '+(p.length===1?fname(fishG(a,'')):(S.disc[key(fishG(a,p[0]))]?fname(fishG(a,p[0])):'???'))}</span>`}</div>`;};
-  open(hd('Stamboom')+`<div class="tchips">${fams.map(k=>`<button class="tchip ${k===a?'on':''} ${famDone(k)?'done':''}" onclick="stamboomUI(${k})" aria-label="${famName(k)}"><span class="tc" data-a="${k}"></span><b>${famHave(k)}/${famSize(k)}</b></button>`).join('')}</div>
+  open(hd('Stamboom')+`<div class="tchips">${fams.map(k=>`<button class="tchip ${k===a?'on':''} ${famDone(k)?'done':''}" onclick="stamboomUI(${k})" aria-label="${famName(k)}"><span class="tc" data-a="${k}"></span><b>${famHave(k)}/${famSize(k)}</b></button>`).join('')}<button class="tchip gchip" onclick="guestbookUI()" aria-label="Gastenboek"><span style="font-size:17px;line-height:22px">📖</span><b>${GUESTS.filter(g=>S.guests&&S.guests[g.id]).length}/${GUESTS.length}</b></button></div>
     <div class="thead"><b>${famName(a)}</b><span>${famHave(a)} van ${famSize(a)} ontdekt${famDone(a)?' · ✔ compleet'+(S.ach&&S.ach['tree_'+a]?'':' · <a href="#" onclick="achUI(\'Stamboom\');return false">haal je 3 parels op</a>'):''}</span><span class="tall">Totaal ${tot}/${max} · ${full} ${full===1?'stamboom':'stambomen'} compleet</span></div>
     <div class="tree"><svg class="tlines" viewBox="0 0 300 100" preserveAspectRatio="none">${[[50,50,150,25],[50,50,150,75],[150,25,250,12.5],[150,25,250,37.5],[150,75,250,62.5],[150,75,250,87.5]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1} C${x1+50} ${y1},${x2-50} ${y2},${x2} ${y2}"/>`).join('')}</svg>
       <div class="tcol">${node('')}</div><div class="tcol">${node('a')}${node('b')}</div><div class="tcol">${node('aa')}${node('ab')}${node('ba')}${node('bb')}</div></div>`);
@@ -642,6 +650,9 @@ function achList(){
     {id:'disc10',grp:'Ontdekken',n:'Verzamelaar',d:'Ontdek 10 soorten',v:D,g:10,p:2},
     {id:'disc25',grp:'Ontdekken',n:'Vissenkenner',d:'Ontdek 25 soorten',v:D,g:25,p:4},
     {id:'disc40',grp:'Ontdekken',n:'Zeebioloog',d:'Ontdek 40 soorten',v:D,g:40,p:6},
+    {id:'guest6',grp:'Ontdekken',n:'Gastvrij',d:'Zie alle 6 gewone gasten',v:GUESTS.filter(g=>!g.leg&&S.guests&&S.guests[g.id]).length,g:6,p:3},
+    {id:'guestLeg',grp:'Ontdekken',n:'Legende',d:'Zie een legendarische gast',v:GUESTS.filter(g=>g.leg&&S.guests&&S.guests[g.id]).length,g:1,p:3},
+    {id:'guestAll',grp:'Ontdekken',n:'Gastenboek vol',d:'Zie alle '+GUESTS.length+' gasten',v:GUESTS.filter(g=>S.guests&&S.guests[g.id]).length,g:GUESTS.length,p:10},
     {id:'evo1',grp:'Evolutie',n:'Eerste stap',d:'Laat een vis evolueren',v:st('evolved'),g:1,p:1},
     {id:'evo10',grp:'Evolutie',n:'Kweker',d:'Laat 10× een vis evolueren',v:st('evolved'),g:10,p:3},
     {id:'evo30',grp:'Evolutie',n:'Meesterkweker',d:'Laat 30× een vis evolueren',v:st('evolved'),g:30,p:6},
@@ -709,6 +720,59 @@ function dailyCheck(){
     <p style="font-size:12px;color:var(--muted);margin:0 0 6px">Sla je een dag over, dan begint de reeks opnieuw.</p><button class="btn p" onclick="closeM()">Ophalen: +${r.c} munten${r.p?' en +'+r.p+' parel'+(r.p>1?'s':''):''}</button></div>`);
   sfx('coin');
 }
+// ================= bezoekers: zwemmen af en toe langs; tikken = beloning; Gastenboek =================
+const GCFG={every:[90,180],legendChance:1/40,swim:16,coins:[15,30],xp:5,legendPearls:5,legendCoins:100,firstPearl:1};
+let GUESTS=[{id:'schildpad',n:'Zandflipper'},{id:'kwal',n:'Krulkwalletje'},{id:'zeepaard',n:'Kroonkruller'},{id:'rog',n:'Vleugelwip'},{id:'octopus',n:'Krulknuffel'},{id:'krab',n:'Schaarkabouter'},
+  {id:'parelwalvis',n:'Parelplons',leg:true},{id:'kristalkwal',n:'Amethientje',leg:true},{id:'komeetrog',n:'Sterrenzwier',leg:true}];
+const GART={};let guest=null,guestT=40+Math.random()*60; // eerste bezoek na 40-100 s
+G4U_JSON('art/gasten/gasten.json').then(j=>{if(Array.isArray(j))j.forEach(v=>{const id=(v.bestand||'').replace(/^gast_|\.png$/g,''),g=GUESTS.find(q=>q.id===id);if(g){if(v.naam)g.n=v.naam;g.leg=!!v.zeldzaam;}});});
+G4U_ART('art/gasten/',GUESTS.map(g=>'gast_'+g.id),{},(n,im)=>{GART[n.slice(5)]=im;});
+function spawnGuest(forceId){
+  const pool=GUESTS.filter(g=>GART[g.id]);if(!pool.length)return;
+  const legs=pool.filter(g=>g.leg),norm=pool.filter(g=>!g.leg);
+  const g=forceId?pool.find(q=>q.id===forceId):(legs.length&&Math.random()<GCFG.legendChance?pick(legs):pick(norm));if(!g)return;
+  const im=GART[g.id],walk=g.id==='krab',drift=/kwal/.test(g.id),dir=Math.random()<.5?1:-1;
+  const sz=W*(g.leg?.13:.1)*(g.id==='zeepaard'?.75:1),w=im.width>=im.height?sz:sz*im.width/im.height,h=w*im.height/im.width;
+  const top=Math.max(90,H*.18),bot=(walk?SAND:dropFloor()-h*.6);
+  guest={g,w,h,dir,x:dir>0?-w:W+w,y:walk?Math.min(SAND,dropFloor()+34)-h*.5:top+Math.random()*Math.max(10,bot-top),t:0,sp:(W+2*w)/(GCFG.swim*(drift?1.35:1)),walk,drift,caught:false};
+  if(g.leg){toast('✨ Een legendarische gast zwemt langs – snel, tik erop!');sfx('new');}
+}
+function updGuest(dt){
+  if(!guest){if(!modalOpen()&&!document.hidden){guestT-=dt;if(guestT<=0){guestT=GCFG.every[0]+Math.random()*(GCFG.every[1]-GCFG.every[0]);spawnGuest();}}return;}
+  const q=guest;q.t+=dt;const sp=q.caught?q.sp*2.2:q.sp;q.x+=q.dir*sp*dt;
+  if(q.drift)q.y+=Math.sin(q.t*1.6)*12*dt;else if(!q.walk)q.y+=Math.sin(q.t*1.1)*8*dt;
+  if(q.caught)q.y-=40*dt;
+  if(q.x<-q.w*1.2||q.x>W+q.w*1.2)guest=null;
+}
+function drawGuest(x,t){
+  const q=guest;if(!q)return;const im=GART[q.g.id];if(!im)return;
+  x.save();x.translate(q.x,q.y);
+  if(q.g.leg){const r=Math.max(q.w,q.h)*.62;const gr=x.createRadialGradient(0,0,r*.2,0,0,r);gr.addColorStop(0,'rgba(255,240,180,.35)');gr.addColorStop(1,'rgba(255,240,180,0)');x.fillStyle=gr;x.beginPath();x.arc(0,0,r,0,7);x.fill();
+    for(let i=0;i<5;i++){const a=t/600+i*1.26,rr=r*.8;x.fillStyle='rgba(255,255,255,'+(.5+.5*Math.sin(t/200+i))+')';x.beginPath();x.arc(Math.cos(a)*rr,Math.sin(a)*rr*.6,2.2,0,7);x.fill();}}
+  const walkFlip=q.walk?1:q.dir;x.scale(walkFlip,1);
+  if(q.walk)x.rotate(Math.sin(q.t*8)*.05);else x.rotate(Math.sin(q.t*2)*.05);
+  if(q.drift){const s=1+Math.sin(q.t*3)*.05;x.scale(1/s,s);}
+  x.drawImage(im,-q.w/2,-q.h/2,q.w,q.h);x.restore();
+}
+function tapGuest(x,y){
+  const q=guest;if(!q||q.caught)return false;if(Math.abs(x-q.x)>q.w*.55+10||Math.abs(y-q.y)>q.h*.55+10)return false;
+  q.caught=true;S.guests=S.guests||{};const first=!S.guests[q.g.id];S.guests[q.g.id]=(S.guests[q.g.id]||0)+1;
+  let txt;
+  if(q.g.leg){S.pearls+=GCFG.legendPearls;S.coins+=GCFG.legendCoins;txt=`✨ ${q.g.n}! +${GCFG.legendPearls} parels, +${GCFG.legendCoins} munten`;sfx('new');}
+  else{const c=GCFG.coins[0]+rnd(GCFG.coins[1]-GCFG.coins[0]+1);S.coins+=c;track('coins',c);addXP(GCFG.xp,q.x,q.y);if(first)S.pearls+=GCFG.firstPearl;txt=`${q.g.n}: +${c} munten${first?' · nieuw in je Gastenboek (+1 parel)':''}`;sfx('coin');}
+  if(q.g.leg&&first)txt+=' · nieuw in je Gastenboek';
+  fx.push({x:q.x,y:q.y-q.h*.5,t:0,txt:q.g.leg?'✨':'+'});toast(txt);updTop();save();return true;
+}
+function guestbookUI(){
+  S.guests=S.guests||{};const seen=GUESTS.filter(g=>S.guests[g.id]).length;
+  open(hd(`Gastenboek <small class="asum">${seen}/${GUESTS.length} gasten gezien</small>`)+`<div class="tchips"><button class="tchip" style="flex:none;padding:4px 12px" onclick="stamboomUI()"><b>← Stamboom</b></button></div>
+    <div class="gbook">${GUESTS.map(g=>{const n=S.guests[g.id]||0;return `<div class="gitem ${g.leg?'leg':''} ${n?'':'unk'}" data-g="${g.id}"><div class="gn">${n?g.n:'???'}</div><small>${g.leg?'Legendarisch':'Gewoon'}${n?' · '+n+'×':''}</small></div>`;}).join('')}</div>
+    <p style="font-size:11.5px;color:var(--muted);margin:6px 0 0">Bezoekers zwemmen af en toe langs. Tik erop voor een beloning. Legendarische gasten komen zelden.</p>`);
+  sheet.querySelectorAll('.gitem').forEach(el=>{const g=GUESTS.find(q=>q.id===el.dataset.g),im=GART[g.id];if(!im)return;const c=document.createElement('canvas'),w=86,h=54,d=Math.min(2,devicePixelRatio||1);c.width=w*d;c.height=h*d;c.style.width=w+'px';c.style.height=h+'px';
+    const x=c.getContext('2d');x.scale(d,d);const s=Math.min(w/im.width,h/im.height)*.95;x.drawImage(im,(w-im.width*s)/2,(h-im.height*s)/2,im.width*s,im.height*s);
+    if(!S.guests[g.id]){x.globalCompositeOperation='source-atop';x.fillStyle='rgba(23,56,74,.82)';x.fillRect(0,0,w,h);}el.prepend(c);});
+}
+window.guestbookUI=guestbookUI;window.spawnGuest=spawnGuest;
 // meer-menu
 const MENU_SVG={"settings": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m10 2.8-.5 2.1-2 .9-1.9-.8-2 3.5 1.5 1.4v2.2L3.6 13.5l2 3.5 1.9-.7 2 .9.5 2.3h4l.5-2.3 2-.9 1.9.7 2-3.5-1.5-1.4v-2.2l1.5-1.4-2-3.5-1.9.8-2-.9L14 2.8Z\" fill=\"#3cb9d6\"/><circle cx=\"12\" cy=\"11.6\" r=\"3\" fill=\"#fff\"/><circle cx=\"12\" cy=\"11.6\" r=\"1.1\" fill=\"#ff8a6b\" stroke=\"none\"/></svg>", "pearl": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 15.5C3 10 7 6 12 6s9 4 9 9.5Z\" fill=\"#f6b7c8\"/><path d=\"M12 6v9.5M7.5 7.8 9.5 15.5M16.5 7.8l-2 7.7\" stroke-width=\"1.1\"/><path d=\"M3 15.5h18l-1.5 3.5h-15Z\" fill=\"#f6b7c8\"/><circle cx=\"12\" cy=\"15.5\" r=\"3\" fill=\"#fff\"/><path d=\"M10.9 14.6a1.3 1.3 0 0 1 1.2-.9\" stroke-width=\"1\"/></svg>", "games": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#ff8a6b\"/><rect x=\"13\" y=\"3\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#ffcb4f\"/><rect x=\"3\" y=\"13\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#3cb9d6\"/><rect x=\"13\" y=\"13\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#b98be8\"/></svg>", "help": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12.5\" r=\"8.5\" fill=\"#e3f6fb\"/><path d=\"M9.4 10a2.7 2.7 0 1 1 3.6 2.6c-.8.4-1 .9-1 1.6M12 17.2h.01\" stroke-width=\"1.8\"/><path d=\"M6.3 9.2a6.3 6.3 0 0 1 3-3\" stroke=\"#fff\" stroke-width=\"1.3\"/><circle cx=\"20.2\" cy=\"4\" r=\"1.1\" fill=\"#fff\" stroke=\"#3cb9d6\" stroke-width=\"1\"/></svg>", "jackpot": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"6\" width=\"15\" height=\"15\" rx=\"2.5\" fill=\"#ff8a6b\"/><rect x=\"5\" y=\"9\" width=\"11\" height=\"6\" rx=\"1.2\" fill=\"#fff\"/><circle cx=\"7.6\" cy=\"12\" r=\"1.2\" fill=\"#3cb9d6\" stroke-width=\"1\"/><circle cx=\"10.5\" cy=\"12\" r=\"1.2\" fill=\"#ffcb4f\" stroke-width=\"1\"/><circle cx=\"13.4\" cy=\"12\" r=\"1.2\" fill=\"#b98be8\" stroke-width=\"1\"/><path d=\"M6 18h9\"/><path d=\"M18 9h1.5a1 1 0 0 1 1 1v4\"/><circle cx=\"20.5\" cy=\"7.5\" r=\"1.6\" fill=\"#fff\"/><path d=\"M6.5 6 8 3.5h5L14.5 6\" fill=\"#ffcb4f\"/></svg>", "tasks": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4.5\" y=\"4\" width=\"15\" height=\"17.5\" rx=\"2.2\" fill=\"#e3f6fb\"/><rect x=\"8.5\" y=\"2.2\" width=\"7\" height=\"3.6\" rx=\"1.1\" fill=\"#ffcb4f\"/><path d=\"m7.5 10.2 1.3 1.3 2.4-2.6M13 10.5h3.5M7.5 15.2l1.3 1.3 2.4-2.6M13 15.5h3.5\" stroke=\"#17384a\"/></svg>", "trophy": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 3h8v6a4 4 0 0 1-8 0ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v6m-4 2h8m-7-2h6\"/></svg>", "sea": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.5 13.5q2.4-2.6 4.8 0t4.7 0q2.4-2.6 4.7 0t4.8 0V21H2.5Z\" fill=\"#3cb9d6\"/><path d=\"M2.5 17.5q2.4-2.6 4.8 0t4.7 0q2.4-2.6 4.7 0t4.8 0\" stroke=\"#fff\" stroke-width=\"1.2\"/><g transform=\"translate(13 7.5) scale(1.35 1.35)\" stroke-width=\"0.96\"><path d=\"M-2.6 0-4.6-1.9-4 0-4.6 1.9Z\" fill=\"#ff8a6b\"/><path d=\"M-2.8 0c1.5-2.4 4.6-2.4 6.1 0-1.5 2.4-4.6 2.4-6.1 0Z\" fill=\"#ff8a6b\"/><circle cx=\"1.5\" cy=\"-.35\" r=\".42\" fill=\"#17384a\" stroke=\"none\"/></g><circle cx=\"6\" cy=\"7\" r=\"1.2\" fill=\"#fff\" stroke=\"#3cb9d6\" stroke-width=\"1\"/><circle cx=\"7.8\" cy=\"4.2\" r=\".8\" fill=\"#fff\" stroke=\"#3cb9d6\" stroke-width=\".9\"/></svg>", "tree": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"10\" y=\"2\" width=\"4\" height=\"4\" rx=\"1\"/><path d=\"M12 6v5M4 15v-4h16v4m-8-4v4\"/><rect x=\"2\" y=\"15\" width=\"4\" height=\"5\" rx=\"1\"/><rect x=\"10\" y=\"15\" width=\"4\" height=\"5\" rx=\"1\"/><rect x=\"18\" y=\"15\" width=\"4\" height=\"5\" rx=\"1\"/></svg>"};
 const MENU_ITEMS=[['jackpot','Jackpot','jackpotUI()'],['tree','Stamboom','stamboomUI()'],['tasks','Taken','tasksUI()'],['sea','Zeeën',"shop('sea')"],
@@ -725,11 +789,12 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>✋ Inrichten</b> – sleep decoraties naar een andere plek.</p>
   <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
-  <p><b>✏️ Namen</b> – tik op een vis om hem een eigen naam te geven of als ⭐ favoriet te markeren (favorieten verkoop je niet). <b>🎁 Dagbonus</b> – elke dag spelen geeft een oplopende beloning.</p>
+  <p><b>✏️ Namen</b> – tik op een vis voor een eigen naam of ⭐ favoriet. <b>🎁 Dagbonus</b> – elke dag spelen = grotere beloning.</p>
+  <p><b>📖 Gasten</b> – tik op bezoekers voor munten; legendarische gasten zijn zeldzaam en geven parels. Zie het Gastenboek (via Stamboom).</p>
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
-  <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='5.1 · namen en dagbonus';
+  </div><button class="btn p" onclick="closeM()">Begrepen</button>`);
+const VERSION='5.2 · bezoekers en Gastenboek';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <div class="row2" style="margin-top:8px;align-items:center"><span style="font-size:12.5px;font-weight:700">${CFG.seas[S.cur].n}: ${T().free?'geen beperkingen (max. '+CFG.freeFish+' vissen, '+CFG.freeDecor+' decoraties)':'normaal ('+fishCap()+' vissen, '+CFG.decorMax+' decoraties)'}</span><button class="btn ${T().free?'p':''}" onclick="T().free=!T().free;save();settingsUI()">Beperkingen: ${T().free?'uit':'aan'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);

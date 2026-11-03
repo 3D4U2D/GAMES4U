@@ -1,0 +1,47 @@
+[
+  {
+    "bestand": "gast_schildpad.png",
+    "naam": "Zandflipper",
+    "zeldzaam": false
+  },
+  {
+    "bestand": "gast_kwal.png",
+    "naam": "Krulkwalletje",
+    "zeldzaam": false
+  },
+  {
+    "bestand": "gast_zeepaard.png",
+    "naam": "Kroonkruller",
+    "zeldzaam": false
+  },
+  {
+    "bestand": "gast_rog.png",
+    "naam": "Vleugelwip",
+    "zeldzaam": false
+  },
+  {
+    "bestand": "gast_octopus.png",
+    "naam": "Krulknuffel",
+    "zeldzaam": false
+  },
+  {
+    "bestand": "gast_krab.png",
+    "naam": "Schaarkabouter",
+    "zeldzaam": false
+  },
+  {
+    "bestand": "gast_parelwalvis.png",
+    "naam": "Parelplons",
+    "zeldzaam": true
+  },
+  {
+    "bestand": "gast_kristalkwal.png",
+    "naam": "Amethientje",
+    "zeldzaam": true
+  },
+  {
+    "bestand": "gast_komeetrog.png",
+    "naam": "Sterrenzwier",
+    "zeldzaam": true
+  }
+]

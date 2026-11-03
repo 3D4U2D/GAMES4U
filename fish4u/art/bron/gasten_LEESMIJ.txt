@@ -1,0 +1,22 @@
+Fish4U - bezoekers en legendarische gasten v1
+
+INHOUD
+gast_schildpad.png - Zandflipper (gewoon)
+gast_kwal.png - Krulkwalletje (gewoon)
+gast_zeepaard.png - Kroonkruller (gewoon)
+gast_rog.png - Vleugelwip (gewoon)
+gast_octopus.png - Krulknuffel (gewoon)
+gast_krab.png - Schaarkabouter (gewoon)
+gast_parelwalvis.png - Parelplons (legendarisch)
+gast_kristalkwal.png - Amethientje (legendarisch)
+gast_komeetrog.png - Sterrenzwier (legendarisch)
+
+vissen_gasten.json - exacte velden: bestand, naam, zeldzaam (boolean).
+overzicht.png - alle negen gasten in een overzicht op blauw; uitsluitend presentatie, geen sprite.
+generatieprompts.json - prompts van de ingebouwde beeldgeneratie.
+
+SPRITES
+9 originele glossy cartoon PNGs met echte transparantie. Maximaal 768px breed, strak bijgesneden, volledig lichaam. Alle zwemmende gasten kijken naar rechts; roggen schuin van boven, krab vooraanzicht staand. Geen tekst of bodemschaduw in sprites. Overzicht is niet op onderlinge spelgrootte.
+
+VOOR CLAUDE
+Voeg de gast_*.png bestanden toe als bezoekersassets, apart van de visfamilies. Lees vissen_gasten.json als gastenlijst. Deze gasten zijn tijdelijke passanten en geen aquariumbezitters/evolutiefamilies. Gebruik zeldzaam voor de drie legendarische gasten. Bepaal bezoekkansen, beloningen, animatie en schaal in de spelcode; dit pakket schrijft daar geen waarden voor voor. Toon ontdekkingen in Gastenboek volgens de bestaande spelregels.
