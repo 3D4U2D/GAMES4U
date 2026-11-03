@@ -10,7 +10,7 @@ Na 1–2 minuten staat het live.
 - PNG, **transparante achtergrond** (geen wit vlak), geen tekst, geen schaduw op de grond.
 - Onderwerp volledig in beeld, strak bijgesneden, niets afgesneden.
 - **Zijaanzicht, kijkend naar rechts** (vissen, vogels).
-- Formaat ca. 256–512 px breed is genoeg; groter maakt de app trager.
+- Formaat ca. 256–512 px breed is genoeg; groter maakt de app trager. Claude verkleint vissen, gasten en decor bij het inbouwen naar max. 512 px en comprimeert ze (ca. 40–60 KB per plaatje).
 - Eén stijl aanhouden over alle plaatjes (zelfde belichting, lijndikte, kleurgebruik).
 - Alleen **eigen, originele ontwerpen** – geen figuren, vissen of logo's uit bestaande games.
 

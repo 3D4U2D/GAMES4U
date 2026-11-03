@@ -867,5 +867,84 @@
   "fase": 3,
   "ouder": "vis_11b",
   "evoluties": []
+ },
+ {
+  "id": "vis_12",
+  "bestand": "vis_12.png",
+  "naam": "Pluisje",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_12a",
+   "vis_12b"
+  ]
+ },
+ {
+  "id": "vis_12a",
+  "bestand": "vis_12a.png",
+  "naam": "Kuifvin",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 2,
+  "ouder": "vis_12",
+  "evoluties": [
+   "vis_12aa",
+   "vis_12ab"
+  ]
+ },
+ {
+  "id": "vis_12b",
+  "bestand": "vis_12b.png",
+  "naam": "Krulvacht",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 2,
+  "ouder": "vis_12",
+  "evoluties": [
+   "vis_12ba",
+   "vis_12bb"
+  ]
+ },
+ {
+  "id": "vis_12aa",
+  "bestand": "vis_12aa.png",
+  "naam": "Hoogvin",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 3,
+  "ouder": "vis_12a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_12ab",
+  "bestand": "vis_12ab.png",
+  "naam": "Brompluis",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 3,
+  "ouder": "vis_12a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_12ba",
+  "bestand": "vis_12ba.png",
+  "naam": "Krulhoorn",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 3,
+  "ouder": "vis_12b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_12bb",
+  "bestand": "vis_12bb.png",
+  "naam": "Stormvacht",
+  "familie": "familie_12",
+  "familienaam": "Hooglander",
+  "fase": 3,
+  "ouder": "vis_12b",
+  "evoluties": []
  }
 ]

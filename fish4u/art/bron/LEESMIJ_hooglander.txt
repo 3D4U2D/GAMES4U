@@ -1,0 +1,18 @@
+Fish4U - Hooglander familie 12 v1
+
+7 PNG-sprites met echte transparantie, max. 1024px breed. Volledige compositie, naar rechts gericht. Overzicht heeft blauwe achtergrond en labels, uitsluitend voor presentatie.
+
+Hooglander: lichamelijke evolutie van baby via brede of sierlijke tak naar volwassen hoorns, vacht en vinnen.
+
+vis_12.png - Pluisje - ouder: None
+vis_12a.png - Kuifvin - ouder: vis_12.png
+vis_12b.png - Krulvacht - ouder: vis_12.png
+vis_12aa.png - Hoogvin - ouder: vis_12a.png
+vis_12ab.png - Brompluis - ouder: vis_12a.png
+vis_12ba.png - Krulhoorn - ouder: vis_12b.png
+vis_12bb.png - Stormvacht - ouder: vis_12b.png
+
+VOOR CLAUDE
+Voeg de 7 vis_*.png toe aan de vissenmap. Voeg vissen.json samen met de bestaande catalogus op bestandsnaam, vervang nooit andere families. Gebruik ouder voor de takken. Behoud bestaande spelwaarden en compacte eindgrootte (circa 9-10% aquariumbreedte inclusief hele compositie). Overzicht toont geen exacte spelverhoudingen. De Scrat-bel, eikel en eventuele tweede personage zijn onderdeel van dezelfde PNG en hebben geen losse spelwerking. Geen prijzen, tijden of kansen meegeleverd.
+
+Gemaakt met ingebouwde beeldgeneratie. Prompts bijgevoegd.
