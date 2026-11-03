@@ -462,19 +462,27 @@ function setTool(t){tool=t;document.querySelectorAll('.dock [data-tool]').forEac
 document.querySelectorAll('.dock [data-tool]').forEach(b=>b.onclick=()=>{ensureAudio();setTool(b.dataset.tool);});
 
 // vis-info
+let nickEdit=null;
 function fishInfo(f){
   const r=rarity(f.g),val=VALUE[r]*(adult(f)?15:5)*(1+(f.tier||0));
-  open(hd(fname(f.g))+`<div class="two"><div><canvas class="big" id="bigc"></canvas>
+  const title=(f.fav?'⭐ ':'')+(f.nick?esc(f.nick):fname(f.g));
+  const nameRow=nickEdit===f.id?`<div class="row2" style="margin:0 0 6px"><input id="nickIn" value="${esc(f.nick||'')}" maxlength="18" placeholder="${fname(f.g)}" style="font:inherit;font-weight:800;padding:6px 8px;border:1px solid var(--line);border-radius:10px;min-width:0"><button class="btn p" style="margin:0;height:36px" onclick="nickSave('${f.id}')">Opslaan</button></div>`
+    :`<div class="row2" style="margin:0 0 6px"><button class="btn" style="margin:0;height:34px" onclick="nickEdit='${f.id}';fishInfoId('${f.id}')">✏️ ${f.nick?'Naam wijzigen':'Naam geven'}</button><button class="btn ${f.fav?'p':''}" style="margin:0;height:34px" onclick="favToggle('${f.id}')">${f.fav?'⭐ Favoriet':'☆ Favoriet'}</button></div>`;
+  open(hd(title+(f.nick?` <small style="font-size:12px;color:var(--muted)">${fname(f.g)}</small>`:''))+nameRow+`<div class="two"><div><canvas class="big" id="bigc"></canvas>
     <div style="text-align:center;margin-top:4px">${rt(r)} <span class="rt" style="background:#5b7d93">Vorm ${(f.tier||0)+1}/3</span></div></div><div>
     <div class="kv"><span>${adult(f)?'Volwassen':'Groeit nog'}</span><span>${Math.min(6,f.grow)}/6</span></div><div class="bar"><i style="width:${Math.min(1,f.grow/6)*100}%;background:#3fb06a"></i></div>
     <div class="kv"><span>Honger</span><span>${Math.round(f.hunger)}%</span></div><div class="bar"><i style="width:${f.hunger}%;background:${f.hunger>70?'#e8202a':'#ff9f43'}"></i></div>
     <p>${adult(f)?((f.tier||0)<2?'Deze vis kan evolueren via 🧬 Evolutie.':'Deze vis is volledig geëvolueerd.'):'Voer hem om te laten groeien. Volwassen vissen laten munten en XP vallen en kunnen evolueren.'}</p>
-    <div class="row2"><button class="btn" onclick="sellFish('${f.id}')">Verkopen (+${val})</button>${evoOptions(f)?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="closeM()">Oké</button>'}</div></div></div>`);
+    <div class="row2"><button class="btn" ${f.fav?'disabled title="Favorieten verkoop je niet"':''} onclick="sellFish('${f.id}')">${f.fav?'Niet te koop':'Verkopen (+'+val+')'}</button>${evoOptions(f)?`<button class="btn p" onclick="evoUI('${f.id}')">Evolueren</button>`:'<button class="btn p" onclick="closeM()">Oké</button>'}</div></div></div>`);
   liveFish('bigc',f.g,280,200,150);
+  const ni=$('nickIn');if(ni){ni.focus();ni.onkeydown=e=>{if(e.key==='Enter')nickSave(f.id);};}
 }
+window.fishInfoId=id=>{const f=T().fish.find(q=>q.id===id);if(f)fishInfo(f);};
+window.nickSave=id=>{const f=T().fish.find(q=>q.id===id);if(!f)return;const v=($('nickIn').value||'').trim().slice(0,18);if(v)f.nick=v;else delete f.nick;nickEdit=null;save();fishInfo(f);};
+window.favToggle=id=>{const f=T().fish.find(q=>q.id===id);if(!f)return;f.fav=!f.fav;if(!f.fav)delete f.fav;save();fishInfo(f);};
 window.sellFish=id=>{const t=T();if(t.fish.length<=1){toast('Je hebt minstens één vis nodig');return;}
   if(S.evo&&S.evo.id===id){toast('Deze vis zit in de evolutie');return;}
-  const f=t.fish.find(q=>q.id===id);if(!f)return;const val=VALUE[rarity(f.g)]*(adult(f)?15:5)*(1+(f.tier||0));
+  const f=t.fish.find(q=>q.id===id);if(!f)return;if(f.fav){toast('Favorieten verkoop je niet');return;}const val=VALUE[rarity(f.g)]*(adult(f)?15:5)*(1+(f.tier||0));
   t.fish.splice(t.fish.indexOf(f),1);S.coins+=val;addXP(3);syncSwimmers();updTop();save();close();sfx('coin');toast(`Verkocht: +${val}`);};
 
 // winkel: Vissen, Decor, Thema's, Zeeën
@@ -653,6 +661,7 @@ function achList(){
     {id:'seaAll',grp:'Inrichten',n:'Oceaanbaas',d:'Koop alle '+CFG.seas.length+' zeeën',v:S.tanks.length,g:CFG.seas.length,p:6},
     {id:'lvl10',grp:'Groei',n:'Niveau 10',d:'Bereik niveau 10',v:S.lvl,g:10,p:3},
     {id:'lvl20',grp:'Groei',n:'Niveau 20',d:'Bereik niveau 20',v:S.lvl,g:20,p:5},
+    {id:'streak7',grp:'Groei',n:'Trouwe verzorger',d:'Speel 7 dagen op rij',v:S.bestStreak||0,g:7,p:3},
     {id:'task10',grp:'Groei',n:'Klusjesvis',d:'Rond 10 taken af',v:st('tasks'),g:10,p:2},
     {id:'task50',grp:'Groei',n:'Takenkampioen',d:'Rond 50 taken af',v:st('tasks'),g:50,p:5},
     {id:'spin25',grp:'Jackpot',n:'Draaier',d:'Speel 25× jackpot',v:st('spins'),g:25,p:1},
@@ -686,6 +695,20 @@ function achUI(tab){
 window.achUI=achUI;
 window.achClaim=id=>{const x=achList().find(q=>q.id===id);if(!x||!x.got||x.claimed)return;S.ach[id]=Date.now();S.pearls+=x.p;sfx('new');toast('+'+x.p+' parels');updTop();save();achCheck();achUI(x.grp);};
 setInterval(achCheck,1500);
+
+// ================= dagbonus: elke dag spelen = oplopende beloning (7-daagse reeks) =================
+const DAILY=[{c:25},{c:40},{c:60},{c:50,p:1},{c:80},{c:100},{c:150,p:3}];
+const dayKey=(d)=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function dailyCheck(){
+  const tk=dayKey();if(S.dayLast===tk)return;
+  const y=new Date();y.setDate(y.getDate()-1);
+  S.streak=S.dayLast===dayKey(y)?(S.streak||0)+1:1;S.dayLast=tk;S.bestStreak=Math.max(S.bestStreak||0,S.streak);
+  const i=(S.streak-1)%7,r=DAILY[i];S.coins+=r.c;S.pearls+=r.p||0;updTop();save();
+  open(`<div style="text-align:center"><h2 style="margin:0 0 4px">Dagbonus · dag ${S.streak}</h2><p style="margin:0 0 8px">${S.streak>1?'Je bent '+S.streak+' dagen op rij langs geweest!':'Kom morgen terug voor een grotere beloning.'}</p>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:10px">${DAILY.map((d,k)=>`<div class="item" style="padding:6px 2px;${k===i?'border-color:#3fb06a;background:#effaf2':k<i?'opacity:.55':''}"><div style="font-size:11px;font-weight:800">Dag ${k+1}</div><div style="font-size:13px;font-weight:900">🪙 ${d.c}</div>${d.p?`<div style="font-size:12px;font-weight:900">🫧 ${d.p}</div>`:''}${k<i?'<div style="font-size:11px">✔</div>':''}</div>`).join('')}</div>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 6px">Sla je een dag over, dan begint de reeks opnieuw.</p><button class="btn p" onclick="closeM()">Ophalen: +${r.c} munten${r.p?' en +'+r.p+' parel'+(r.p>1?'s':''):''}</button></div>`);
+  sfx('coin');
+}
 // meer-menu
 const MENU_SVG={"settings": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m10 2.8-.5 2.1-2 .9-1.9-.8-2 3.5 1.5 1.4v2.2L3.6 13.5l2 3.5 1.9-.7 2 .9.5 2.3h4l.5-2.3 2-.9 1.9.7 2-3.5-1.5-1.4v-2.2l1.5-1.4-2-3.5-1.9.8-2-.9L14 2.8Z\" fill=\"#3cb9d6\"/><circle cx=\"12\" cy=\"11.6\" r=\"3\" fill=\"#fff\"/><circle cx=\"12\" cy=\"11.6\" r=\"1.1\" fill=\"#ff8a6b\" stroke=\"none\"/></svg>", "pearl": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 15.5C3 10 7 6 12 6s9 4 9 9.5Z\" fill=\"#f6b7c8\"/><path d=\"M12 6v9.5M7.5 7.8 9.5 15.5M16.5 7.8l-2 7.7\" stroke-width=\"1.1\"/><path d=\"M3 15.5h18l-1.5 3.5h-15Z\" fill=\"#f6b7c8\"/><circle cx=\"12\" cy=\"15.5\" r=\"3\" fill=\"#fff\"/><path d=\"M10.9 14.6a1.3 1.3 0 0 1 1.2-.9\" stroke-width=\"1\"/></svg>", "games": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#ff8a6b\"/><rect x=\"13\" y=\"3\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#ffcb4f\"/><rect x=\"3\" y=\"13\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#3cb9d6\"/><rect x=\"13\" y=\"13\" width=\"8\" height=\"8\" rx=\"2\" fill=\"#b98be8\"/></svg>", "help": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12.5\" r=\"8.5\" fill=\"#e3f6fb\"/><path d=\"M9.4 10a2.7 2.7 0 1 1 3.6 2.6c-.8.4-1 .9-1 1.6M12 17.2h.01\" stroke-width=\"1.8\"/><path d=\"M6.3 9.2a6.3 6.3 0 0 1 3-3\" stroke=\"#fff\" stroke-width=\"1.3\"/><circle cx=\"20.2\" cy=\"4\" r=\"1.1\" fill=\"#fff\" stroke=\"#3cb9d6\" stroke-width=\"1\"/></svg>", "jackpot": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"6\" width=\"15\" height=\"15\" rx=\"2.5\" fill=\"#ff8a6b\"/><rect x=\"5\" y=\"9\" width=\"11\" height=\"6\" rx=\"1.2\" fill=\"#fff\"/><circle cx=\"7.6\" cy=\"12\" r=\"1.2\" fill=\"#3cb9d6\" stroke-width=\"1\"/><circle cx=\"10.5\" cy=\"12\" r=\"1.2\" fill=\"#ffcb4f\" stroke-width=\"1\"/><circle cx=\"13.4\" cy=\"12\" r=\"1.2\" fill=\"#b98be8\" stroke-width=\"1\"/><path d=\"M6 18h9\"/><path d=\"M18 9h1.5a1 1 0 0 1 1 1v4\"/><circle cx=\"20.5\" cy=\"7.5\" r=\"1.6\" fill=\"#fff\"/><path d=\"M6.5 6 8 3.5h5L14.5 6\" fill=\"#ffcb4f\"/></svg>", "tasks": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"4.5\" y=\"4\" width=\"15\" height=\"17.5\" rx=\"2.2\" fill=\"#e3f6fb\"/><rect x=\"8.5\" y=\"2.2\" width=\"7\" height=\"3.6\" rx=\"1.1\" fill=\"#ffcb4f\"/><path d=\"m7.5 10.2 1.3 1.3 2.4-2.6M13 10.5h3.5M7.5 15.2l1.3 1.3 2.4-2.6M13 15.5h3.5\" stroke=\"#17384a\"/></svg>", "trophy": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 3h8v6a4 4 0 0 1-8 0ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v6m-4 2h8m-7-2h6\"/></svg>", "sea": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.5 13.5q2.4-2.6 4.8 0t4.7 0q2.4-2.6 4.7 0t4.8 0V21H2.5Z\" fill=\"#3cb9d6\"/><path d=\"M2.5 17.5q2.4-2.6 4.8 0t4.7 0q2.4-2.6 4.7 0t4.8 0\" stroke=\"#fff\" stroke-width=\"1.2\"/><g transform=\"translate(13 7.5) scale(1.35 1.35)\" stroke-width=\"0.96\"><path d=\"M-2.6 0-4.6-1.9-4 0-4.6 1.9Z\" fill=\"#ff8a6b\"/><path d=\"M-2.8 0c1.5-2.4 4.6-2.4 6.1 0-1.5 2.4-4.6 2.4-6.1 0Z\" fill=\"#ff8a6b\"/><circle cx=\"1.5\" cy=\"-.35\" r=\".42\" fill=\"#17384a\" stroke=\"none\"/></g><circle cx=\"6\" cy=\"7\" r=\"1.2\" fill=\"#fff\" stroke=\"#3cb9d6\" stroke-width=\"1\"/><circle cx=\"7.8\" cy=\"4.2\" r=\".8\" fill=\"#fff\" stroke=\"#3cb9d6\" stroke-width=\".9\"/></svg>", "tree": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#17384a\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"10\" y=\"2\" width=\"4\" height=\"4\" rx=\"1\"/><path d=\"M12 6v5M4 15v-4h16v4m-8-4v4\"/><rect x=\"2\" y=\"15\" width=\"4\" height=\"5\" rx=\"1\"/><rect x=\"10\" y=\"15\" width=\"4\" height=\"5\" rx=\"1\"/><rect x=\"18\" y=\"15\" width=\"4\" height=\"5\" rx=\"1\"/></svg>"};
 const MENU_ITEMS=[['jackpot','Jackpot','jackpotUI()'],['tree','Stamboom','stamboomUI()'],['tasks','Taken','tasksUI()'],['sea','Zeeën',"shop('sea')"],
@@ -702,10 +725,11 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>✋ Inrichten</b> – sleep decoraties naar een andere plek.</p>
   <p><b>🧬 Evolutie</b> – een volwassen vis evolueert na een wachttijd naar één van twee nieuwe vormen, en daarna nog één keer.</p>
   <p><b>🛒 Winkel</b> – vissen, decor, thema's en extra zeeën; nieuwe spullen komen vrij per niveau.</p>
+  <p><b>✏️ Namen</b> – tik op een vis om hem een eigen naam te geven of als ⭐ favoriet te markeren (favorieten verkoop je niet). <b>🎁 Dagbonus</b> – elke dag spelen geeft een oplopende beloning.</p>
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='5.0 · meer vissen per zee';
+const VERSION='5.1 · namen en dagbonus';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <div class="row2" style="margin-top:8px;align-items:center"><span style="font-size:12.5px;font-weight:700">${CFG.seas[S.cur].n}: ${T().free?'geen beperkingen (max. '+CFG.freeFish+' vissen, '+CFG.freeDecor+' decoraties)':'normaal ('+fishCap()+' vissen, '+CFG.decorMax+' decoraties)'}</span><button class="btn ${T().free?'p':''}" onclick="T().free=!T().free;save();settingsUI()">Beperkingen: ${T().free?'uit':'aan'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
@@ -769,6 +793,8 @@ function sfx(k){if(S&&S.sound===false)return;switch(k){
 
 /* ================= start ================= */
 resize();syncSwimmers(true);updTop();setTool('pointer');
+(function dailyWait(){if(modalOpen()){setTimeout(dailyWait,1500);return;}dailyCheck();})();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{if(!modalOpen())dailyCheck();},800);});
 G4U_ART_SERIES('art/','vis_',99,(i,img)=>{ART_FISH[i]=img;updTop();
   const ev=ART_EVO[i]={};G4U_ART('art/',['a','b','aa','ab','ba','bb'].map(p=>artFile(i,p)),{},(n,im)=>{ev[n.slice(6)]=im;});}).then(cleanup);
 G4U_JSON('art/vissen.json').then(j=>{if(Array.isArray(j))j.forEach(v=>{if(v&&v.bestand)ART_NAMES[v.bestand.replace(/\.png$/,'')]=v;});});
