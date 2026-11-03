@@ -475,7 +475,7 @@ function fishInfo(f){
   const r=rarity(f.g),val=VALUE[r]*(adult(f)?15:5)*(1+(f.tier||0));
   const title=(f.fav?'⭐ ':'')+(f.nick?esc(f.nick):fname(f.g));
   const nameRow=nickEdit===f.id?`<div class="row2" style="margin:0 0 6px"><input id="nickIn" value="${esc(f.nick||'')}" maxlength="18" placeholder="${fname(f.g)}" style="font:inherit;font-weight:800;padding:6px 8px;border:1px solid var(--line);border-radius:10px;min-width:0"><button class="btn p" style="margin:0;height:36px" onclick="nickSave('${f.id}')">Opslaan</button></div>`
-    :`<div class="row2" style="margin:0 0 6px"><button class="btn" style="margin:0;height:34px" onclick="nickEdit='${f.id}';fishInfoId('${f.id}')">✏️ ${f.nick?'Naam wijzigen':'Naam geven'}</button><button class="btn ${f.fav?'p':''}" style="margin:0;height:34px" onclick="favToggle('${f.id}')">${f.fav?'⭐ Favoriet':'☆ Favoriet'}</button></div>`;
+    :`<div class="row2" style="margin:0 0 6px"><button class="btn" style="margin:0;height:34px" onclick="nickEdit='${f.id}';fishInfoId('${f.id}')">✏️ ${f.nick?'Naam wijzigen':'Naam geven'}</button><button class="btn ${f.fav?'p':''}" style="margin:0;height:34px" onclick="favToggle('${f.id}')">${f.fav?'⭐ Favoriet':'☆ Favoriet'}</button>${S.tanks.length>1?`<button class="btn" style="margin:0;height:34px" onclick="moveUI('${f.id}')">🌊 Verplaats</button>`:''}</div>`;
   open(hd(title+(f.nick?` <small style="font-size:12px;color:var(--muted)">${fname(f.g)}</small>`:''))+nameRow+`<div class="two"><div><canvas class="big" id="bigc"></canvas>
     <div style="text-align:center;margin-top:4px">${rt(r)} <span class="rt" style="background:#5b7d93">Vorm ${(f.tier||0)+1}/3</span></div></div><div>
     <div class="kv"><span>${adult(f)?'Volwassen':'Groeit nog'}</span><span>${Math.min(6,f.grow)}/6</span></div><div class="bar"><i style="width:${Math.min(1,f.grow/6)*100}%;background:#3fb06a"></i></div>
@@ -488,6 +488,13 @@ function fishInfo(f){
 window.fishInfoId=id=>{const f=T().fish.find(q=>q.id===id);if(f)fishInfo(f);};
 window.nickSave=id=>{const f=T().fish.find(q=>q.id===id);if(!f)return;const v=($('nickIn').value||'').trim().slice(0,18);if(v)f.nick=v;else delete f.nick;nickEdit=null;save();fishInfo(f);};
 window.favToggle=id=>{const f=T().fish.find(q=>q.id===id);if(!f)return;f.fav=!f.fav;if(!f.fav)delete f.fav;save();fishInfo(f);};
+window.moveUI=id=>{const f=T().fish.find(q=>q.id===id);if(!f)return;
+  open(hd('Verplaats '+(f.nick?esc(f.nick):fname(f.g)))+`<p style="margin:0 0 8px">Naar welke zee moet deze vis?</p><div class="grid">${S.tanks.map((t,i)=>{const cur=i===S.cur,full=t.fish.length>=fishCap(t);return `<div class="item ${cur||full?'dis':''}" onclick="moveFish('${id}',${i})"><div style="font-size:30px;line-height:1.5">🌊</div>${CFG.seas[i].n}<div class="pr">${cur?'Hier':full?'Vol':t.fish.length+'/'+fishCap(t)}</div></div>`;}).join('')}</div><div class="row2"><button class="btn" onclick="fishInfoId('${id}')">Terug</button></div>`);};
+window.moveFish=(id,i)=>{const t=T(),f=t.fish.find(q=>q.id===id);if(!f||i===S.cur)return;
+  if(S.evo&&S.evo.id===id){toast('Deze vis zit in de evolutie');return;}
+  if(t.fish.length<=1){toast('Laat minstens één vis in deze zee');return;}
+  const to=S.tanks[i];if(!to)return;if(to.fish.length>=fishCap(to)){toast(CFG.seas[i].n+' is vol');return;}
+  t.fish.splice(t.fish.indexOf(f),1);to.fish.push(f);syncSwimmers();updTop();save();close();sfx('buy');toast((f.nick||fname(f.g))+' zwemt nu in '+CFG.seas[i].n);};
 window.sellFish=id=>{const t=T();if(t.fish.length<=1){toast('Je hebt minstens één vis nodig');return;}
   if(S.evo&&S.evo.id===id){toast('Deze vis zit in de evolutie');return;}
   const f=t.fish.find(q=>q.id===id);if(!f)return;if(f.fav){toast('Favorieten verkoop je niet');return;}const val=VALUE[rarity(f.g)]*(adult(f)?15:5)*(1+(f.tier||0));
@@ -794,7 +801,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   </div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='5.5 · Borreleek (familie 13)';
+const VERSION='5.6 · Vissen verplaatsen tussen zeeën';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <div class="row2" style="margin-top:8px;align-items:center"><span style="font-size:12.5px;font-weight:700">${CFG.seas[S.cur].n}: ${T().free?'geen beperkingen (max. '+CFG.freeFish+' vissen, '+CFG.freeDecor+' decoraties)':'normaal ('+fishCap()+' vissen, '+CFG.decorMax+' decoraties)'}</span><button class="btn ${T().free?'p':''}" onclick="T().free=!T().free;save();settingsUI()">Beperkingen: ${T().free?'uit':'aan'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
