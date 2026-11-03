@@ -193,7 +193,13 @@ function drawDecor(x,d,t,X,Y,s){
 
 /* ================= instelbare waarden (niet vastgelegd in de bron – vrij aan te passen) ================= */
 const CFG={
-  maxFish:12,            // vissen per zee
+  maxFish:12,            // vissen per zee op niveau 1-3
+  fishGrowFrom:4,        // vanaf dit niveau +fishPerLvl plekken per niveau
+  fishPerLvl:2,
+  fishMax:40,            // maximum per zee (bereikt op niveau 17)
+  decorMax:10,           // decoraties per zee
+  freeFish:80,           // zee zonder beperkingen: technische grens (snelheid)
+  freeDecor:30,
   evoTime:[180,600],     // wachttijd evolutie in seconden: van basis -> vorm 1, vorm 1 -> vorm 2
   evoCost:[40,120],      // munten per evolutie
   skipPearls:5,          // parels om een evolutie direct af te ronden
@@ -220,6 +226,9 @@ function evoOptions(f){
   return null;
 }
 
+const fishCapLvl=l=>Math.min(CFG.fishMax,CFG.maxFish+Math.max(0,l-CFG.fishGrowFrom+1)*CFG.fishPerLvl);
+const fishCap=t=>(t||T()).free?CFG.freeFish:fishCapLvl(S.lvl);
+const decorCap=t=>(t||T()).free?CFG.freeDecor:CFG.decorMax;
 /* ================= staat ================= */
 function mkFish(g,adultNow){return {id:Math.random().toString(36).slice(2,9),g,grow:adultNow?6:0,hunger:30,tier:0,born:Date.now()};}
 function newTank(bgId){return {fish:[],decor:[],bg:bgId||'reef',dirt:[]};}
@@ -264,7 +273,8 @@ function levelUp(){
   Object.entries(DECOR_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push(DECOR.find(d=>d.id===k).n);});
   Object.entries(BG_LVL).forEach(([k,l])=>{if(l===S.lvl)un.push('Thema: '+BGS.find(b=>b.id===k).n);});
   CFG.seas.forEach(z=>{if(z.lvl===S.lvl&&z.lvl>1)un.push(z.n+' te koop');});
-  open(`<div style="text-align:center"><div style="font-size:40px" class="reveal">⭐</div><h2>Niveau ${S.lvl}!</h2><p>+3 parels</p>
+  const more=fishCapLvl(S.lvl)-fishCapLvl(S.lvl-1);
+  open(`<div style="text-align:center"><div style="font-size:40px" class="reveal">⭐</div><h2>Niveau ${S.lvl}!</h2><p>+3 parels${more>0?` · +${more} vissenplekken per zee (nu ${fishCapLvl(S.lvl)})`:''}</p>
     ${un.length?'<p><b>Nieuw in de winkel:</b><br>'+un.join(' · ')+'</p>':''}</div><button class="btn p" onclick="closeM()">Top!</button>`);
 }
 
@@ -476,17 +486,17 @@ function shop(tab){
   else if(tab==='bg')body='<div class="grid">'+BGS.map(b=>{const own=S.bgs.includes(b.id),l=BG_LVL[b.id],lock=!own&&S.lvl<l;return `<div class="item ${lock||(!own&&S.coins<b.p)?'dis':''} ${T().bg===b.id?'sel':''}" onclick="buyBg('${b.id}')">${lock?lockTag(l):''}<div style="height:62px;border-radius:10px;background:linear-gradient(${b.w[0]},${b.w[1]} 60%,${b.sand[0]} 61%)"></div>${b.n}<div class="pr">${own?'In bezit':'<i></i>'+b.p}</div></div>`;}).join('')+'</div>';
   else body='<div class="grid">'+CFG.seas.map((z,i)=>{const own=i<S.tanks.length,lock=!own&&S.lvl<z.lvl,next=i===S.tanks.length;return `<div class="item ${(!own&&(lock||!next||S.coins<z.p))?'dis':''} ${S.cur===i?'sel':''}" onclick="buySea(${i})">${lock?lockTag(z.lvl):''}<div style="font-size:34px;line-height:1.7">🌊</div>${z.n}<div class="pr">${own?'In bezit':'<i></i>'+z.p}</div></div>`;}).join('')+'</div>';
   open(hd('Winkel')+`<div class="tabs"><button class="${tab==='fish'?'on':''}" onclick="shop('fish')">Vissen</button><button class="${tab==='decor'?'on':''}" onclick="shop('decor')">Decor</button><button class="${tab==='bg'?'on':''}" onclick="shop('bg')">Thema's</button><button class="${tab==='sea'?'on':''}" onclick="shop('sea')">Zeeën</button></div>${body}
-    <p style="margin-top:12px">${CFG.seas[S.cur].n}: ${T().fish.length}/${CFG.maxFish} vissen · ${T().decor.length}/10 decoraties</p>`);
+    <p style="margin-top:12px">${CFG.seas[S.cur].n}: ${T().fish.length}/${fishCap()} vissen · ${T().decor.length}/${decorCap()} decoraties${T().free?' · zonder beperkingen':''}</p>`);
   if(tab==='fish'){const cat=catalogFish();sheet.querySelectorAll('.item').forEach((el,i)=>el.insertBefore(thumb(cat[i].g,90,66),el.children[1]));}
   sheet.querySelectorAll('canvas[data-d]').forEach(c=>{const x=c.getContext('2d');x.fillStyle='#bfe8f7';x.fillRect(0,0,160,120);x.fillStyle='#f6dfa6';x.fillRect(0,96,160,24);drawDecor(x,c.dataset.d,0,80,104,1.1);});
 }
 window.shop=shop;
-window.buyFish=i=>{const c=catalogFish()[i];if(S.lvl<c.lvl){toast('Vrij op niveau '+c.lvl);return;}if(S.coins<c.p){toast('Niet genoeg munten');return;}if(T().fish.length>=CFG.maxFish){toast('Deze zee is vol');return;}
+window.buyFish=i=>{const c=catalogFish()[i];if(S.lvl<c.lvl){toast('Vrij op niveau '+c.lvl);return;}if(S.coins<c.p){toast('Niet genoeg munten');return;}if(T().fish.length>=fishCap()){toast(T().free?'Deze zee zit echt vol ('+CFG.freeFish+')':'Deze zee is vol – meer plek op een hoger niveau');return;}
   S.coins-=c.p;const f=mkFish(Object.assign({},c.g),false);T().fish.push(f);const k=key(f.g);if(!S.disc[k]){S.disc[k]=1;track('discover');}track('buyfish');addXP(5);
   syncSwimmers();updTop();save();close();sfx('buy');toast(fname(c.g)+' is erbij! Voer hem om te groeien');};
 window.buyBg=id=>{const b=BGS.find(q=>q.id===id);if(!S.bgs.includes(id)){if(S.lvl<BG_LVL[id]){toast('Vrij op niveau '+BG_LVL[id]);return;}if(S.coins<b.p){toast('Niet genoeg munten');return;}S.coins-=b.p;S.bgs.push(id);addXP(10);sfx('buy');}
   T().bg=id;SAND=sandLine();updTop();save();shop('bg');};
-window.buyDecor=id=>{const d=DECOR.find(q=>q.id===id),l=DECOR_LVL[id]||1;if(S.lvl<l){toast('Vrij op niveau '+l);return;}if(S.coins<d.p){toast('Niet genoeg munten');return;}if(T().decor.length>=10){toast('Max. 10 decoraties per zee');return;}
+window.buyDecor=id=>{const d=DECOR.find(q=>q.id===id),l=DECOR_LVL[id]||1;if(S.lvl<l){toast('Vrij op niveau '+l);return;}if(S.coins<d.p){toast('Niet genoeg munten');return;}if(T().decor.length>=decorCap()){toast('Max. '+decorCap()+' decoraties in deze zee');return;}
   S.coins-=d.p;T().decor.push({id,x:.08+Math.random()*.84});track('buydecor');addXP(4);updTop();save();close();sfx('buy');toast(d.n+' geplaatst – verschuif met ✋ Inrichten');};
 window.buySea=i=>{if(i<S.tanks.length){switchSea(i);close();return;}const z=CFG.seas[i];
   if(i!==S.tanks.length){toast('Koop eerst '+CFG.seas[S.tanks.length].n);return;}if(S.lvl<z.lvl){toast('Vrij op niveau '+z.lvl);return;}if(S.coins<z.p){toast('Niet genoeg munten');return;}
@@ -617,7 +627,7 @@ function st(k){S.stats=S.stats||{};return S.stats[k]||0;}
 const decorEver=()=>{S.ever=S.ever||{};S.ever.decor=S.ever.decor||{};for(const t of S.tanks)for(const d of t.decor)S.ever.decor[d.id]=1;return Object.keys(S.ever.decor).length;};
 const finals=()=>Object.keys(S.disc).filter(k=>/^A\d+[ab]{2}$/.test(k)).length;
 const twin=()=>famIdx().some(a=>S.disc[key(fishG(a,'a'))]&&S.disc[key(fishG(a,'b'))])?1:0;
-const maxFishSea=()=>Math.max(0,...S.tanks.map(t=>t.fish.length));
+const maxFishSea=()=>Math.max(0,...S.tanks.filter(t=>!t.free).map(t=>t.fish.length));
 function achList(){
   const D=Object.keys(S.disc).length,fams=famIdx();
   const L=[
@@ -635,7 +645,7 @@ function achList(){
     {id:'feed1000',grp:'Verzorging',n:'Chef-kok',d:'Voer 1000 hapjes',v:st('fed'),g:1000,p:3},
     {id:'clean50',grp:'Verzorging',n:'Glashelder',d:'Poets 50 vuilplekken weg',v:st('cleaned'),g:50,p:1},
     {id:'clean500',grp:'Verzorging',n:'Glazenwasser',d:'Poets 500 vuilplekken weg',v:st('cleaned'),g:500,p:3},
-    {id:'full',grp:'Verzorging',n:'Volle zee',d:'Heb '+CFG.maxFish+' vissen in één zee',v:maxFishSea(),g:CFG.maxFish,p:3},
+    {id:'full',grp:'Verzorging',n:'Volle zee',d:'Heb '+CFG.fishMax+' vissen in één zee (met beperkingen)',v:maxFishSea(),g:CFG.fishMax,p:3},
     {id:'decor5',grp:'Inrichten',n:'Binnenhuisarchitect',d:'Koop 5 verschillende decoraties',v:decorEver(),g:5,p:2},
     {id:'decorAll',grp:'Inrichten',n:'Alles erin',d:'Koop alle '+DECOR.length+' decoraties',v:decorEver(),g:DECOR.length,p:5},
     {id:'themes',grp:'Inrichten',n:'Wereldreiziger',d:'Koop alle '+BGS.length+' thema\'s',v:S.bgs.length,g:BGS.length,p:3},
@@ -695,8 +705,9 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   <p>Prijzen, wachttijden en kansen zijn eigen keuzes en kunnen nog worden aangepast.</p></div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='4.9 · munten automatisch innen';
+const VERSION='5.0 · meer vissen per zee';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
+  <div class="row2" style="margin-top:8px;align-items:center"><span style="font-size:12.5px;font-weight:700">${CFG.seas[S.cur].n}: ${T().free?'geen beperkingen (max. '+CFG.freeFish+' vissen, '+CFG.freeDecor+' decoraties)':'normaal ('+fishCap()+' vissen, '+CFG.decorMax+' decoraties)'}</span><button class="btn ${T().free?'p':''}" onclick="T().free=!T().free;save();settingsUI()">Beperkingen: ${T().free?'uit':'aan'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
 // ---- oceanen beheren ----
 const slotInfo=id=>{const st=store.get('state_'+id,null);if(!st)return 'Nog niet gespeeld';const n=(st.tanks||[]).reduce((a,t)=>a+t.fish.length,0);return `Niveau ${st.lvl||1} · ${st.coins||0} munten · ${n} vis${n===1?'':'sen'} · ${(k=>k+(k===1?' soort':' soorten'))(Object.keys(st.disc||{}).length)}`;};
