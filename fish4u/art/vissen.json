@@ -946,5 +946,84 @@
   "fase": 3,
   "ouder": "vis_12b",
   "evoluties": []
+ },
+ {
+  "id": "vis_13",
+  "bestand": "vis_13.png",
+  "naam": "Borreleek",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 1,
+  "ouder": null,
+  "evoluties": [
+   "vis_13a",
+   "vis_13b"
+  ]
+ },
+ {
+  "id": "vis_13a",
+  "bestand": "vis_13a.png",
+  "naam": "Notenspeurder",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 2,
+  "ouder": "vis_13",
+  "evoluties": [
+   "vis_13aa",
+   "vis_13ab"
+  ]
+ },
+ {
+  "id": "vis_13b",
+  "bestand": "vis_13b.png",
+  "naam": "Hartendobber",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 2,
+  "ouder": "vis_13",
+  "evoluties": [
+   "vis_13ba",
+   "vis_13bb"
+  ]
+ },
+ {
+  "id": "vis_13aa",
+  "bestand": "vis_13aa.png",
+  "naam": "Belklamper",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 3,
+  "ouder": "vis_13a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_13ab",
+  "bestand": "vis_13ab.png",
+  "naam": "Notenkampioen",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 3,
+  "ouder": "vis_13a",
+  "evoluties": []
+ },
+ {
+  "id": "vis_13ba",
+  "bestand": "vis_13ba.png",
+  "naam": "Pootjeslief",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 3,
+  "ouder": "vis_13b",
+  "evoluties": []
+ },
+ {
+  "id": "vis_13bb",
+  "bestand": "vis_13bb.png",
+  "naam": "Samenstromer",
+  "familie": "familie_13",
+  "familienaam": "Borreleek",
+  "fase": 3,
+  "ouder": "vis_13b",
+  "evoluties": []
  }
 ]

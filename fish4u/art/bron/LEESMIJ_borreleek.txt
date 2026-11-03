@@ -1,0 +1,19 @@
+Fish4U - Borreleek en Hazelbel, familie 13 v1
+
+Nieuwe eigen personageontwerpen: Borreleek is een ronde kastanjebruine watereekhoorn met korte snuit, kleine voortanden, amberogen en gekrulde peddelstaart met karamelstreep. Hazelbel heeft een donkere vacht, turquoise ogen, een crèmekuif en een bladvormige staart.
+7 transparante PNGs maximaal 1024px breed; volledige composities zonder bodemschaduw. Glossy Fish4U-stijl.
+
+vis_13.png - Borreleek - ouder: None
+vis_13a.png - Notenspeurder - ouder: vis_13.png
+vis_13b.png - Hartendobber - ouder: vis_13.png
+vis_13aa.png - Belklamper - ouder: vis_13a.png
+vis_13ab.png - Notenkampioen - ouder: vis_13a.png
+vis_13ba.png - Pootjeslief - ouder: vis_13b.png
+vis_13bb.png - Samenstromer - ouder: vis_13b.png
+
+VERHAAL
+Basis: ruiken naar een eikel in een luchtbel. A: achtervolging. AA: buitenkant eikelbel vasthouden en adem inhouden. AB: eikel gewonnen, bel geknapt, adem inhouden. B: kiezen voor Hazelbel. BA: pootjes raken in afzonderlijke bellen. BB: samen in één bel, eikel vergeten.
+
+VOOR CLAUDE
+Dit pakket bevat nieuw getekende eigen personages. Gebruik uitsluitend de PNGs uit dit pakket voor familie 13. Vervang een eventueel bestaande familie 13 inclusief alle zeven afbeeldingen en catalogusrecords; meng geen oude beelden met deze nieuwe familie. Behoud alle overige families. Voeg vissen.json samen op bestandsnaam, vervang nooit de volledige spelcatalogus. Gebruik ouder voor de stamboom. Personages en hun bel/eikel vormen samen één sprite, zonder losse spelwerking. Behoud bestaande spelwaarden. Overzicht toont ontwerpen en geen exacte spelverhouding; eindvorm inclusief hele compositie compact houden. Geen prijzen, tijden of kansen toegevoegd.
+Gemaakt met ingebouwde beeldgeneratie; prompts bijgevoegd.

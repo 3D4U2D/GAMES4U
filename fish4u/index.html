@@ -794,7 +794,7 @@ window.helpUI=()=>open(hd('Help')+`<div class="help2"><p><b>👆 Wijzer</b> – 
   <p><b>🌳 Stamboom</b> – per familie zie je welke vissen je al hebt en welke nog ontbreken. <b>🏅 Prestaties</b> – haal doelen en int je parels in het menu.</p>
   <p><b>📋 Taken · 🎰 Jackpot · 🌊 Zeeën</b> – via het menu ☰.</p>
   </div><button class="btn p" onclick="closeM()">Begrepen</button>`);
-const VERSION='5.4 · Hooglander + lichtere plaatjes';
+const VERSION='5.5 · Borreleek (familie 13)';
 window.settingsUI=()=>open(hd('Instellingen')+`<p style="font-size:11px">Scherm ${screen.width}×${screen.height} · venster ${innerWidth}×${innerHeight} · lvh ${lvhProbe.offsetHeight} · spel ${app.offsetWidth}×${app.offsetHeight} · ${standalone()?'app':'browser'} · ${rotated()?'gedraaid':'liggend'}</p><p>Versie <b>${VERSION}</b> · Oceaan: <b>${(SLOTS.find(x=>x.id===CUR)||{}).name||''}</b></p><div class="row2"><button class="btn ${S.sound?'p':''}" onclick="S.sound=!S.sound;save();settingsUI()">Geluid: ${S.sound?'aan':'uit'}</button><button class="btn p" onclick="slotsUI()">🌊 Mijn oceanen</button></div>
   <div class="row2" style="margin-top:8px;align-items:center"><span style="font-size:12.5px;font-weight:700">${CFG.seas[S.cur].n}: ${T().free?'geen beperkingen (max. '+CFG.freeFish+' vissen, '+CFG.freeDecor+' decoraties)':'normaal ('+fishCap()+' vissen, '+CFG.decorMax+' decoraties)'}</span><button class="btn ${T().free?'p':''}" onclick="T().free=!T().free;save();settingsUI()">Beperkingen: ${T().free?'uit':'aan'}</button></div>
   <button class="btn" style="margin-top:18px;color:#c0303a" onclick="resetGame(this)">Opnieuw beginnen</button>`);
