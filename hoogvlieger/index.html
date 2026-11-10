@@ -106,9 +106,9 @@ const $=id=>document.getElementById(id);
 const OUT='#1e1a24';
 const LW=200;let LH=430;
 const cv=$('cv'),ctx=cv.getContext('2d'),app=$('app');
-const buf=document.createElement('canvas'),b=buf.getContext('2d');
+const buf=document.createElement('canvas'),b=buf.getContext('2d');let Q=1; // Q = scherptefactor: logisch 200 px breed, intern Q× zoveel pixels
 function resize(){const r=app.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,3);
-  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);LH=Math.round(LW*r.height/r.width);buf.width=LW;buf.height=LH;
+  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);LH=Math.round(LW*r.height/r.width);Q=Math.max(1,Math.min(3,Math.round(r.width*dpr/LW)));buf.width=LW*Q;buf.height=LH*Q;b.setTransform(Q,0,0,Q,0,0);
   ctx.imageSmoothingEnabled=false;b.imageSmoothingEnabled=false;buildScenes();}
 addEventListener('resize',resize);
 
@@ -166,6 +166,7 @@ let CHARS=null;G4U_CHARS('../img/').then(c=>{CHARS=c;});
 // eigen plaatjes uit art/ (zie ART.md)
 G4U_ART('art/',['coin','spring','bird0','bird1','hornbill0','hornbill1'],SPR);
 const ARTP={};G4U_ART('art/',['plank_0','plank_1','plank_move','plank_break','plank_cloud','scene_0','scene_1','start'],ARTP);
+function drawSpring(x,y,w){const im=SPR.spring;if(im.__art){const sw=13,sh=sw*im.height/im.width;di(im,x+w/2-sw/2,y-sh+2,sw,sh);}else di(im,x+w/2-5,y-7);}
 function di(img,...a){b.imageSmoothingEnabled=!!img.__art;b.drawImage(img,...a);b.imageSmoothingEnabled=false;}
 
 /* ===== staat ===== */
@@ -299,7 +300,7 @@ function draw(){
   const off=((-camY*0.25)%400+400)%400;
   b.globalAlpha=(1-t)*(1-space);for(let y=off-400;y<LH;y+=400)di(ARTP['scene_'+wi]||scenes[wi],0,y,LW,400);
   b.globalAlpha=t*(1-space);for(let y=off-400;y<LH;y+=400)di(ARTP['scene_'+(1-wi)]||scenes[1-wi],0,y,LW,400);b.globalAlpha=1;
-  const sy=Math.round(-camY-160);if(sy<LH)di(ARTP.start||startScene,0,sy,LW,160);
+  const sy=Math.round(-camY-160);if(sy<LH){const st=ARTP.start;if(st){const sh=LW*st.height/st.width;di(st,0,sy+160-sh,LW,sh);}else di(startScene,0,sy,LW,160);}
   // platformen
   for(const p of plats){
     if(p.gone)continue;const y=Math.round(p.y-camY);if(y<-10||y>LH+10)continue;
@@ -311,16 +312,16 @@ function draw(){
     if(p.t==='break'){c0='#9c7a5a';c1='#6a5038';c2='#b89c7c';}
     if(p.t==='cloud'){c0='#ffffff';c1='#cfe0ee';c2='#ffffff';}
     const pk=p.t==='move'?'plank_move':p.t==='break'?'plank_break':p.t==='cloud'?'plank_cloud':'plank_'+wIdx(-p.y);
-    if(ARTP[pk]){di(ARTP[pk],x-2,y-4,p.w+4,PH+8);if(p.spring)di(SPR.spring,x+p.w/2-5,y-7);continue;}
+    if(ARTP[pk]){const im=ARTP[pk],pw2=p.w+6,ph2=pw2*im.height/im.width;di(im,x-3,y-2,pw2,ph2);if(p.spring)drawSpring(x,y,p.w);continue;}
     b.fillStyle=OUT;b.fillRect(x-1,y-1,p.w+2,PH+2);
     b.fillStyle=c0;b.fillRect(x,y,p.w,PH);b.fillStyle=c1;b.fillRect(x,y+PH-2,p.w,2);b.fillStyle=c2;b.fillRect(x,y,p.w,2);
     if(p.t==='n'||p.t==='move'){b.fillStyle=p.t==='move'?'#2a6fc0':pw.node;for(let k=7;k<p.w;k+=9)b.fillRect(x+k,y+1,1,PH-2);}
     if(p.t==='break'){b.fillStyle=OUT;b.fillRect(x+10,y+1,1,3);b.fillRect(x+11,y+3,1,3);b.fillRect(x+22,y+2,1,4);}
-    if(p.spring)di(SPR.spring,x+p.w/2-5,y-7);
+    if(p.spring)drawSpring(x,y,p.w);
   }
   for(const c of coinsArr){const y=c.y-camY,sp=Math.abs(Math.cos(performance.now()/200+c.x));di(SPR.coin,Math.round(c.x-4*sp),Math.round(y-4),Math.max(1,Math.round(8*sp)),8);}
   for(const m of mobs){const y=Math.round(m.y-camY),ind=wIdx(-m.y)===0,fr=Math.floor(performance.now()/160)%2;
-    const img=SPR[(ind?'hornbill':'bird')+fr];b.save();b.translate(Math.round(m.x+10),y);if(m.dir<0)b.scale(-1,1);if(m.dead)b.rotate(Math.PI);di(img,-10,-6,img.__art?20:img.width,img.__art?12:img.height);b.restore();}
+    const img=SPR[(ind?'hornbill':'bird')+fr];b.save();b.translate(Math.round(m.x+10),y);if(m.dir<0)b.scale(-1,1);if(m.dead)b.rotate(Math.PI);di(img,img.__art?-12:-10,img.__art?-12:-6,img.__art?24:img.width,img.__art?24:img.height);b.restore();}
   if(CHARS){
     drawGuy(CHARS.p2.front,partner.x,partner.y,false);
     drawGuy(CHARS.p1.front,pl.x,pl.y,true);
@@ -332,7 +333,7 @@ function drawGuy(frames,x,y,main){
   const sy=Math.round(y-camY);
   b.save();b.translate(Math.round(x),sy);if(face<0)b.scale(-1,1);
   if(state==='falling'&&main)b.rotate(fallT*4);
-  b.drawImage(fr,Math.round(-w/2),Math.round(-h*(1-sq*0.15)),Math.round(w),Math.round(h*(1-sq*0.15)));b.restore();
+  b.imageSmoothingEnabled=!!fr.__art;b.drawImage(fr,-w/2,-h*(1-sq*0.15),w,h*(1-sq*0.15));b.imageSmoothingEnabled=false;b.restore();
 }
 function render(){draw();ctx.drawImage(buf,0,0,cv.width,cv.height);}
 

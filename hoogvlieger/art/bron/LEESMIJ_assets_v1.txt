@@ -1,0 +1,34 @@
+Hoogvlieger — losse spelassets / versie 1
+
+14 spel-PNGs; overzicht.png is alleen presentatie.
+Stijl: semi-realistische 3D-render, warm licht van linksboven.
+
+INBOUWEN
+Pak de mappen direct uit in de projectroot. Behoud de bestandsnamen.
+Sprites hebben echte RGBA-transparantie. Achtergronden zijn volledig dekkend.
+Gebruik de alpha-silhouetten niet als automatische botsingsvorm: stel eenvoudige hitboxes in.
+Geen UI, spelcode of 3D-modellen inbegrepen. Nog niet in de game getest.
+
+Gebruik de gedeelde img/personages uit de Bergloop-zip.
+Platformcanvassen: 1000x200. Zichtbare oppervlaktes verschillen per materiaal.
+bird0/1 en hornbill0/1: twee vleugelstanden naar rechts; canvas 1024x1024.
+Stel per vogelbeeld het draaipunt op de romp in; controleer de aansluiting in beweging.
+scene_0/1: 1024x2048, herhalen op Y. Boven- en onderrand zijn gelijkgemaakt.
+start.png: 1000x800, plaats als decor onderaan de beginscene.
+De achtergronden zijn herhalende landschappen; geen oneindig veranderende hoogtebiomen.
+
+BESTANDEN (breedte x hoogte)
+hoogvlieger/art/bird0.png — 1024 x 1024
+hoogvlieger/art/bird1.png — 1024 x 1024
+hoogvlieger/art/coin.png — 512 x 512
+hoogvlieger/art/hornbill0.png — 1024 x 1024
+hoogvlieger/art/hornbill1.png — 1024 x 1024
+hoogvlieger/art/plank_0.png — 1000 x 200
+hoogvlieger/art/plank_1.png — 1000 x 200
+hoogvlieger/art/plank_break.png — 1000 x 200
+hoogvlieger/art/plank_cloud.png — 1000 x 200
+hoogvlieger/art/plank_move.png — 1000 x 200
+hoogvlieger/art/scene_0.png — 1024 x 2048
+hoogvlieger/art/scene_1.png — 1024 x 2048
+hoogvlieger/art/spring.png — 512 x 512
+hoogvlieger/art/start.png — 1000 x 800

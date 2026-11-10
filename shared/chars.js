@@ -39,6 +39,10 @@
     const a=mk(0,0),b=mk(-s,0),c=mk(0,-s);
     return [a,b,a,c];
   }
+  // eigen (realistische) figuren: niet knippen, alleen licht veren; __art = glad schalen
+  function bob(src){const s=Math.max(1,Math.round(src.height*0.025));
+    const mk=d=>{const c=cnv(src.width,src.height+s),x=c.getContext('2d');x.drawImage(src,0,s+d);c.__art=true;return c;};
+    const a=mk(0),u=mk(-s);return [a,u,a,u];}
   function load(url){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=url;});}
   async function getChars(base){
     base=base||'../img/';
@@ -50,7 +54,7 @@
         let src=img;
         if(img){const c=cnv(img.width,img.height);c.getContext('2d').drawImage(img,0,0);src=c;}
         else src=placeholder(who,view);
-        out[who][view]=frames(src);
+        out[who][view]=img?bob(src):frames(src);
       }
     }
     return out;

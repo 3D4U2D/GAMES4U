@@ -1,0 +1,42 @@
+Bergloop — losse spelassets / versie 1
+
+21 spel-PNGs; overzicht.png is alleen presentatie.
+Stijl: semi-realistische 3D-render, warm licht van linksboven.
+
+INBOUWEN
+Pak de mappen direct uit in de projectroot. Behoud de bestandsnamen.
+Sprites hebben echte RGBA-transparantie. Achtergronden zijn volledig dekkend.
+Gebruik de alpha-silhouetten niet als automatische botsingsvorm: stel eenvoudige hitboxes in.
+Geen UI, spelcode of 3D-modellen inbegrepen. Nog niet in de game getest.
+
+img/p1_* = Rowan, blauwe sportjas; img/p2_* = Gladys, koraalrode sportjas.
+Voor- en rugaanzichten zijn losse rennende poses, geen volledige loopanimatie.
+Personages: canvas 660x1280, anker middenonder. Stel de wereldhoogte per personage in.
+goat0/1 en monkey0/1 zijn twee aparte loopstanden, canvas 768x900.
+Begin met 6 wisselingen per seconde; timing en uitlijning in de game controleren.
+backdrop_0/1: 1800x450 (bewuste uitzondering op maximaal 1024 breed), herhalen op X.
+Uiterste linker- en rechterkolommen zijn gelijkgemaakt voor een doorlopende overgang.
+Onderste strook is effen #9AAEBA; laat het speelpad de onderste rand overlappen.
+
+BESTANDEN (breedte x hoogte)
+bergloop/art/backdrop_0.png — 1800 x 450
+bergloop/art/backdrop_1.png — 1800 x 450
+bergloop/art/beam.png — 1012 x 662
+bergloop/art/boost.png — 512 x 512
+bergloop/art/chalet.png — 1012 x 671
+bergloop/art/coin.png — 512 x 512
+bergloop/art/fence.png — 1012 x 343
+bergloop/art/gate.png — 1012 x 694
+bergloop/art/goat0.png — 768 x 900
+bergloop/art/goat1.png — 768 x 900
+bergloop/art/magnet.png — 512 x 512
+bergloop/art/monkey0.png — 768 x 900
+bergloop/art/monkey1.png — 768 x 900
+bergloop/art/palm.png — 933 x 1412
+bergloop/art/pine.png — 943 x 1412
+bergloop/art/rock.png — 1012 x 400
+bergloop/art/vine.png — 1012 x 600
+img/p1_back.png — 660 x 1280
+img/p1_front.png — 660 x 1280
+img/p2_back.png — 660 x 1280
+img/p2_front.png — 660 x 1280
