@@ -1,0 +1,29 @@
+BERGLOOP + HOOGVLIEGER — TEGELS V2
+
+Aanvullingspakket: zes volledig dekkende RGB-PNGs.
+Pak de mappen uit in de projectroot.
+De twee hoogvlieger/art/scene_*.png vervangen de eerdere landschapsachtergronden.
+Behoud start.png en alle overige v1-assets.
+
+BESTANDEN
+bergloop/art/road_0.png — 512 x 512 — Alpenpad — herhaal verticaal
+bergloop/art/road_1.png — 512 x 512 — Indonesisch pad — herhaal verticaal
+bergloop/art/wall_0.png — 512 x 256 — Alpenbrugmuur — herhaal horizontaal
+bergloop/art/wall_1.png — 512 x 256 — Indonesische brugmuur — herhaal horizontaal
+hoogvlieger/art/scene_0.png — 512 x 1024 — warme ochtendlucht — herhaal verticaal
+hoogvlieger/art/scene_1.png — 512 x 1024 — koelere lucht — herhaal verticaal
+
+INBOUWEN
+road: de volle afbeelding is de padbreedte; lichte zijranden circa 6% per zijde.
+wall: vlak vooraanzicht, bovenrand recht; geen perspectief in de textuur.
+scene: uitsluitend lucht; landschap en startdecor blijven in start.png.
+Herhaal op de aangegeven as, zonder spiegelen en zonder ruimte tussen de tegels.
+Gebruik bij textuurmapping repeat op die as. Voorkom sampling buiten een atlasvak.
+
+CONTROLE
+De aansluitende uiterste pixelrijen of pixelkolommen zijn exact gelijk.
+Alle zes beelden zijn volledig dekkend en hebben de gevraagde afmetingen.
+Overzicht.png toont ieder bestand tweemaal direct aansluitend op de herhaalas.
+De naad ligt midden in ieder beeldpaar; labels staan erbuiten.
+Het overzicht is alleen presentatie, niet bedoeld als speltextuur.
+De herhaling is visueel gecontroleerd; nog niet in de game getest.
