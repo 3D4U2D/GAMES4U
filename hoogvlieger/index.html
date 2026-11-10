@@ -79,6 +79,7 @@ ol.top li:first-child{background:#ffe7a3}
     <div class="sub" id="startBest"></div>
     <div style="flex:1.2"></div>
     <div class="how" style="grid-template-columns:auto"><span>📱 Kantel je telefoon om te sturen</span><span>👆 of houd links/rechts ingedrukt</span></div>
+    <div class="small" id="tiltMsg" style="font-size:12px;font-weight:800;color:#ffe0a8;text-align:center;max-width:290px;min-height:30px"></div>
     <div class="tapme">Tik om te starten</div>
     <div style="flex:.5"></div>
   </div>
@@ -196,17 +197,36 @@ function genPlat(){
 }
 
 /* ===== besturing: kantelen of vasthouden ===== */
-let tilt=0,hasTilt=false,holdDir=0;
-function onOri(e){if(e.gamma==null)return;hasTilt=true;tilt=Math.max(-1,Math.min(1,e.gamma/22));}
+let tilt=0,hasTilt=false,holdDir=0,tiltListening=false,tiltSrc='';
+const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const NEEDPERM=typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function';
+function setTilt(v,src){hasTilt=true;tiltSrc=src;tilt=Math.max(-1,Math.min(1,v));}
+// 1e keuze: hoek (gamma), werkt op iPhone en Android (Chrome/Samsung Internet) met dezelfde richting
+function onOri(e){if(e.gamma==null)return;setTilt(e.gamma/22,'gamma');}
+// reserve: versnellingsmeter, voor toestellen waar gamma leeg blijft. Teken verschilt: Android = -x, iOS = +x
+function onMotion(e){if(tiltSrc==='gamma')return;const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;
+  setTilt((IOS?1:-1)*g.x/5.5,'motion');}
+function tiltMsg(t){const el=$('tiltMsg');if(el)el.textContent=t||'';}
 async function enableTilt(){
-  try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
-      const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted')return;}
-    addEventListener('deviceorientation',onOri);}catch(e){}
+  if(tiltListening)return true;
+  try{
+    if(NEEDPERM){const r=await DeviceOrientationEvent.requestPermission();
+      if(r!=='granted'){tiltMsg('Kantelen staat uit: sta bewegingstoegang toe (iPhone: Instellingen > Apps > Safari > Beweging en oriëntatie) of speel met je duim.');return false;}}
+    addEventListener('deviceorientation',onOri);addEventListener('devicemotion',onMotion);tiltListening=true;
+    setTimeout(()=>{if(!hasTilt)tiltMsg('Geen kantelsignaal ontvangen: speel met je duim (links/rechts ingedrukt houden).');},1500);
+    return true;
+  }catch(e){tiltMsg('Kantelen niet beschikbaar: speel met je duim.');return false;}
 }
+// Android: sensoren hebben geen toestemming nodig, dus meteen starten. iPhone: toestemming mag alleen
+// in een echte tik-afloop ('click'), dus daar starten we pas na die toestemming.
 app.addEventListener('pointerdown',e=>{
   if(e.target.closest('button,a,.card'))return;e.preventDefault();ensureAudio();
-  if(state==='ready'){enableTilt();start();return;}
+  if(state==='ready'){if(!NEEDPERM||tiltListening){enableTilt();start();}return;}
   const r=app.getBoundingClientRect();holdDir=e.clientX<r.left+r.width/2?-1:1;
+});
+app.addEventListener('click',async e=>{
+  if(e.target.closest('button,a,.card')||state!=='ready'||!NEEDPERM||tiltListening)return;
+  ensureAudio();await enableTilt();start();
 });
 addEventListener('pointerup',()=>{holdDir=0;});addEventListener('pointercancel',()=>{holdDir=0;});
 const keys={};
