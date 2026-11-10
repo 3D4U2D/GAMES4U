@@ -1,7 +1,7 @@
 {
   "name": "GAMES4U",
   "short_name": "GAMES4U",
-  "description": "Retro spelletjes: TikBlok, FlappyMe, Bergloop en Hoogvlieger.",
+  "description": "Eigen spelletjes in één app: TikBlok, FlappyMe, Bergloop, Hoogvlieger, Fish4U en meer.",
   "lang": "nl",
   "start_url": "./",
   "scope": "./",
