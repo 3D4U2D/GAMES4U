@@ -59,6 +59,8 @@ ol.top li:first-child{background:#ffe7a3}
 @keyframes ban{0%{opacity:0;transform:translate(-50%,-20px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
 .flash{position:absolute;inset:0;background:#fff;z-index:2;pointer-events:none;opacity:0}
 .flash.go{animation:fl .3s ease-out}@keyframes fl{0%{opacity:.8}100%{opacity:0}}
+.sens{font:inherit;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.25);color:#fff}
+.sens.on{background:#ffc94a;color:#2a1a00;border-color:transparent}
 </style>
 </head>
 <body>
@@ -79,6 +81,7 @@ ol.top li:first-child{background:#ffe7a3}
     <div class="sub" id="startBest"></div>
     <div style="flex:1.2"></div>
     <div class="how" style="grid-template-columns:auto"><span>📱 Kantel je telefoon om te sturen</span><span>👆 of houd links/rechts ingedrukt</span></div>
+    <div id="tiltBox" style="background:rgba(12,22,44,.62);border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)"><div id="tiltRow" style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;font-weight:800;color:#fff">Kantelmeter</span><span style="position:relative;width:120px;height:10px;border-radius:5px;background:rgba(255,255,255,.25)"><span style="position:absolute;left:59px;top:-2px;width:2px;height:14px;background:rgba(255,255,255,.5)"></span><span id="tiltDot" style="position:absolute;top:-3px;left:54px;width:16px;height:16px;border-radius:50%;background:#ffc94a;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:left .05s"></span></span></div><div style="display:flex;gap:6px;align-items:center" id="sensRow"><span style="font-size:12px;font-weight:800;color:#fff">Gevoelig</span><button class="sens" data-s="0">Rustig</button><button class="sens" data-s="1">Normaal</button><button class="sens" data-s="2">Snel</button></div></div>
     <div class="small" id="tiltMsg" style="font-size:12px;font-weight:800;color:#ffe0a8;text-align:center;max-width:290px;min-height:30px"></div>
     <div class="tapme">Tik om te starten</div>
     <div style="flex:.5"></div>
@@ -108,7 +111,7 @@ const LW=200;let LH=430;
 const cv=$('cv'),ctx=cv.getContext('2d'),app=$('app');
 const buf=document.createElement('canvas'),b=buf.getContext('2d');let Q=1; // Q = scherptefactor: logisch 200 px breed, intern Q× zoveel pixels
 function resize(){const r=app.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,3);
-  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);LH=Math.round(LW*r.height/r.width);Q=Math.max(1,Math.min(3,Math.round(r.width*dpr/LW)));buf.width=LW*Q;buf.height=LH*Q;b.setTransform(Q,0,0,Q,0,0);
+  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);LH=Math.round(LW*r.height/r.width);Q=Math.max(1,Math.min(QMAX,Math.round(r.width*dpr/LW)));buf.width=LW*Q;buf.height=LH*Q;b.setTransform(Q,0,0,Q,0,0);
   ctx.imageSmoothingEnabled=false;b.imageSmoothingEnabled=false;buildScenes();}
 addEventListener('resize',resize);
 
@@ -199,14 +202,21 @@ function genPlat(){
 
 /* ===== besturing: kantelen of vasthouden ===== */
 let tilt=0,hasTilt=false,holdDir=0,tiltListening=false,tiltSrc='';
-const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const NEEDPERM=typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function';
-function setTilt(v,src){hasTilt=true;tiltSrc=src;tilt=Math.max(-1,Math.min(1,v));}
-// 1e keuze: hoek (gamma), werkt op iPhone en Android (Chrome/Samsung Internet) met dezelfde richting
-function onOri(e){if(e.gamma==null)return;setTilt(e.gamma/22,'gamma');}
-// reserve: versnellingsmeter, voor toestellen waar gamma leeg blijft. Teken verschilt: Android = -x, iOS = +x
-function onMotion(e){if(tiltSrc==='gamma')return;const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;
-  setTilt((IOS?1:-1)*g.x/5.5,'motion');}
+// gevoeligheid: hoeveel m/s² zijwaartse zwaartekracht = volle snelheid (≈ 25° / 35° / 45° kantelen)
+const SENS=[6.2,4.6,3.4];let sens=store.get('sens',1);
+let inv=null,lastMotion=0;
+function setTilt(v,src){if(!hasTilt)tiltMsg('');hasTilt=true;tiltSrc=src;v=Math.max(-1,Math.min(1,v));tilt+=(v-tilt)*.45; // licht dempen tegen trillen
+  const d=document.getElementById('tiltDot');if(d)d.style.left=(54+tilt*54)+'px';}
+// 1e keuze: versnellingsmeter (zoals Doodle Jump). Werkt in elke houding: plat, schuin én rechtop als een stuur.
+// iPhone en Android geven deze waarden met omgekeerd teken; we lezen dat af aan de zwaartekracht op de y/z-as.
+function onMotion(e){const g=e.accelerationIncludingGravity;if(!g||g.x==null)return;
+  if(Math.abs(g.y)>4)inv=g.y<0;else if(Math.abs(g.z)>4)inv=g.z<0;
+  if(inv===null)return;lastMotion=performance.now();
+  const x=inv?-g.x:g.x; // nu volgens de norm: kantel naar rechts = negatief
+  setTilt(-x/SENS[sens],'motion');}
+// reserve: hoek (gamma), alleen als er geen versnellingsmeter-signaal is
+function onOri(e){if(e.gamma==null||performance.now()-lastMotion<500)return;setTilt(e.gamma/(SENS[sens]*4.5),'gamma');}
 function tiltMsg(t){const el=$('tiltMsg');if(el)el.textContent=t||'';}
 async function enableTilt(){
   if(tiltListening)return true;
@@ -220,6 +230,10 @@ async function enableTilt(){
 }
 // Android: sensoren hebben geen toestemming nodig, dus meteen starten. iPhone: toestemming mag alleen
 // in een echte tik-afloop ('click'), dus daar starten we pas na die toestemming.
+if(!NEEDPERM)enableTilt();
+function sensUI(){document.querySelectorAll('.sens').forEach(b=>b.classList.toggle('on',+b.dataset.s===sens));}
+document.querySelectorAll('.sens').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();sens=+b.dataset.s;store.set('sens',sens);sensUI();}));
+sensUI();
 app.addEventListener('pointerdown',e=>{
   if(e.target.closest('button,a,.card'))return;e.preventDefault();ensureAudio();
   if(state==='ready'){if(!NEEDPERM||tiltListening){enableTilt();start();}return;}
@@ -386,7 +400,9 @@ function sfx(k){switch(k){
 
 /* ===== loop ===== */
 let last=performance.now(),acc=0;const STEP=1/120;
-function loop(now){let dt=(now-last)/1000;last=now;if(dt>.1)dt=.1;if(!paused){acc+=dt;while(acc>=STEP){update(STEP);acc-=STEP;}}render();requestAnimationFrame(loop);}
+let QMAX=3,fAvg=16,fN=0;
+function loop(now){let dt=(now-last)/1000;
+  if(state==='play'&&dt<.2){fAvg=fAvg*.97+dt*1000*.03;if(++fN>120&&fAvg>21&&QMAX>1){QMAX--;fN=0;fAvg=16;resize();}}last=now;if(dt>.1)dt=.1;if(!paused){acc+=dt;while(acc>=STEP){update(STEP);acc-=STEP;}}render();requestAnimationFrame(loop);}
 setSB();resize();toReady();requestAnimationFrame(loop);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
 </script>
