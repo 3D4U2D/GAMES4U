@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#10203f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Woordraak">
+<title>Woordraak</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+:root{
+  --bg1:#17336b;--bg2:#0a1430;--ink:#f4f7ff;--muted:#9fb0d6;--card:rgba(255,255,255,.08);--cardb:rgba(255,255,255,.13);
+  --tile:#1c2b55;--tileb:#33467e;--ok:#21b35f;--near:#ffc21a;--miss:#3a4566;--accent:#ff9a1a;--sheet:#14244c;
+  --t:58px;
+}
+*{box-sizing:border-box;touch-action:manipulation}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg2)}
+body{color:var(--ink);font-family:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
+  /* art/bg.jpg is optioneel (ChatGPT-beeld); ontbreekt hij, dan blijft het verloop staan */
+  background:radial-gradient(120% 70% at 50% 0%,rgba(40,80,160,.55),rgba(10,20,48,.92) 70%),url(art/bg.jpg) center/cover,var(--bg2)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 8px) 8px calc(env(safe-area-inset-bottom) + 8px)}
+.bar{width:min(100%,430px)}
+.top{display:flex;align-items:center;gap:8px}
+h1{font-size:23px;margin:0 0 0 2px;font-weight:900;letter-spacing:-.3px;flex:1;white-space:nowrap}
+h1 em{font-style:normal;color:var(--near)}
+.icon{width:38px;height:38px;border-radius:11px;border:1px solid var(--cardb);background:var(--card);display:grid;place-items:center;flex:none;font-size:18px}
+.modes{display:flex;gap:6px;justify-content:center}
+.mode{font-size:13px;font-weight:800;padding:7px 14px;border-radius:999px;background:var(--card);border:1px solid var(--cardb);color:var(--muted)}
+.mode.on{background:var(--near);color:#231a00;border-color:transparent}
+#sub{text-align:center;font-size:12.5px;font-weight:700;color:var(--muted);height:16px}
+
+#stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;width:100%}
+#board{display:grid;grid-template-rows:repeat(5,var(--t));gap:6px}
+.row{display:grid;grid-template-columns:repeat(5,var(--t));gap:6px}
+.row.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.tile{position:relative;border-radius:10px;background:var(--tile);border:2px solid var(--tileb);display:grid;place-items:center;
+  font-size:calc(var(--t)*.5);font-weight:900;text-transform:uppercase;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.tile span{position:relative;z-index:1}
+.tile.fill{border-color:#6f86c6;animation:pop .1s}
+.tile.given{color:#c9d6ff;border-style:dashed}
+@keyframes pop{50%{transform:scale(1.08)}}
+.tile.ok{background:var(--ok);border-color:#5fe08f;color:#fff}
+.tile.near{background:var(--miss);border-color:#5d6a92;color:#2a1d00}
+.tile.near::before{content:'';position:absolute;inset:9%;border-radius:50%;background:var(--near);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.tile.miss{background:var(--miss);border-color:#4b5679;color:#c2cbe4}
+.tile.flip{animation:flip .5s ease both}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.tile.win{animation:jump .5s ease both}
+@keyframes jump{40%{transform:translateY(-14px)}70%{transform:translateY(3px)}}
+
+#kbd{display:flex;flex-direction:column;gap:7px;width:min(100%,430px)}
+.krow{display:flex;gap:5px;justify-content:center}
+.key{flex:1;max-width:40px;height:52px;border-radius:8px;background:#5a6a99;font-weight:800;font-size:17px;text-transform:uppercase;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);display:grid;place-items:center}
+.key.wide{max-width:64px;flex:1.5;font-size:13px}
+.key.ok{background:var(--ok)}.key.near{background:var(--near);color:#2a1d00}.key.miss{background:#262f4a;color:#7b86a6}
+.key:active{filter:brightness(1.25)}
+
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 110px);transform:translateX(-50%);background:#fff;color:#111;font-weight:900;
+  padding:10px 16px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;white-space:nowrap}
+#toast.on{opacity:1}
+
+.ov{position:fixed;inset:0;background:rgba(3,8,22,.62);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.ov.on{display:flex}
+.sheet{width:min(100%,430px);background:var(--sheet);border-radius:22px 22px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);
+  max-height:88dvh;overflow:auto;box-shadow:0 -10px 40px rgba(0,0,0,.4)}
+.sheet h2{margin:0 0 10px;font-size:21px}
+.sheet p{margin:6px 0;color:#d7def3;font-size:14.5px;line-height:1.45}
+.ex{display:flex;gap:5px;margin:8px 0 2px}.ex .tile{--t:40px;width:40px;height:40px;font-size:20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:8px 0 12px}
+.stats b{display:block;font-size:26px}.stats small{font-size:11.5px;color:var(--muted);font-weight:700}
+.dist{display:flex;flex-direction:column;gap:4px;margin:6px 0 12px}
+.dist div{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800}
+.dist i{display:block;height:20px;min-width:22px;border-radius:5px;background:var(--miss);font-style:normal;text-align:right;padding:0 6px;line-height:20px}
+.dist i.hl{background:var(--ok)}
+.btns{display:flex;gap:8px;margin-top:6px}
+.btn{flex:1;height:48px;border-radius:13px;background:var(--card);border:1px solid var(--cardb);font-weight:900;font-size:15.5px}
+.btn.p{background:var(--accent);color:#2a1400;border-color:transparent}
+.answer{font-size:30px;font-weight:900;letter-spacing:3px;text-transform:uppercase;text-align:center;margin:4px 0 10px;color:var(--near)}
+#next{text-align:center;color:var(--muted);font-weight:800;font-size:13.5px;margin-top:4px}
+.src{font-size:11px!important;color:var(--muted)!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar top">
+    <button class="icon" id="home" aria-label="Naar GAMES4U">🏠</button>
+    <h1>Woord<em>raak</em></h1>
+    <button class="icon" id="bStats" aria-label="Statistiek">📊</button>
+    <button class="icon" id="bHelp" aria-label="Uitleg">?</button>
+  </div>
+  <div class="bar modes">
+    <button class="mode" data-m="dag">📅 Dagwoord</button>
+    <button class="mode" data-m="oef">🔁 Oefenen</button>
+  </div>
+  <div class="bar" id="sub"></div>
+  <div id="stage"><div id="board"></div></div>
+  <div id="kbd"></div>
+</div>
+<div id="toast"></div>
+
+<div class="ov" id="ovHelp"><div class="sheet">
+  <h2>Zo speel je Woordraak</h2>
+  <p>Raad het woord van <b>5 letters</b> in <b>5 pogingen</b>. De eerste letter krijg je cadeau.</p>
+  <div class="ex"><div class="tile ok"><span>K</span></div><div class="tile miss"><span>A</span></div><div class="tile near"><span>M</span></div><div class="tile miss"><span>E</span></div><div class="tile miss"><span>R</span></div></div>
+  <p><b>Groen vak</b>: letter staat op de goede plek. <b>Gele cirkel</b>: letter zit in het woord, maar op een andere plek. Grijs: letter zit er niet in.</p>
+  <p><b>IJ</b> telt als één letter. Typ hem met de IJ-toets, of gewoon i en j achter elkaar.</p>
+  <p><b>Dagwoord</b>: elke dag één nieuw woord, hetzelfde voor iedereen. Hou je reeks vast! <b>Oefenen</b>: zoveel woorden als je wilt.</p>
+  <p class="src">Woordenlijst: OpenTaal (opentaal.org, BSD/CC BY 3.0). Selectie dagwoorden op basis van FrequencyWords (CC BY-SA 4.0).</p>
+  <div class="btns"><button class="btn p" data-close>Spelen</button></div>
+</div></div>
+
+<div class="ov" id="ovEnd"><div class="sheet">
+  <h2 id="endTitle"></h2>
+  <div class="answer" id="endWord"></div>
+  <div id="endStats"></div>
+  <div class="btns" id="endBtns"></div>
+  <div id="next"></div>
+</div></div>
+
+<script src="woorden.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem('woordraak_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('woordraak_'+k,JSON.stringify(v))}catch(e){}}};
+const ROWS=5,LEN=5,IJ='ĳ';
+const up=t=>t===IJ?'IJ':t.toUpperCase();
+
+// ---------- datum & dagwoord ----------
+const START=Date.UTC(2026,10,15); // 15 nov 2026 = dag 0
+function dayKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dayIdx(d=new Date()){return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-START)/864e5);}
+function dagWoord(){const n=WR_DAG.length;return WR_DAG[((dayIdx()%n)+n)%n];}
+const toks=w=>[...w];
+
+// ---------- spelstatus ----------
+let mode=store.get('mode','dag');
+let G=null; // {ans,guesses,done,won,key}
+function newGame(m){
+  if(m==='dag'){const k=dayKey(),s=store.get('dag',null);
+    if(s&&s.key===k)return s;return {key:k,ans:dagWoord(),guesses:[],done:false,won:false};}
+  const s=store.get('oef',null);if(s&&!s.done)return s;
+  let a;do{a=WR_DAG[Math.floor(Math.random()*WR_DAG.length)];}while(a===dagWoord());
+  return {key:'oef',ans:a,guesses:[],done:false,won:false};
+}
+function save(){store.set(mode,G);}
+let cur=[]; // getypte letters ná de eerste
+
+// ---------- beoordelen (dubbele letters goed afgehandeld) ----------
+function score(guess,ans){
+  const g=toks(guess),a=toks(ans),r=Array(LEN).fill('miss'),left={};
+  for(let i=0;i<LEN;i++){if(g[i]===a[i])r[i]='ok';else left[a[i]]=(left[a[i]]||0)+1;}
+  for(let i=0;i<LEN;i++){if(r[i]!=='ok'&&left[g[i]]){r[i]='near';left[g[i]]--;}}
+  return r;
+}
+
+// ---------- tekenen ----------
+const board=$('board');
+function build(){
+  board.innerHTML='';
+  for(let r=0;r<ROWS;r++){const row=document.createElement('div');row.className='row';
+    for(let c=0;c<LEN;c++){const t=document.createElement('div');t.className='tile';t.innerHTML='<span></span>';row.appendChild(t);}
+    board.appendChild(row);}
+}
+function tileAt(r,c){return board.children[r].children[c];}
+function setTile(t,letter,cls){t.className='tile'+(cls?' '+cls:'');t.firstChild.textContent=letter?up(letter):'';}
+function render(){
+  const a=toks(G.ans);
+  for(let r=0;r<ROWS;r++){
+    const g=G.guesses[r];
+    if(g){const sc=score(g,G.ans);toks(g).forEach((l,c)=>setTile(tileAt(r,c),l,sc[c]));}
+    else if(r===G.guesses.length&&!G.done){
+      setTile(tileAt(r,0),a[0],'given');
+      for(let c=1;c<LEN;c++){const l=cur[c-1];setTile(tileAt(r,c),l,l?'fill':'');}
+    } else for(let c=0;c<LEN;c++)setTile(tileAt(r,c),'','');
+  }
+  paintKeys();
+  document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+  $('sub').textContent=mode==='dag'?'Woord van '+new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}):'Oefenwoord – telt niet mee voor je reeks';
+}
+
+// ---------- toetsenbord ----------
+const KB=[['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['enter','z','x','c','v','b','n','m',IJ,'back']];
+function buildKbd(){
+  const k=$('kbd');k.innerHTML='';
+  KB.forEach(row=>{const d=document.createElement('div');d.className='krow';
+    row.forEach(x=>{const b=document.createElement('button');b.className='key'+(x==='enter'||x==='back'?' wide':'');b.dataset.k=x;
+      b.textContent=x==='enter'?'Raad':x==='back'?'⌫':up(x);b.addEventListener('click',()=>press(x));d.appendChild(b);});
+    k.appendChild(d);});
+}
+function paintKeys(){
+  const best={},rank={miss:1,near:2,ok:3};
+  G.guesses.forEach(g=>{const sc=score(g,G.ans);toks(g).forEach((l,i)=>{if(!best[l]||rank[sc[i]]>rank[best[l]])best[l]=sc[i];});});
+  document.querySelectorAll('.key').forEach(b=>{const s=best[b.dataset.k];b.classList.remove('ok','near','miss');if(s)b.classList.add(s);});
+}
+
+let busy=false;
+function press(x){
+  if(busy||G.done)return;
+  if(x==='back'){cur.pop();render();return;}
+  if(x==='enter'){submit();return;}
+  if(x==='j'&&cur[cur.length-1]==='i'){cur[cur.length-1]=IJ;render();return;}
+  if(cur.length>=LEN-1)return;
+  cur.push(x);render();
+}
+addEventListener('keydown',e=>{
+  if($('ovHelp').classList.contains('on')||$('ovEnd').classList.contains('on'))return;
+  if(e.key==='Enter')press('enter');else if(e.key==='Backspace')press('back');
+  else if(/^[a-z]$/i.test(e.key))press(e.key.toLowerCase());
+});
+
+function toast(t,ms=1500){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>el.classList.remove('on'),ms);}
+function shake(){const row=board.children[G.guesses.length];row.classList.remove('shake');void row.offsetWidth;row.classList.add('shake');}
+
+function submit(){
+  if(cur.length<LEN-1){toast('Te weinig letters');shake();return;}
+  const guess=toks(G.ans)[0]+cur.join('');
+  if(!WR_OK.has(guess)){toast('Dit woord ken ik niet');shake();return;}
+  const r=G.guesses.length,sc=score(guess,G.ans);
+  G.guesses.push(guess);cur=[];busy=true;
+  const L=toks(guess);
+  L.forEach((l,c)=>{const t=tileAt(r,c);setTimeout(()=>{t.classList.add('flip');setTimeout(()=>setTile(t,l,sc[c]+' flip'),250);},c*230);});
+  setTimeout(()=>{
+    busy=false;
+    const won=guess===G.ans;
+    if(won||G.guesses.length>=ROWS){G.done=true;G.won=won;record();}
+    save();render();
+    if(won){for(let c=0;c<LEN;c++){const t=tileAt(r,c);setTimeout(()=>t.classList.add('win'),c*90);}
+      toast(['Geniaal!','Prachtig!','Knap!','Goed zo!','Net op tijd!'][r]||'Goed!',1800);setTimeout(showEnd,1500);}
+    else if(G.done){toast(up(G.ans).replace(/./g,m=>m),2000);setTimeout(showEnd,1300);}
+  },LEN*230+300);
+}
+
+// ---------- statistiek ----------
+function stats(){return store.get('stats',{played:0,won:0,streak:0,best:0,dist:[0,0,0,0,0],lastWin:null,lastDay:null});}
+function record(){
+  if(mode!=='dag'){const p=store.get('oefstats',{played:0,won:0});p.played++;if(G.won)p.won++;store.set('oefstats',p);return;}
+  const s=stats();if(s.lastDay===G.key)return; // al geteld
+  s.played++;s.lastDay=G.key;
+  if(G.won){s.won++;s.dist[G.guesses.length-1]++;
+    const y=new Date();y.setDate(y.getDate()-1);
+    s.streak=(s.lastWin===dayKey(y))?s.streak+1:1;s.best=Math.max(s.best,s.streak);s.lastWin=G.key;}
+  else s.streak=0;
+  store.set('stats',s);
+}
+function statsHTML(){
+  const s=stats(),p=store.get('oefstats',{played:0,won:0}),mx=Math.max(1,...s.dist);
+  const hl=mode==='dag'&&G.done&&G.won?G.guesses.length-1:-1;
+  return `<div class="stats"><div><b>${s.played}</b><small>gespeeld</small></div><div><b>${s.played?Math.round(100*s.won/s.played):0}%</b><small>gewonnen</small></div>
+    <div><b>${s.streak}</b><small>reeks</small></div><div><b>${s.best}</b><small>beste reeks</small></div></div>
+    <div class="dist">${s.dist.map((n,i)=>`<div>${i+1}<i class="${i===hl?'hl':''}" style="width:${8+92*n/mx}%">${n}</i></div>`).join('')}</div>
+    <p class="src">Oefenen: ${p.won} van ${p.played} geraden.</p>`;
+}
+function showEnd(){
+  const won=G.done&&G.won;
+  $('endTitle').textContent=!G.done?'Statistiek':won?'🎉 Geraden in '+G.guesses.length+(G.guesses.length===1?' poging':' pogingen'):'Helaas!';
+  $('endWord').textContent=G.done?up(G.ans).split('').join(''):'';
+  $('endWord').style.display=G.done?'':'none';
+  $('endStats').innerHTML=statsHTML();
+  const b=$('endBtns');b.innerHTML='';
+  const add=(t,cls,fn)=>{const x=document.createElement('button');x.className='btn'+(cls?' '+cls:'');x.textContent=t;x.onclick=fn;b.appendChild(x);};
+  if(mode==='oef'&&G.done)add('Nieuw woord','p',()=>{store.set('oef',null);switchMode('oef');close();});
+  else if(mode==='dag'&&G.done)add('Oefenen','p',()=>{switchMode('oef');close();});
+  add('Sluiten','',close);
+  $('next').textContent='';
+  if(mode==='dag'&&G.done){clearInterval(showEnd.t);const tick=()=>{const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const d=Math.max(0,m-n);
+    $('next').textContent='Nieuw dagwoord over '+String(Math.floor(d/36e5)).padStart(2,'0')+':'+String(Math.floor(d/6e4)%60).padStart(2,'0')+':'+String(Math.floor(d/1e3)%60).padStart(2,'0');};
+    tick();showEnd.t=setInterval(tick,1000);}
+  $('ovEnd').classList.add('on');
+}
+function close(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'));clearInterval(showEnd.t);}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o||e.target.hasAttribute('data-close'))close();}));
+
+// ---------- modus ----------
+function switchMode(m){mode=m;store.set('mode',m);G=newGame(m);cur=[];render();}
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>switchMode(b.dataset.m));
+$('home').onclick=()=>{location.href='../';};
+$('bHelp').onclick=()=>$('ovHelp').classList.add('on');
+$('bStats').onclick=showEnd;
+// dag gewisseld terwijl de app openstond
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mode==='dag'&&G.key!==dayKey()){G=newGame('dag');cur=[];render();}});
+
+// ---------- schermmaat ----------
+function fit(){
+  const kb=$('kbd').getBoundingClientRect().height,h=innerHeight-kb-150,w=Math.min(innerWidth,430)-24;
+  const t=Math.max(40,Math.min(64,Math.floor((h-24)/5),Math.floor((w-24)/5)));
+  document.documentElement.style.setProperty('--t',t+'px');
+}
+addEventListener('resize',fit);
+
+build();buildKbd();G=newGame(mode);render();fit();
+if(!store.get('seenHelp',false)){$('ovHelp').classList.add('on');store.set('seenHelp',true);}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
+</script>
+</body>
+</html>

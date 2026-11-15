@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1a1430">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kleurcode">
+<title>Kleurcode</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+:root{--bg1:#3a2466;--bg2:#120c24;--ink:#f7f4ff;--muted:#b3a8d6;--card:rgba(255,255,255,.08);--cardb:rgba(255,255,255,.14);
+  --wood1:#3a2a5c;--wood2:#241a3d;--accent:#ff9a1a;--ok:#22c55e;--sheet:#21173d;--m:38px}
+*{box-sizing:border-box;touch-action:manipulation}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg2)}
+body{color:var(--ink);font-family:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
+  background:radial-gradient(120% 70% at 50% 0%,rgba(90,50,160,.55),rgba(18,12,36,.94) 70%),url(art/bg.jpg) center/cover,var(--bg2)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:calc(env(safe-area-inset-top) + 8px) 8px calc(env(safe-area-inset-bottom) + 8px)}
+.bar{width:min(100%,430px)}
+.top{display:flex;align-items:center;gap:8px}
+h1{font-size:23px;margin:0 0 0 2px;font-weight:900;letter-spacing:-.3px;flex:1;white-space:nowrap}
+h1 em{font-style:normal;color:#ffd21a}
+.icon{width:38px;height:38px;border-radius:11px;border:1px solid var(--cardb);background:var(--card);display:grid;place-items:center;flex:none;font-size:18px}
+.modes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.mode{font-size:13px;font-weight:800;padding:7px 12px;border-radius:999px;background:var(--card);border:1px solid var(--cardb);color:var(--muted)}
+.mode.on{background:#ffd21a;color:#2a1d00;border-color:transparent}
+#sub{text-align:center;font-size:12.5px;font-weight:700;color:var(--muted);min-height:16px}
+
+/* speelbord */
+#boardWrap{flex:1;min-height:0;width:min(100%,430px);display:flex;flex-direction:column;border-radius:18px;
+  background:linear-gradient(180deg,var(--wood1),var(--wood2));box-shadow:0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);padding:8px}
+#secret{display:flex;align-items:center;gap:8px;padding:6px 8px 10px;border-bottom:2px solid rgba(255,255,255,.08)}
+#secret .lab{width:22px;font-size:15px;text-align:center}
+#rows{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:5px;padding:8px 0 2px;scrollbar-width:none}
+#rows::-webkit-scrollbar{display:none}
+.row{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:12px}
+.row.cur{background:rgba(255,210,26,.12);box-shadow:inset 0 0 0 2px rgba(255,210,26,.5)}
+.row .no{width:22px;font-size:12px;font-weight:800;color:var(--muted);text-align:center}
+.slots{display:flex;gap:6px;flex:1}
+.hole{width:var(--m);height:var(--m);border-radius:50%;background:rgba(0,0,0,.35);box-shadow:inset 0 3px 6px rgba(0,0,0,.5);display:grid;place-items:center;flex:none}
+.row.cur .hole.sel{box-shadow:inset 0 3px 6px rgba(0,0,0,.5),0 0 0 3px #ffd21a}
+.marble{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;position:relative;
+  box-shadow:inset -4px -5px 8px rgba(0,0,0,.35),inset 3px 4px 6px rgba(255,255,255,.35),0 2px 4px rgba(0,0,0,.35)}
+.marble::after{content:'';position:absolute;left:18%;top:12%;width:34%;height:26%;border-radius:50%;background:rgba(255,255,255,.55);filter:blur(1px)}
+.marble svg{width:58%;height:58%;fill:rgba(255,255,255,.88);position:relative;z-index:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.marble.hid{background:radial-gradient(circle at 35% 30%,#6b5a95,#2d2148)}
+.marble.hid::before{content:'?';position:relative;z-index:1;font-weight:900;font-size:calc(var(--m)*.45);color:#d9ccff}
+.marble.in{animation:drop .18s ease-out}
+@keyframes drop{from{transform:scale(.4)}to{transform:scale(1)}}
+.pegs{display:grid;gap:3px;flex:none}
+.peg{width:11px;height:11px;border-radius:50%;background:rgba(0,0,0,.4);box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
+.peg.ok{background:var(--ok);box-shadow:0 0 0 1px #0f5f2c,inset 0 2px 2px rgba(255,255,255,.4)}
+.peg.near{background:#f4f4f8;box-shadow:0 0 0 1px #7d7a92,inset 0 -1px 2px rgba(0,0,0,.25)}
+.row.done .slots{opacity:.95}
+#secret.open .marble{animation:reveal .45s ease both}
+@keyframes reveal{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+
+/* palet */
+#palette{width:min(100%,430px);display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:4px 0}
+.pal{width:48px;height:48px;border-radius:50%}
+#palette.k8{gap:6px}#palette.k8 .pal{width:40px;height:40px}
+.pal:active{transform:scale(.9)}
+.acts{width:min(100%,430px);display:flex;gap:8px}
+.btn{flex:1;height:48px;border-radius:13px;background:var(--card);border:1px solid var(--cardb);font-weight:900;font-size:15.5px}
+.btn.p{background:var(--accent);color:#2a1400;border-color:transparent}
+.btn:disabled{opacity:.4}
+
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 120px);transform:translateX(-50%);background:#fff;color:#111;font-weight:900;
+  padding:10px 16px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;white-space:nowrap}
+#toast.on{opacity:1}
+.ov{position:fixed;inset:0;background:rgba(6,3,16,.62);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.ov.on{display:flex}
+.sheet{width:min(100%,430px);background:var(--sheet);border-radius:22px 22px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);max-height:88dvh;overflow:auto;box-shadow:0 -10px 40px rgba(0,0,0,.4)}
+.sheet h2{margin:0 0 10px;font-size:21px}
+.sheet p{margin:6px 0;color:#e2dcf5;font-size:14.5px;line-height:1.45}
+.legend{display:flex;align-items:center;gap:8px;margin:4px 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:8px 0 12px}
+.stats b{display:block;font-size:26px}.stats small{font-size:11.5px;color:var(--muted);font-weight:700}
+.btns{display:flex;gap:8px;margin-top:8px}
+.lvls{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.lvl{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--cardb);text-align:left}
+.lvl.on{border-color:#ffd21a;background:rgba(255,210,26,.14)}
+.lvl b{font-size:16px}.lvl small{display:block;color:var(--muted);font-weight:700;font-size:12.5px;margin-top:2px}
+#next{text-align:center;color:var(--muted);font-weight:800;font-size:13.5px;margin-top:6px}
+.secretShow{display:flex;gap:6px;justify-content:center;margin:6px 0 10px}
+.secretShow .hole{--m:44px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar top">
+    <button class="icon" id="home" aria-label="Naar GAMES4U">🏠</button>
+    <h1>Kleur<em>code</em></h1>
+    <button class="icon" id="bStats" aria-label="Statistiek">📊</button>
+    <button class="icon" id="bHelp" aria-label="Uitleg">?</button>
+  </div>
+  <div class="bar modes">
+    <button class="mode" data-m="dag">📅 Dagcode</button>
+    <button class="mode" data-m="vrij">🎲 Vrij spelen</button>
+    <button class="mode" id="bLvl">⚙️ <span id="lvlName"></span></button>
+  </div>
+  <div class="bar" id="sub"></div>
+  <div id="boardWrap">
+    <div id="secret"></div>
+    <div id="rows"></div>
+  </div>
+  <div id="palette"></div>
+  <div class="acts">
+    <button class="btn" id="bClear">↩︎ Wis</button>
+    <button class="btn p" id="bCheck">Controleer</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<div class="ov" id="ovHelp"><div class="sheet">
+  <h2>Zo speel je Kleurcode</h2>
+  <p>Er ligt een geheime code van gekleurde knikkers. Kraak hem in zo weinig mogelijk pogingen.</p>
+  <p>Tik op een knikker onderaan om hem in het eerstvolgende gaatje te leggen. Tik op een gaatje om het te kiezen of leeg te maken. Is de rij vol, tik dan op <b>Controleer</b>.</p>
+  <div class="legend"><span class="peg ok"></span><span>= goede kleur op de <b>goede plek</b></span></div>
+  <div class="legend"><span class="peg near"></span><span>= goede kleur, maar op een <b>andere plek</b></span></div>
+  <p>De pinnetjes zeggen niet wélke knikker goed is: dat is de puzzel! Elke kleur heeft ook een eigen symbool, zodat je ze altijd uit elkaar houdt.</p>
+  <p><b>Dagcode</b>: elke dag één nieuwe code (niveau Normaal). <b>Vrij spelen</b>: kies zelf je niveau.</p>
+  <div class="btns"><button class="btn p" data-close>Spelen</button></div>
+</div></div>
+
+<div class="ov" id="ovLvl"><div class="sheet">
+  <h2>Niveau voor vrij spelen</h2>
+  <div class="lvls" id="lvls"></div>
+  <div class="btns"><button class="btn" data-close>Sluiten</button></div>
+</div></div>
+
+<div class="ov" id="ovEnd"><div class="sheet">
+  <h2 id="endTitle"></h2>
+  <div class="secretShow" id="endCode"></div>
+  <div id="endStats"></div>
+  <div class="btns" id="endBtns"></div>
+  <div id="next"></div>
+</div></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem('kleurcode_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('kleurcode_'+k,JSON.stringify(v))}catch(e){}}};
+
+// kleur + eigen symbool (ook speelbaar bij kleurenblindheid)
+const SYM={
+  cirkel:'<circle cx="12" cy="12" r="7"/>',
+  vierkant:'<rect x="5.5" y="5.5" width="13" height="13" rx="1.5"/>',
+  driehoek:'<path d="M12 4 21 19H3z"/>',
+  ruit:'<path d="M12 3 20 12 12 21 4 12z"/>',
+  ster:'<path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',
+  plus:'<path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z"/>',
+  hart:'<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+  maan:'<path d="M15 3.5a8.5 8.5 0 1 0 5.6 13.6A7 7 0 0 1 15 3.5z"/>'
+};
+const COLS=[
+  {n:'rood',c:'#e8384f',s:'hart'},{n:'oranje',c:'#ff8a1f',s:'ster'},{n:'geel',c:'#f5c518',s:'cirkel'},{n:'groen',c:'#22b35e',s:'driehoek'},
+  {n:'blauw',c:'#2f7cf6',s:'ruit'},{n:'paars',c:'#9b4dff',s:'maan'},{n:'roze',c:'#ff5fb8',s:'plus'},{n:'turquoise',c:'#14c3c3',s:'vierkant'}
+];
+const LVL={
+  makkelijk:{t:'Makkelijk',n:4,k:6,dup:false,rows:10,d:'4 knikkers · 6 kleuren · geen dubbele'},
+  normaal:{t:'Normaal',n:4,k:6,dup:true,rows:10,d:'4 knikkers · 6 kleuren · dubbele mogen'},
+  moeilijk:{t:'Moeilijk',n:5,k:8,dup:true,rows:12,d:'5 knikkers · 8 kleuren · dubbele mogen'}
+};
+function marble(i,extra=''){const c=COLS[i];
+  return `<div class="marble ${extra}" style="background:radial-gradient(circle at 35% 30%,${c.c}ee,${c.c} 45%,color-mix(in srgb,${c.c} 55%,#000))" aria-label="${c.n}"><svg viewBox="0 0 24 24">${SYM[c.s]}</svg></div>`;}
+
+// ---------- datum ----------
+const START=Date.UTC(2026,10,15);
+function dayKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dayIdx(d=new Date()){return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-START)/864e5);}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function makeCode(L,r=Math.random){const out=[],pool=[...Array(L.k).keys()];
+  for(let i=0;i<L.n;i++){if(L.dup)out.push(Math.floor(r()*L.k));else out.push(pool.splice(Math.floor(r()*pool.length),1)[0]);}return out;}
+
+// ---------- spelstatus ----------
+let mode=store.get('mode','dag'),lvlKey=store.get('lvl','normaal');
+let G=null,cur=[],sel=0;
+function L(){return LVL[G.lvl];}
+function newGame(m){
+  if(m==='dag'){const k=dayKey(),s=store.get('dag',null);if(s&&s.key===k)return s;
+    return {key:k,lvl:'normaal',code:makeCode(LVL.normaal,rng(90210+dayIdx()*7919)),guesses:[],done:false,won:false};}
+  const s=store.get('vrij',null);if(s&&!s.done&&s.lvl===lvlKey)return s;
+  return {key:'vrij',lvl:lvlKey,code:makeCode(LVL[lvlKey]),guesses:[],done:false,won:false};
+}
+function save(){store.set(mode,G);}
+
+function feedback(g,code){
+  let ok=0,near=0;const a={},b={};
+  g.forEach((x,i)=>{if(x===code[i])ok++;else{a[x]=(a[x]||0)+1;b[code[i]]=(b[code[i]]||0)+1;}});
+  for(const x in a)near+=Math.min(a[x],b[x]||0);
+  return {ok,near};
+}
+
+// ---------- tekenen ----------
+function pegsHTML(f,n){
+  const cols=n<=4?2:3,arr=[];for(let i=0;i<f.ok;i++)arr.push('ok');for(let i=0;i<f.near;i++)arr.push('near');while(arr.length<n)arr.push('');
+  return `<div class="pegs" style="grid-template-columns:repeat(${cols},11px)">${arr.map(c=>`<span class="peg ${c}"></span>`).join('')}</div>`;
+}
+function render(){
+  const l=L(),n=l.n;
+  // geheime code
+  $('secret').className=G.done?'open':'';
+  $('secret').innerHTML=`<span class="lab">🔒</span><div class="slots">${G.code.map(c=>`<div class="hole">${G.done?marble(c):'<div class="marble hid"></div>'}</div>`).join('')}</div>`;
+  // rijen
+  let h='';
+  for(let r=0;r<l.rows;r++){
+    const g=G.guesses[r],isCur=!G.done&&r===G.guesses.length;
+    let slots='';
+    for(let i=0;i<n;i++){
+      const v=g?g[i]:isCur?cur[i]:null;
+      slots+=`<div class="hole${isCur&&i===sel?' sel':''}" data-i="${i}">${v!=null?marble(v,isCur&&i===lastIn?'in':''):''}</div>`;
+    }
+    const peg=g?pegsHTML(feedback(g,G.code),n):pegsHTML({ok:0,near:0},n);
+    h+=`<div class="row${isCur?' cur':''}${g?' done':''}"><span class="no">${r+1}</span><div class="slots">${slots}</div>${peg}</div>`;
+  }
+  $('rows').innerHTML=h;lastIn=-1;
+  const c=$('rows').querySelector('.row.cur');if(c)c.scrollIntoView({block:'nearest'});
+  // palet
+  $('palette').className=l.k>6?'k8':'';$('palette').innerHTML=COLS.slice(0,l.k).map((_,i)=>`<button class="pal" data-c="${i}">${marble(i)}</button>`).join('');
+  $('bCheck').disabled=G.done||cur.filter(v=>v!=null).length<n;
+  $('bClear').disabled=G.done;
+  document.querySelectorAll('.mode[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+  $('lvlName').textContent=LVL[lvlKey].t;$('bLvl').style.display=mode==='vrij'?'':'none';
+  $('sub').textContent=mode==='dag'?'Dagcode van '+new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long'})+' · '+LVL.normaal.d
+    :l.d+' · '+l.rows+' pogingen';
+  fit();
+}
+let lastIn=-1;
+
+// ---------- invoer ----------
+function nextEmpty(from){const n=L().n;for(let k=0;k<n;k++){const i=(from+k)%n;if(cur[i]==null)return i;}return from;}
+$('palette').addEventListener('click',e=>{const b=e.target.closest('.pal');if(!b||G.done)return;
+  const c=+b.dataset.c,l=L();
+  if(!l.dup&&cur.includes(c)&&cur[sel]!==c){toast('Op dit niveau komt elke kleur maar één keer voor');return;}
+  cur[sel]=c;lastIn=sel;sel=nextEmpty(sel);render();});
+$('rows').addEventListener('click',e=>{const h=e.target.closest('.row.cur .hole');if(!h)return;const i=+h.dataset.i;
+  if(sel===i&&cur[i]!=null)cur[i]=null;sel=i;render();});
+$('bClear').onclick=()=>{if(G.done)return;
+  // laatst geplaatste weg, of alles leeg als het gekozen gaatje al leeg is
+  if(cur[sel]!=null)cur[sel]=null;else{let j=-1;cur.forEach((v,i)=>{if(v!=null)j=i;});if(j>=0){cur[j]=null;sel=j;}}render();};
+$('bCheck').onclick=check;
+
+function check(){
+  const l=L();if(G.done||cur.filter(v=>v!=null).length<l.n)return;
+  const g=cur.slice(0,l.n);G.guesses.push(g);cur=[];sel=0;
+  const f=feedback(g,G.code);
+  if(f.ok===l.n){G.done=true;G.won=true;}else if(G.guesses.length>=l.rows){G.done=true;G.won=false;}
+  if(G.done)record();
+  save();render();
+  if(G.done){toast(G.won?['Wauw, in één keer!','Fenomenaal!','Briljant!','Knap gekraakt!'][Math.min(3,G.guesses.length-1)]:'De code was te sterk…',1600);setTimeout(showEnd,1300);}
+  else if(f.ok+f.near===0)toast('Geen enkele kleur goed');
+}
+
+function toast(t,ms=1500){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>el.classList.remove('on'),ms);}
+
+// ---------- statistiek ----------
+function dstats(){return store.get('stats',{played:0,won:0,streak:0,best:0,tries:0,lastWin:null,lastDay:null});}
+function vstats(){return store.get('vstats',{});}
+function record(){
+  if(mode==='dag'){const s=dstats();if(s.lastDay===G.key)return;s.played++;s.lastDay=G.key;
+    if(G.won){s.won++;s.tries+=G.guesses.length;const y=new Date();y.setDate(y.getDate()-1);s.streak=s.lastWin===dayKey(y)?s.streak+1:1;s.best=Math.max(s.best,s.streak);s.lastWin=G.key;}
+    else s.streak=0;store.set('stats',s);return;}
+  const all=vstats(),s=all[G.lvl]||{played:0,won:0,best:0};s.played++;
+  if(G.won){s.won++;s.best=s.best?Math.min(s.best,G.guesses.length):G.guesses.length;}
+  all[G.lvl]=s;store.set('vstats',all);
+}
+function statsHTML(){
+  const s=dstats(),v=vstats();
+  const vr=Object.keys(LVL).map(k=>{const x=v[k];return x?`${LVL[k].t}: ${x.won}/${x.played}${x.best?' · beste '+x.best:''}`:null;}).filter(Boolean).join('<br>');
+  return `<p style="font-weight:800;margin-top:0">Dagcode</p><div class="stats"><div><b>${s.played}</b><small>gespeeld</small></div>
+    <div><b>${s.won?(s.tries/s.won).toFixed(1):'–'}</b><small>gem. pogingen</small></div><div><b>${s.streak}</b><small>reeks</small></div><div><b>${s.best}</b><small>beste reeks</small></div></div>
+    ${vr?`<p style="font-weight:800">Vrij spelen</p><p style="color:var(--muted);font-size:13.5px">${vr}</p>`:''}`;
+}
+function showEnd(){
+  $('endTitle').textContent=!G.done?'Statistiek':G.won?'🔓 Gekraakt in '+G.guesses.length+(G.guesses.length===1?' poging':' pogingen'):'🔒 Niet gekraakt';
+  $('endCode').innerHTML=G.done?G.code.map(c=>`<div class="hole">${marble(c)}</div>`).join(''):'';
+  $('endStats').innerHTML=statsHTML();
+  const b=$('endBtns');b.innerHTML='';
+  const add=(t,cls,fn)=>{const x=document.createElement('button');x.className='btn'+(cls?' '+cls:'');x.textContent=t;x.onclick=fn;b.appendChild(x);};
+  if(mode==='vrij'&&G.done)add('Nieuwe code','p',()=>{store.set('vrij',null);switchMode('vrij');close();});
+  else if(mode==='dag'&&G.done)add('Vrij spelen','p',()=>{switchMode('vrij');close();});
+  add('Sluiten','',close);
+  $('next').textContent='';
+  if(mode==='dag'&&G.done){clearInterval(showEnd.t);const tick=()=>{const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const d=Math.max(0,m-n);
+    $('next').textContent='Nieuwe dagcode over '+String(Math.floor(d/36e5)).padStart(2,'0')+':'+String(Math.floor(d/6e4)%60).padStart(2,'0')+':'+String(Math.floor(d/1e3)%60).padStart(2,'0');};
+    tick();showEnd.t=setInterval(tick,1000);}
+  $('ovEnd').classList.add('on');
+}
+function close(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'));clearInterval(showEnd.t);}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o||e.target.hasAttribute('data-close'))close();}));
+
+// ---------- niveau & modus ----------
+function lvlUI(){
+  $('lvls').innerHTML=Object.entries(LVL).map(([k,l])=>`<button class="lvl${k===lvlKey?' on':''}" data-l="${k}"><span><b>${l.t}</b><small>${l.d} · ${l.rows} pogingen</small></span><span>${k===lvlKey?'✓':''}</span></button>`).join('');
+  $('ovLvl').classList.add('on');
+}
+$('lvls').addEventListener('click',e=>{const b=e.target.closest('.lvl');if(!b)return;
+  lvlKey=b.dataset.l;store.set('lvl',lvlKey);
+  if(G.lvl!==lvlKey||G.done){store.set('vrij',null);}
+  close();switchMode('vrij');});
+function switchMode(m){mode=m;store.set('mode',m);G=newGame(m);cur=[];sel=0;render();}
+document.querySelectorAll('.mode[data-m]').forEach(b=>b.onclick=()=>switchMode(b.dataset.m));
+$('bLvl').onclick=lvlUI;
+$('home').onclick=()=>{location.href='../';};
+$('bHelp').onclick=()=>$('ovHelp').classList.add('on');
+$('bStats').onclick=showEnd;
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mode==='dag'&&G.key!==dayKey()){G=newGame('dag');cur=[];sel=0;render();}});
+
+// ---------- schermmaat: knikkers zo groot als past ----------
+function fit(){
+  const l=L(),w=Math.min(innerWidth,430)-16-16-22-8-(l.n<=4?2:3)*14-24;
+  const avail=$('rows').clientHeight||300;
+  const byH=Math.floor(avail/Math.min(l.rows,10))-11,byW=Math.floor((w-(l.n-1)*6)/l.n);
+  const m=Math.max(26,Math.min(44,byW,byH));
+  document.documentElement.style.setProperty('--m',m+'px');
+}
+addEventListener('resize',fit);
+
+G=newGame(mode);render();
+if(!store.get('seenHelp',false)){$('ovHelp').classList.add('on');store.set('seenHelp',true);}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
+</script>
+</body>
+</html>

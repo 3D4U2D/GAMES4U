@@ -52,6 +52,8 @@ footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12.5px;fon
     <a class="game" href="bergloop/"><img class="cv" src="bergloop/art/cover.jpg" alt=""><b>Bergloop</b><small>Samen rennen door Alpen en jungle</small><span class="best" data-g="bergloop"></span></a>
     <a class="game" href="fish4u/"><img src="fish4u/icon-192.png" alt=""><b>Fish4U</b><small>Kweek je eigen magische vissen</small><span class="best" data-g="fish4u"></span></a>
     <a class="game" href="hoogvlieger/"><img class="cv" src="hoogvlieger/art/cover.jpg" alt=""><b>Hoogvlieger</b><small>Samen omhoog springen</small><span class="best" data-g="hoogvlieger"></span></a>
+    <a class="game" href="woordraak/"><img class="cv" src="woordraak/icon-192.png" alt=""><b>Woordraak</b><small>Raad elke dag het woord</small><span class="best" data-g="woordraak"></span></a>
+    <a class="game" href="kleurcode/"><img class="cv" src="kleurcode/icon-192.png" alt=""><b>Kleurcode</b><small>Kraak de geheime knikkercode</small><span class="best" data-g="kleurcode"></span></a>
   </div>
   <footer>Zet GAMES4U op je beginscherm voor schermvullend spelen – werkt ook offline.</footer>
 </main>
@@ -61,6 +63,7 @@ const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){re
 document.querySelectorAll('.best').forEach(el=>{
   const g=el.dataset.g;let best=0;
   if(g==='tikblok'){for(const m of['vast','stijg']){const l=get('tikblok_top_'+m);if(l&&l[0])best=Math.max(best,l[0].score);}}
+  else if(g==='woordraak'||g==='kleurcode'){const st=get(g+'_stats');if(st&&st.played){el.textContent=st.streak?'🔥 '+st.streak+(st.streak===1?' dag':' dagen'):'✅ '+st.won+' gewonnen';}return;}
   else if(g==='fish4u'){const st=get('fish4u_state_'+(get('fish4u_cur')||'s1'))||get('fish4u_state');if(st&&st.disc){el.textContent='🐟 '+Object.keys(st.disc).length+' soorten';return;}}
   else{const l=get(g+'_top');if(l&&l[0])best=l[0].score;}
   if(best)el.textContent='🏆 '+best.toLocaleString('nl-NL');
