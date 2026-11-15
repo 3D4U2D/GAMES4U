@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#5b5aa8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eendenjacht">
+<title>Eendenjacht</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+*{box-sizing:border-box;touch-action:none}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:#2c2b5a}
+body{color:#fff;font-family:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 8px) 10px 0;display:flex;align-items:center;gap:8px;pointer-events:none}
+.top>*{pointer-events:auto}
+.icon{width:40px;height:40px;border-radius:12px;background:rgba(20,18,50,.45);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font-size:18px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.chip{flex:1;display:flex;justify-content:center;gap:14px;font-weight:900;font-size:17px;text-shadow:0 2px 4px rgba(0,0,0,.45)}
+.chip span{background:rgba(20,18,50,.45);border:1px solid rgba(255,255,255,.25);padding:7px 12px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hud{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 12px);display:flex;gap:10px;align-items:center;
+  background:rgba(20,18,50,.55);border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:8px 12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none}
+#shots{display:flex;gap:4px}
+.shot{width:12px;height:24px;border-radius:6px 6px 3px 3px;background:linear-gradient(#ffd56a,#e09a1a);box-shadow:inset 0 -6px 0 #b8432a}
+.shot.used{opacity:.18}
+.sep{width:1px;height:28px;background:rgba(255,255,255,.25)}
+#hits{display:flex;gap:3px}
+.hit{width:17px;height:17px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:11px}
+.hit.cur{box-shadow:0 0 0 2px #ffd21a}
+.hit.ok{background:#ff9a1a}.hit.ok::after{content:'✓';font-weight:900;color:#2a1400}
+.hit.miss{background:rgba(0,0,0,.35)}
+#need{position:absolute;top:-8px;height:2px}
+.ov{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,16,50,.45)}
+.ov.on{display:flex}
+.card{width:min(100%,360px);background:rgba(28,24,70,.92);border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:20px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.card img{width:100%;border-radius:16px;display:block;margin-bottom:12px}
+.card h2{margin:0 0 6px;font-size:26px}.card h2 em{font-style:normal;color:#ffb21a}
+.card p{margin:6px 0;color:#ddd8ff;font-size:14.5px;line-height:1.45}
+.btn{width:100%;height:50px;border-radius:14px;background:#ff9a1a;color:#2a1400;font-weight:900;font-size:17px;margin-top:10px}
+.btn.s{background:rgba(255,255,255,.12);color:#fff}
+.big{font-size:40px;font-weight:900;margin:4px 0}
+#msg{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);font-size:30px;font-weight:900;text-shadow:0 3px 8px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none;text-align:center;white-space:nowrap}
+#msg.on{opacity:1}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="top">
+  <button class="icon" id="home" aria-label="Naar GAMES4U">🏠</button>
+  <div class="chip"><span id="rnd">Ronde 1</span><span id="sc">0</span></div>
+  <button class="icon" id="snd" aria-label="Geluid">🔊</button>
+</div>
+<div class="hud"><div id="shots"></div><div class="sep"></div><div id="hits"></div></div>
+<div id="msg"></div>
+<div class="ov on" id="ovStart"><div class="card">
+  <img src="art/cover.jpg" alt="">
+  <h2>Eenden<em>jacht</em></h2>
+  <p>Tik op de eenden voordat ze wegvliegen. Per vlucht heb je <b>3 schoten</b>. Raak genoeg eenden van de 10 om door te gaan naar de volgende ronde.</p>
+  <p>🦆 500 · 💙 snelle eend 1000 · ✨ gouden eend 2500</p>
+  <button class="btn" id="bStart">Start</button>
+</div></div>
+<div class="ov" id="ovEnd"><div class="card">
+  <h2 id="endT">Afgelopen!</h2>
+  <div class="big" id="endS">0</div>
+  <p id="endP"></p>
+  <button class="btn" id="bAgain">Opnieuw</button>
+  <button class="btn s" id="bHome2">Naar GAMES4U</button>
+</div></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem('eendenjacht_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('eendenjacht_'+k,JSON.stringify(v))}catch(e){}}};
+// ---------- plaatjes ----------
+const IMG={};['bg','eend0','eend1','snel0','snel1','goud0','goud1','raak','plof'].forEach(n=>{const i=new Image();i.src='art/'+n+(n==='bg'?'.jpg':'.png');IMG[n]=i;});
+const ok=i=>i&&i.complete&&i.naturalWidth>0;
+// ---------- canvas ----------
+const cv=$('cv'),cx=cv.getContext('2d');let W=0,H=0,DPR=1;
+function resize(){DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0);}
+addEventListener('resize',resize);resize();
+// ---------- geluid ----------
+let AC=null,mute=store.get('mute',false);
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+function bang(){if(mute||!ac())return;const t=AC.currentTime,n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*.18,AC.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);n.buffer=b;const g=AC.createGain(),f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=1800;g.gain.value=.5;n.connect(f).connect(g).connect(AC.destination);n.start(t);}
+function quack(hi){if(mute||!ac())return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';
+  o.frequency.setValueAtTime(hi?620:420,t);o.frequency.exponentialRampToValueAtTime(hi?300:200,t+.22);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);
+  o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.27);}
+function ding(){if(mute||!ac())return;const t=AC.currentTime;[880,1320].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,t+i*.08);g.gain.exponentialRampToValueAtTime(.15,t+i*.08+.01);g.gain.exponentialRampToValueAtTime(.0001,t+i*.08+.3);o.connect(g).connect(AC.destination);o.start(t+i*.08);o.stop(t+i*.08+.32);});}
+$('snd').textContent=mute?'🔇':'🔊';$('snd').onclick=()=>{mute=!mute;store.set('mute',mute);$('snd').textContent=mute?'🔇':'🔊';};
+// ---------- spel ----------
+const TYPES={eend:{pts:500,spd:1,size:.21},snel:{pts:1000,spd:1.55,size:.18},goud:{pts:2500,spd:1.2,size:.21}};
+let state='start',round=1,score=0,released=0,hits=[],shots=3,ducks=[],fx=[],waveT=0,waitT=0,flash=0;
+const REEDS=()=>H*.74; // hier stijgen ze op uit het riet
+function need(){return Math.min(9,5+round);}
+function pickType(){const r=Math.random();if(r<.06)return 'goud';if(round>=2&&r<.36)return 'snel';return 'eend';}
+function spawn(){
+  const t=pickType(),T=TYPES[t],dir=Math.random()<.5?-1:1,sp=W*.26*T.spd*(1+.11*(round-1));
+  const ang=(-Math.PI/2)+dir*(.35+Math.random()*.5);
+  const prev=ducks.find(d=>d.st==='fly'),x0=prev?(prev.x<W/2?W*(.6+Math.random()*.25):W*(.15+Math.random()*.25)):W*(.2+Math.random()*.6);
+  ducks.push({t,x:x0,y:REEDS(),vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,sp,w:Math.min(W,520)*T.size,st:'fly',turn:.6+Math.random()*.8,fr:0,ft:0,id:released});
+  released++;
+}
+function startWave(){
+  const n=round>=3&&released<9?2:1;shots=3;waveT=Math.max(4.2,7-.25*(round-1));
+  for(let i=0;i<n&&released<10;i++)spawn();
+  quack(false);hud();
+}
+function startRound(){released=0;hits=Array(10).fill(null);ducks=[];msg('Ronde '+round,1200);state='wait';waitT=1.3;hud();}
+function newGame(){round=1;score=0;$('ovStart').classList.remove('on');$('ovEnd').classList.remove('on');startRound();}
+
+function shoot(x,y){
+  if(state!=='wave'||shots<=0)return;
+  shots--;bang();flash=.08;fx.push({k:'ring',x,y,t:0});
+  let hit=false;
+  for(const d of ducks){if(d.st!=='fly')continue;
+    const dx=x-d.x,dy=y-d.y;if(dx*dx+dy*dy<(d.w*.6)**2){hit=true;d.st='hit';d.ht=0;d.vx=0;d.vy=0;
+      const p=Math.round(TYPES[d.t].pts*(1+.1*(round-1))/10)*10;score+=p;hits[d.id]=true;
+      fx.push({k:'plof',x:d.x,y:d.y,t:0});fx.push({k:'pts',x:d.x,y:d.y-d.w*.4,t:0,txt:'+'+p,gold:d.t==='goud'});quack(true);if(d.t==='goud')ding();break;}}
+  if(shots===0)for(const d of ducks)if(d.st==='fly')flee(d);
+  hud();
+}
+function flee(d){d.st='flee';d.vy=-d.sp*1.6;d.vx*=.4;}
+cv.addEventListener('pointerdown',e=>{e.preventDefault();ac();shoot(e.clientX,e.clientY);});
+
+function update(dt){
+  flash=Math.max(0,flash-dt);
+  if(state==='wait'){waitT-=dt;if(waitT<=0){state='wave';startWave();}}
+  if(state==='wave'){
+    waveT-=dt;if(waveT<=0)for(const d of ducks)if(d.st==='fly')flee(d);
+    for(const d of ducks){
+      d.ft+=dt;if(d.ft>(d.t==='snel'?.08:.12)){d.ft=0;d.fr^=1;}
+      if(d.st==='fly'){
+        d.turn-=dt;if(d.turn<=0){d.turn=.5+Math.random()*1;const a=Math.atan2(d.vy,d.vx)+(Math.random()-.5)*1.6;d.vx=Math.cos(a)*d.sp;d.vy=Math.sin(a)*d.sp;}
+        d.x+=d.vx*dt;d.y+=d.vy*dt;
+        const m=d.w*.5;
+        if(d.x<m){d.x=m;d.vx=Math.abs(d.vx);}if(d.x>W-m){d.x=W-m;d.vx=-Math.abs(d.vx);}
+        if(d.y<H*.14){d.y=H*.14;d.vy=Math.abs(d.vy);}if(d.y>REEDS()-m*.4){d.y=REEDS()-m*.4;d.vy=-Math.abs(d.vy);}
+      } else if(d.st==='flee'){d.x+=d.vx*dt;d.y+=d.vy*dt;if(d.y<-d.w){d.st='gone';if(hits[d.id]==null)hits[d.id]=false;}}
+      else if(d.st==='hit'){d.ht+=dt;if(d.ht>.4){d.vy+=H*2.2*dt;d.y+=d.vy*dt;if(d.y>REEDS()+d.w*.3)d.st='gone';}}
+    }
+    if(ducks.length&&ducks.every(d=>d.st==='gone')){
+      ducks.forEach(d=>{if(hits[d.id]==null)hits[d.id]=false;});
+      if(ducks.some(d=>hits[d.id]===false)&&!ducks.some(d=>hits[d.id]))msg('Weggevlogen!',900);
+      ducks=[];hud();
+      if(released<10){state='wait';waitT=.9;}
+      else endRound();
+    }
+  }
+  fx=fx.filter(f=>(f.t+=dt)<(f.k==='pts'?1:.6));
+}
+function endRound(){
+  const n=hits.filter(Boolean).length;
+  if(n>=need()){let b=0;if(n===10){b=10000;msg('Perfect! +10.000',1600);ding();}else msg(n+' van 10 – door!',1400);score+=b;round++;hud();setTimeout(startRound,1500);state='pause';}
+  else{state='over';setTimeout(gameOver,700);}
+}
+function gameOver(){
+  const top=store.get('top',[]);top.push({score,round,d:Date.now()});top.sort((a,b)=>b.score-a.score);store.set('top',top.slice(0,10));
+  $('endT').textContent=top[0].score===score&&score>0?'🏆 Nieuw record!':'Afgelopen!';
+  $('endS').textContent=score.toLocaleString('nl-NL');
+  $('endP').textContent='Je haalde ronde '+round+'. Nodig was '+need()+' van 10. Record: '+top[0].score.toLocaleString('nl-NL');
+  $('ovEnd').classList.add('on');
+}
+function msg(t,ms){const m=$('msg');m.textContent=t;m.classList.add('on');clearTimeout(msg.h);msg.h=setTimeout(()=>m.classList.remove('on'),ms);}
+function hud(){
+  $('rnd').textContent='Ronde '+round;$('sc').textContent=score.toLocaleString('nl-NL');
+  $('shots').innerHTML=[0,1,2].map(i=>`<span class="shot${i>=shots?' used':''}"></span>`).join('');
+  $('hits').innerHTML=hits.map((h,i)=>`<span class="hit${h===true?' ok':h===false?' miss':''}${h==null&&ducks.some(d=>d.id===i)?' cur':''}"></span>`).join('');
+}
+// ---------- tekenen ----------
+function drawBg(){
+  const b=IMG.bg;
+  if(ok(b)){const s=Math.max(W/b.naturalWidth,H/b.naturalHeight),w=b.naturalWidth*s,h=b.naturalHeight*s;cx.drawImage(b,(W-w)/2,(H-h)*.7,w,h);}
+  else{const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#7b7fd0');g.addColorStop(.5,'#e7a3c0');g.addColorStop(.52,'#5b5aa8');g.addColorStop(1,'#2c2b5a');cx.fillStyle=g;cx.fillRect(0,0,W,H);}
+}
+function drawDuck(d){
+  const im=d.st==='hit'?IMG.raak:IMG[d.t+d.fr];
+  const w=d.w,h=ok(im)?w*im.naturalHeight/im.naturalWidth:w*.66;
+  cx.save();cx.translate(d.x,d.y);
+  if(d.st!=='hit'&&d.vx<0)cx.scale(-1,1);
+  if(d.st==='flee')cx.rotate(-.35);
+  if(ok(im))cx.drawImage(im,-w/2,-h/2,w,h);else{cx.fillStyle=d.t==='goud'?'#ffc21a':d.t==='snel'?'#2f7cf6':'#3a8a3a';cx.beginPath();cx.ellipse(0,0,w/2,h/2,0,0,7);cx.fill();}
+  if(d.t==='goud'&&d.st==='fly'){cx.fillStyle='rgba(255,240,150,.9)';for(let i=0;i<3;i++){const a=performance.now()/300+i*2.1;cx.beginPath();cx.arc(Math.cos(a)*w*.55,Math.sin(a)*h*.55,2.5,0,7);cx.fill();}}
+  cx.restore();
+}
+function draw(){
+  drawBg();
+  for(const d of ducks)if(d.st!=='gone')drawDuck(d);
+  for(const f of fx){
+    if(f.k==='ring'){cx.strokeStyle=`rgba(255,255,255,${1-f.t/.6})`;cx.lineWidth=3;cx.beginPath();cx.arc(f.x,f.y,10+f.t*60,0,7);cx.stroke();}
+    if(f.k==='plof'&&ok(IMG.plof)){const s=W*.22*(1+f.t);cx.globalAlpha=1-f.t/.6;cx.drawImage(IMG.plof,f.x-s/2,f.y-s/2,s,s);cx.globalAlpha=1;}
+    if(f.k==='pts'){cx.globalAlpha=1-f.t;cx.font='900 20px system-ui';cx.textAlign='center';cx.fillStyle=f.gold?'#ffd21a':'#fff';cx.strokeStyle='rgba(0,0,0,.5)';cx.lineWidth=4;
+      cx.strokeText(f.txt,f.x,f.y-f.t*40);cx.fillText(f.txt,f.x,f.y-f.t*40);cx.globalAlpha=1;}
+  }
+  if(flash>0){cx.fillStyle=`rgba(255,255,255,${flash*2})`;cx.fillRect(0,0,W,H);}
+}
+let last=performance.now();
+function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;if(state!=='start'&&state!=='over')update(dt);draw();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+$('bStart').onclick=()=>{ac();newGame();};$('bAgain').onclick=newGame;
+$('home').onclick=$('bHome2').onclick=()=>{location.href='../';};
+document.addEventListener('visibilitychange',()=>{last=performance.now();});
+hits=Array(10).fill(null);hud();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
