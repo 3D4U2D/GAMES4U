@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#3b2414">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Woordzoeker">
+<title>Woordzoeker</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+:root{--ink:#fff8ef;--muted:#e3cdb4;--card:rgba(0,0,0,.28);--cardb:rgba(255,255,255,.16);--accent:#ff9a1a;--ok:#2fbf62;--bad:#e5484d;--sheet:#2e1c10;--cell:80px}
+*{box-sizing:border-box;touch-action:manipulation}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:#3b2414}
+body{color:var(--ink);font-family:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
+  background:radial-gradient(110% 70% at 50% 30%,rgba(0,0,0,0),rgba(0,0,0,.55)),url(art/bg.jpg) center/cover,#5a3820}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 8px) 10px calc(env(safe-area-inset-bottom) + 8px)}
+.bar{width:min(100%,430px)}
+.top{display:flex;align-items:center;gap:8px}
+h1{font-size:23px;margin:0 0 0 2px;font-weight:900;letter-spacing:-.3px;flex:1;white-space:nowrap;text-shadow:0 2px 4px rgba(0,0,0,.4)}
+h1 em{font-style:normal;color:#ffc94a}
+.icon{width:38px;height:38px;border-radius:11px;border:1px solid var(--cardb);background:var(--card);display:grid;place-items:center;flex:none;font-size:18px}
+.row{display:flex;align-items:center;gap:6px}
+.mode{font-size:13px;font-weight:800;padding:7px 12px;border-radius:999px;background:var(--card);border:1px solid var(--cardb);color:var(--muted)}
+.mode.on{background:#ffc94a;color:#2a1a00;border-color:transparent}
+.sp{flex:1}
+.pill{font-weight:900;font-size:15px;padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--cardb);display:flex;align-items:center;gap:6px;white-space:nowrap}
+#timer.low{background:var(--bad);border-color:transparent;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.glass{width:12px;height:18px;position:relative}
+.glass::before,.glass::after{content:'';position:absolute;left:1px;right:1px;height:8px;background:#ffd98a}
+.glass::before{top:0;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transform:scaleY(var(--top,1))}
+.glass::after{bottom:0;clip-path:polygon(50% 0,100% 100%,0 100%);transform-origin:bottom;transform:scaleY(var(--bot,0))}
+.glass span{position:absolute;inset:0;border:2px solid #c9a46a;border-left:0;border-right:0}
+
+/* word being formed */
+#word{height:40px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;letter-spacing:2px;text-transform:uppercase;text-shadow:0 2px 6px rgba(0,0,0,.5)}
+#word.ok{color:#7dffa6}#word.bad{color:#ff9b9b;animation:shake .35s}#word.dup{color:#ffd76a}
+@keyframes shake{25%,75%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+
+/* het bakje met dobbelstenen */
+#tray{position:relative;padding:12px;border-radius:22px;background:linear-gradient(160deg,#3a3f4a,#1d2027);box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.12),inset 0 -3px 0 rgba(0,0,0,.4)}
+#grid{position:relative;display:grid;grid-template-columns:repeat(4,var(--cell));gap:8px;touch-action:none}
+.well{width:var(--cell);height:var(--cell);border-radius:14px;background:#14161b;box-shadow:inset 0 4px 8px rgba(0,0,0,.7);display:grid;place-items:center}
+.die{width:90%;height:90%;border-radius:18%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 30% 25%,#ffffff 0%,#f6f1e6 45%,#ddd4c2 100%);
+  box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),inset 0 3px 0 rgba(255,255,255,.9),0 3px 0 #b9ae98,0 6px 10px rgba(0,0,0,.45);
+  transform:rotate(var(--tilt,0deg));transition:background .12s,transform .12s}
+.die b{font-family:"Arial Black","Helvetica Neue",Arial,sans-serif;font-weight:900;font-size:calc(var(--cell)*.46);color:#151515;line-height:1;transform:rotate(var(--rot,0deg));display:block}
+.die b.ij{font-size:calc(var(--cell)*.36);letter-spacing:-1px}
+.die b.ul{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:3px}
+.die.sel{background:radial-gradient(120% 120% at 30% 25%,#fff7c2,#ffd25a 60%,#f0b52a);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 3px 0 #c58a10,0 0 0 3px #fff3,0 6px 14px rgba(0,0,0,.45)}
+.die.good{background:radial-gradient(120% 120% at 30% 25%,#e7ffe9,#7fe39a 60%,#3fbf68)}
+.die.blank b{visibility:hidden}
+.shaking .die{animation:rattle .09s infinite alternate}
+@keyframes rattle{from{transform:translate(-3px,2px) rotate(-6deg)}to{transform:translate(3px,-2px) rotate(7deg)}}
+#lines{position:absolute;inset:12px;pointer-events:none;overflow:visible}
+#lines polyline{fill:none;stroke:rgba(255,170,30,.85);stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+#cover{position:absolute;inset:0;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(20,22,28,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#cover.off{display:none}
+.big{height:56px;padding:0 26px;border-radius:16px;background:var(--accent);color:#2a1400;font-weight:900;font-size:19px;box-shadow:0 5px 0 #b9640b}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #b9640b}
+#cover small{font-weight:800;color:#f1e5d6;font-size:13px;text-align:center;max-width:260px}
+
+#found{width:min(100%,430px);flex:1;min-height:0;overflow:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;padding:4px 2px}
+.w{font-size:13.5px;font-weight:800;padding:5px 9px;border-radius:9px;background:rgba(255,255,255,.14);text-transform:uppercase;letter-spacing:.5px}
+.w i{font-style:normal;color:#ffc94a;margin-left:5px;font-size:12px}
+.w.new{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.6);background:var(--ok)}100%{transform:scale(1)}}
+
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 110px);transform:translateX(-50%);background:#fff;color:#111;font-weight:900;padding:10px 16px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;white-space:nowrap}
+#toast.on{opacity:1}
+.ov{position:fixed;inset:0;background:rgba(10,5,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.ov.on{display:flex}
+.sheet{width:min(100%,430px);background:var(--sheet);border-radius:22px 22px 0 0;padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);max-height:88dvh;overflow:auto;box-shadow:0 -10px 40px rgba(0,0,0,.4)}
+.sheet h2{margin:0 0 10px;font-size:21px}
+.sheet p{margin:6px 0;color:#f0e2d0;font-size:14.5px;line-height:1.45}
+.sheet h3{margin:14px 0 6px;font-size:15px;color:#ffc94a}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:8px 0 10px}
+.stats b{display:block;font-size:24px}.stats small{font-size:11.5px;color:var(--muted);font-weight:700}
+.list{display:flex;flex-wrap:wrap;gap:5px}
+.list .w{background:rgba(255,255,255,.1)}.list .w.mine{background:rgba(47,191,98,.35)}
+.btns{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;height:48px;border-radius:13px;background:rgba(255,255,255,.1);border:1px solid var(--cardb);font-weight:900;font-size:15.5px}
+.btn.p{background:var(--accent);color:#2a1400;border-color:transparent}
+table.pts{border-collapse:collapse;margin:6px 0;font-size:14px}table.pts td{padding:3px 12px 3px 0}
+.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid rgba(255,255,255,.1);font-weight:800;font-size:14.5px}
+.tog{width:50px;height:30px;border-radius:999px;background:rgba(255,255,255,.2);position:relative;flex:none}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s}
+.tog.on{background:var(--ok)}.tog.on::after{left:23px}
+#next{text-align:center;color:var(--muted);font-weight:800;font-size:13.5px;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar top">
+    <button class="icon" id="home" aria-label="Naar GAMES4U">🏠</button>
+    <h1>Woord<em>zoeker</em></h1>
+    <button class="icon" id="bStats" aria-label="Statistiek">📊</button>
+    <button class="icon" id="bHelp" aria-label="Uitleg">?</button>
+  </div>
+  <div class="bar row">
+    <button class="mode" data-m="dag">📅 Dagbord</button>
+    <button class="mode" data-m="vrij">🎲 Vrij</button>
+    <span class="sp"></span>
+    <span class="pill" id="timer"><span class="glass" id="glass"><span></span></span><span id="tt">3:00</span></span>
+    <span class="pill" id="score">0</span>
+  </div>
+  <div class="bar" id="word"></div>
+  <div id="tray">
+    <div id="grid"></div>
+    <svg id="lines"><polyline id="pl" points=""/></svg>
+    <div id="cover"><button class="big" id="bShake">🎲 Schudden!</button><small id="coverTxt">Je hebt 3 minuten. Veeg over aangrenzende letters om woorden te maken.</small></div>
+  </div>
+  <div id="found"></div>
+</div>
+<div id="toast"></div>
+
+<div class="ov" id="ovHelp"><div class="sheet">
+  <h2>Zo speel je Woordzoeker</h2>
+  <p>Schud de 16 letterdobbelstenen en zoek in <b>3 minuten</b> zoveel mogelijk Nederlandse woorden.</p>
+  <p><b>Veeg</b> met je vinger over letters die aan elkaar grenzen: naast, boven, onder of schuin. Elke dobbelsteen mag maar één keer per woord. Laat los om het woord te checken.</p>
+  <p>Woorden van minimaal <b>3 letters</b>. Hoe langer, hoe meer punten:</p>
+  <table class="pts"><tr><td>3–4 letters</td><td><b>1</b></td></tr><tr><td>5 letters</td><td><b>2</b></td></tr><tr><td>6 letters</td><td><b>3</b></td></tr><tr><td>7 letters</td><td><b>5</b></td></tr><tr><td>8+ letters</td><td><b>11</b></td></tr></table>
+  <p>De <b>IJ</b> zit samen op één dobbelsteen en telt als twee letters.</p>
+  <p><b>Dagbord</b>: elke dag hetzelfde bord voor iedereen, één poging. <b>Vrij</b>: zo vaak je wilt.</p>
+  <div class="set"><span>🎲 Letters gedraaid zoals echte dobbelstenen</span><button class="tog" id="tRot" aria-label="Letters draaien"></button></div>
+  <p style="font-size:11px;color:var(--muted)">Woordenlijst: OpenTaal (opentaal.org, BSD/CC BY 3.0).</p>
+  <div class="btns"><button class="btn p" data-close>Spelen</button></div>
+</div></div>
+
+<div class="ov" id="ovEnd"><div class="sheet">
+  <h2 id="endT"></h2>
+  <div id="endBody"></div>
+  <div class="btns" id="endBtns"></div>
+  <div id="next"></div>
+</div></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem('woordzoeker_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('woordzoeker_'+k,JSON.stringify(v))}catch(e){}}};
+const IJ='ĳ',TIME=180;
+const up=t=>t===IJ?'IJ':t.toUpperCase();
+const show=w=>[...w].map(up).join('');
+const plen=w=>w.replace(/ĳ/g,'ij').length; // IJ telt als 2 letters
+function pts(w){const n=plen(w);return n<=4?1:n===5?2:n===6?3:n===7?5:11;}
+
+// eigen Nederlandse dobbelstenen (6 zijden elk), afgestemd op letterfrequentie
+const DICE=['AAEEGN','ABBJOO','ACHOPS','AFKPSV','AOOTTW','CIMOTU','DEILRV','DELRVZ','DINSTT','EEGHNW','EEINSU','EHRTVW','EIOSST','EELRTT','HIMNU'+IJ,'HLNNRZ']
+  .map(d=>[...d].map(c=>c===IJ?IJ:c.toLowerCase()));
+
+// ---------- woordenlijst (gesorteerd, prefix-zoeken met binair zoeken) ----------
+let WORDS=null,WSET=null;
+fetch('woorden.txt').then(r=>r.text()).then(t=>{WORDS=t.split('\n');WSET=new Set(WORDS);}).catch(()=>toast('Woordenlijst laden mislukt',3000));
+function lb(p){let lo=0,hi=WORDS.length;while(lo<hi){const m=(lo+hi)>>1;if(WORDS[m]<p)lo=m+1;else hi=m;}return lo;}
+function hasPrefix(p){const i=lb(p);return i<WORDS.length&&WORDS[i].startsWith(p);}
+const NB=[...Array(16)].map((_,i)=>{const r=i>>2,c=i&3,o=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&rr<4&&cc>=0&&cc<4)o.push(rr*4+cc);}return o;});
+function solve(b){const out=new Set();
+  const dfs=(i,used,w)=>{w+=b[i];if(!hasPrefix(w))return;if(w.length>=3&&WSET.has(w))out.add(w);if(w.length>=10)return;
+    for(const j of NB[i])if(!(used&(1<<j)))dfs(j,used|(1<<j),w);};
+  for(let i=0;i<16;i++)dfs(i,1<<i,'');return [...out];}
+
+// ---------- bord maken ----------
+const START=Date.UTC(2026,10,15);
+function dayKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dayIdx(d=new Date()){return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-START)/864e5);}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function roll(r=Math.random){const d=DICE.map(x=>x.slice());for(let i=d.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
+  return {letters:d.map(f=>f[Math.floor(r()*6)]),rot:d.map(()=>Math.floor(r()*4)*90),tilt:d.map(()=>Math.round((r()-.5)*8))};}
+
+// ---------- status ----------
+let mode=store.get('mode','dag'),rotOn=store.get('rot',false);
+let G=null; // {key,board,found:[],score,left,started,done}
+function fresh(m){
+  if(m==='dag'){const k=dayKey(),s=store.get('dag',null);if(s&&s.key===k)return s;return {key:k,board:roll(rng(4242+dayIdx()*104729)),found:[],score:0,left:TIME,started:false,done:false};}
+  const s=store.get('vrij',null);if(s&&!s.done)return s;return {key:'vrij',board:roll(),found:[],score:0,left:TIME,started:false,done:false};
+}
+function save(){store.set(mode,G);}
+
+// ---------- tekenen ----------
+const grid=$('grid');
+function build(){grid.innerHTML='';for(let i=0;i<16;i++){const w=document.createElement('div');w.className='well';w.innerHTML='<div class="die"><b></b></div>';grid.appendChild(w);}}
+function die(i){return grid.children[i].firstChild;}
+function paintDice(letters,blank){
+  for(let i=0;i<16;i++){const d=die(i),b=d.firstChild,l=letters[i];
+    b.textContent=up(l);b.className=(l===IJ?'ij':'')+(rotOn&&'mnwz'.includes(l)?' ul':'');
+    d.style.setProperty('--rot',(rotOn?G.board.rot[i]:0)+'deg');d.style.setProperty('--tilt',G.board.tilt[i]+'deg');
+    d.classList.toggle('blank',!!blank);}
+}
+function render(){
+  paintDice(G.board.letters,!G.started);
+  $('score').textContent=G.score+' pt';
+  $('found').innerHTML=G.found.slice().reverse().map(w=>`<span class="w">${show(w)}<i>${pts(w)}</i></span>`).join('');
+  document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+  $('cover').classList.toggle('off',G.started&&!G.done);
+  $('bShake').textContent=G.done?(mode==='dag'?'📊 Uitslag':'🎲 Nieuw bord'):'🎲 Schudden!';
+  $('coverTxt').textContent=G.done?(mode==='dag'?'Het dagbord is gespeeld. Morgen een nieuw bord!':'Klaar! Schud voor een nieuw bord.'):mode==='dag'?'Dagbord van '+new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long'})+'. Eén poging, 3 minuten.':'Je hebt 3 minuten. Veeg over aangrenzende letters.';
+  timerUI();
+}
+function timerUI(){const s=Math.max(0,Math.ceil(G.left));$('tt').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  $('timer').classList.toggle('low',G.started&&!G.done&&s<=15);const f=G.left/TIME;$('glass').style.setProperty('--top',f);$('glass').style.setProperty('--bot',1-f);}
+function fit(){const w=Math.min(innerWidth,430)-24-24,h=innerHeight*.5;const c=Math.floor(Math.min((w-24)/4,(h-24)/4,92));document.documentElement.style.setProperty('--cell',c+'px');}
+addEventListener('resize',fit);
+
+// ---------- geluid ----------
+let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+function tone(f,d=.12,type='triangle',v=.12,at=0){if(!ac())return;const t=AC.currentTime+at,o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.02);}
+function rattle(){if(!ac())return;for(let k=0;k<14;k++){const t=AC.currentTime+k*.055,n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*.03,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=b;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=1800+Math.random()*1500;const g=AC.createGain();g.gain.value=.5;n.connect(f).connect(g).connect(AC.destination);n.start(t);}}
+
+// ---------- schudden & timer ----------
+let tick=null;
+function shake(){
+  ac();
+  if(G.done){if(mode==='dag'){showEnd();return;}store.set('vrij',null);G=fresh('vrij');}
+  rattle();$('cover').classList.add('off');grid.classList.add('shaking');
+  let n=0;const iv=setInterval(()=>{paintDice(G.board.letters.map(()=>DICE[Math.floor(Math.random()*16)][Math.floor(Math.random()*6)]),false);if(++n>9){clearInterval(iv);grid.classList.remove('shaking');
+    G.started=true;save();render();tone(660,.15);tone(990,.2,'triangle',.12,.1);run();}},80);
+}
+function run(){clearInterval(tick);let last=performance.now();
+  tick=setInterval(()=>{const now=performance.now();G.left-=(now-last)/1000;last=now;
+    if(G.left<=0){G.left=0;end();}else if(Math.ceil(G.left)<=5&&Math.ceil(G.left)!==run.b){run.b=Math.ceil(G.left);tone(880,.08,'square',.05);}
+    timerUI();if(Math.random()<.1)save();},200);}
+function end(){clearInterval(tick);clearPath();G.done=true;record();save();render();tone(523,.3,'triangle',.15);tone(392,.5,'triangle',.15,.25);setTimeout(showEnd,600);}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(tick);save();}else if(G&&G.started&&!G.done)run();});
+$('bShake').onclick=shake;
+
+// ---------- vegen ----------
+let path=[],drag=false;
+function cellAt(x,y){const r=grid.getBoundingClientRect(),c=(r.width+8)/4;const cx=x-r.left,cy=y-r.top,col=Math.floor(cx/c),row=Math.floor(cy/c);
+  if(col<0||col>3||row<0||row>3)return -1;const dx=cx-(col*c+(c-8)/2),dy=cy-(row*c+(c-8)/2);if(dx*dx+dy*dy>(c*.42)**2)return -1;return row*4+col;}
+function cur(){return path.map(i=>G.board.letters[i]).join('');}
+function drawPath(){const r=grid.getBoundingClientRect(),c=(r.width+8)/4;
+  $('pl').setAttribute('points',path.map(i=>((i&3)*c+(c-8)/2)+','+((i>>2)*c+(c-8)/2)).join(' '));
+  for(let i=0;i<16;i++)die(i).classList.toggle('sel',path.includes(i));
+  const w=$('word');w.className='bar';w.textContent=show(cur());}
+function clearPath(){path=[];drag=false;$('pl').setAttribute('points','');for(let i=0;i<16;i++)die(i).classList.remove('sel');}
+function addCell(i){if(i<0)return;const L=path.length;
+  if(L&&path[L-1]===i)return;
+  if(L>1&&path[L-2]===i){path.pop();drawPath();return;} // terug
+  if(path.includes(i))return;if(L&&!NB[path[L-1]].includes(i))return;
+  path.push(i);drawPath();if(navigator.vibrate)try{navigator.vibrate(6);}catch(e){}}
+grid.addEventListener('pointerdown',e=>{if(!G.started||G.done||!WORDS)return;e.preventDefault();drag=true;path=[];try{grid.setPointerCapture(e.pointerId);}catch(_){};addCell(cellAt(e.clientX,e.clientY));});
+grid.addEventListener('pointermove',e=>{if(!drag)return;addCell(cellAt(e.clientX,e.clientY));});
+const release=()=>{if(!drag)return;drag=false;submit();};
+grid.addEventListener('pointerup',release);grid.addEventListener('pointercancel',release);
+function submit(){const w=cur(),el=$('word'),sel=path.slice();clearPath();if(!w)return;
+  el.textContent=show(w);
+  if(w.length<3&&plen(w)<3){el.className='bar bad';el.textContent+=' – te kort';tone(200,.15,'sawtooth',.06);return;}
+  if(G.found.includes(w)){el.className='bar dup';el.textContent+=' – al gevonden';tone(300,.12,'triangle',.08);return;}
+  if(!WSET.has(w)){el.className='bar bad';tone(180,.18,'sawtooth',.06);return;}
+  G.found.push(w);const p=pts(w);G.score+=p;save();
+  el.className='bar ok';el.textContent=show(w)+'  +'+p;tone(700,.1);tone(1050,.14,'triangle',.12,.08);
+  sel.forEach(i=>{die(i).classList.add('good');setTimeout(()=>die(i).classList.remove('good'),350);});
+  render();const f=$('found').firstChild;if(f)f.classList.add('new');
+}
+
+// ---------- statistiek ----------
+function record(){
+  const top=store.get('top',[]);top.push({score:G.score,n:G.found.length,d:Date.now(),m:mode});top.sort((a,b)=>b.score-a.score);store.set('top',top.slice(0,10));
+  if(mode==='dag'){const s=store.get('stats',{played:0,streak:0,best:0,lastDay:null,bestScore:0});if(s.lastDay===G.key)return;
+    const y=new Date();y.setDate(y.getDate()-1);s.streak=s.lastDay===dayKey(y)?s.streak+1:1;s.best=Math.max(s.best,s.streak);s.played++;s.lastDay=G.key;s.bestScore=Math.max(s.bestScore,G.score);store.set('stats',s);}
+}
+function showEnd(){
+  const all=WORDS?solve(G.board.letters):[],mine=new Set(G.found);
+  all.sort((a,b)=>plen(b)-plen(a)||a.localeCompare(b));
+  const max=all.reduce((s,w)=>s+pts(w),0),s=store.get('stats',{played:0,streak:0,best:0,bestScore:0}),top=store.get('top',[]);
+  const best=G.found.slice().sort((a,b)=>plen(b)-plen(a))[0];
+  $('endT').textContent=!G.started?'Statistiek':G.done?'⏳ Tijd om! '+G.score+' punten':'Tussenstand: '+G.score+' punten';
+  const missed=all.filter(w=>!mine.has(w));
+  $('endBody').innerHTML=(G.started?`<div class="stats"><div><b>${G.found.length}</b><small>woorden</small></div><div><b>${G.score}</b><small>punten</small></div>
+    <div><b>${all.length}</b><small>mogelijk</small></div><div><b>${max?Math.round(100*G.score/max):0}%</b><small>van max.</small></div></div>
+    ${best?`<p>Langste woord: <b>${show(best)}</b> (${pts(best)} pt)</p>`:''}`:'')+
+    `<p>📅 Dagbord: ${s.played} gespeeld · reeks ${s.streak} · beste score ${s.bestScore||0}<br>🏆 Hoogste score ooit: ${top[0]?top[0].score:0}</p>`+
+    (G.done&&missed.length?`<h3>Gemist (${missed.length})</h3><div class="list">${missed.slice(0,60).map(w=>`<span class="w">${show(w)}<i>${pts(w)}</i></span>`).join('')}${missed.length>60?'<span class="w">…</span>':''}</div>`:'');
+  const b=$('endBtns');b.innerHTML='';const add=(t,c,fn)=>{const x=document.createElement('button');x.className='btn'+(c?' '+c:'');x.textContent=t;x.onclick=fn;b.appendChild(x);};
+  if(G.done&&mode==='vrij')add('Nieuw bord','p',()=>{close();shake();});
+  if(G.done&&mode==='dag')add('Vrij spelen','p',()=>{close();switchMode('vrij');});
+  add('Sluiten','',close);
+  $('next').textContent='';
+  if(mode==='dag'&&G.done){clearInterval(showEnd.t);const tk=()=>{const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const d=Math.max(0,m-n);
+    $('next').textContent='Nieuw dagbord over '+String(Math.floor(d/36e5)).padStart(2,'0')+':'+String(Math.floor(d/6e4)%60).padStart(2,'0')+':'+String(Math.floor(d/1e3)%60).padStart(2,'0');};tk();showEnd.t=setInterval(tk,1000);}
+  $('ovEnd').classList.add('on');
+}
+function close(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('on'));clearInterval(showEnd.t);}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o||e.target.hasAttribute('data-close'))close();}));
+function toast(t,ms=1500){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>el.classList.remove('on'),ms);}
+
+// ---------- modus & instellingen ----------
+function switchMode(m){if(G&&G.started&&!G.done){save();clearInterval(tick);}mode=m;store.set('mode',m);G=fresh(m);clearPath();$('word').textContent='';render();if(G.started&&!G.done)run();}
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>switchMode(b.dataset.m));
+$('tRot').classList.toggle('on',rotOn);$('tRot').onclick=()=>{rotOn=!rotOn;store.set('rot',rotOn);$('tRot').classList.toggle('on',rotOn);render();};
+$('home').onclick=()=>{if(G.started&&!G.done)save();location.href='../';};
+$('bHelp').onclick=()=>$('ovHelp').classList.add('on');
+$('bStats').onclick=showEnd;
+
+build();fit();G=fresh(mode);render();if(G.started&&!G.done)run();
+if(!store.get('seenHelp',false)){$('ovHelp').classList.add('on');store.set('seenHelp',true);}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
